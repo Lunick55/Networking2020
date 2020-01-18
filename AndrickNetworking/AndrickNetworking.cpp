@@ -70,13 +70,15 @@ int main(void)
 		std::cout << ("Enter server IP or hit enter for 127.0.0.1\n");
 		std::string serverIPInput;
 		getInput("Server IP: ", serverIPInput);
-		if (!serverIPInput.empty()) {
+
+		if (serverIPInput.empty()) 
+		{
 			serverIPInput = "127.0.0.1";
 		}
+
 		printf("Starting the client.\n");
 
 		peer->Connect(serverIPInput.c_str(), serverPort, 0, 0);
-
 	}
 
 	while (1)
@@ -104,18 +106,22 @@ int main(void)
 				printf("The server is full.\n");
 				break;
 			case ID_DISCONNECTION_NOTIFICATION:
-				if (isServer) {
+				if (isServer) 
+				{
 					printf("A client has disconnected.\n");
 				}
-				else {
+				else 
+				{
 					printf("We have been disconnected.\n");
 				}
 				break;
 			case ID_CONNECTION_LOST:
-				if (isServer) {
+				if (isServer) 
+				{
 					printf("A client lost the connection.\n");
 				}
-				else {
+				else 
+				{
 					printf("Connection lost.\n");
 				}
 				break;
