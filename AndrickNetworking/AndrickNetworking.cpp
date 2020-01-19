@@ -3,8 +3,14 @@
 #include <iostream>
 #include <string>
 #include "RakNet/MessageIdentifiers.h"
+#include "RakNet/BitStream.h"
+#include "RakNet/RakNetTypes.h"
 
-//is this really necessary?
+enum GameMessages
+{
+	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+};
+
 void getInput(const char* outputText, std::string& input)
 {
 	printf(outputText);
@@ -30,6 +36,19 @@ int main(void)
 	//Server port is always initialized for server and client.
 	std::string serverPortInput;
 	getInput("Server Port: ", serverPortInput);
+
+	if (!serverPortInput.empty())
+	{
+		try
+		{
+			serverPort = stoi(serverPortInput);
+		}
+		catch (const std::exception & e)
+		{
+			std::cout << "Could not convert ServerPort input into a number: " << e.what() << std::endl;
+			return -1;
+		}
+	}
 
 	//Client
 	if (std::tolower(csResult) == 'c')
@@ -66,7 +85,8 @@ int main(void)
 		// We need to let the server accept incoming connections from the clients
 		peer->SetMaximumIncomingConnections(maxClients);
 	}
-	else {
+	else 
+	{
 		std::cout << ("Enter server IP or hit enter for 127.0.0.1\n");
 		std::string serverIPInput;
 		getInput("Server IP: ", serverIPInput);
@@ -97,8 +117,16 @@ int main(void)
 				printf("Another client has connected.\n");
 				break;
 			case ID_CONNECTION_REQUEST_ACCEPTED:
+			{
 				printf("Our connection request has been accepted.\n");
-				break;
+
+				// Use a BitStream to write a custom user message
+				// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write("Hello world");
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+			}
 			case ID_NEW_INCOMING_CONNECTION:
 				printf("A connection is incoming.\n");
 				break;
@@ -125,6 +153,15 @@ int main(void)
 					printf("Connection lost.\n");
 				}
 				break;
+			case ID_GAME_MESSAGE_1:
+			{
+				RakNet::RakString rs;
+				RakNet::BitStream bsIn(packet->data, packet->length, false);
+				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				bsIn.Read(rs);
+				printf("%s\n", rs.C_String());
+			}
+			break;
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
