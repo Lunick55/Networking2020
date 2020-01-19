@@ -6,6 +6,17 @@
 #include "RakNet/BitStream.h"
 #include "RakNet/RakNetTypes.h"
 
+#pragma pack(push, 1)
+struct Message
+{
+	unsigned char typeId;//your type here
+
+	//the message from the user
+	std::string message;
+	//more data goes here
+};
+#pragma pack(pop)
+
 enum GameMessages
 {
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
@@ -123,9 +134,16 @@ int main(void)
 				// Use a BitStream to write a custom user message
 				// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
 				RakNet::BitStream bsOut;
+				Message messageOut;
+
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				messageOut.typeId = ID_GAME_MESSAGE_1;
+
 				bsOut.Write("Hello world");
-				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				messageOut.message = "SUCK MY TITS SLUT";
+	
+				//peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				peer->Send((char*)&messageOut, sizeof(Message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			case ID_NEW_INCOMING_CONNECTION:
 				printf("A connection is incoming.\n");
@@ -155,11 +173,23 @@ int main(void)
 				break;
 			case ID_GAME_MESSAGE_1:
 			{
-				RakNet::RakString rs;
-				RakNet::BitStream bsIn(packet->data, packet->length, false);
-				bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				bsIn.Read(rs);
-				printf("%s\n", rs.C_String());
+				Message* m = (Message*)packet->data;
+				unsigned char* dataThing = packet->data;
+
+				assert(packet->length == sizeof(Message)); // This is a good idea if you’re transmitting structs.
+				if (packet->length != sizeof(Message))
+				{
+					std::cout << "Length is the big suck" << std::endl;
+					return 0;
+				}
+
+				//RakNet::RakString rs;
+				//RakNet::BitStream bsIn(packet->data, packet->length, false);
+				//bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+				//bsIn.Read(rs);
+
+				//this crashes
+				std::cout << m->message << std::endl;
 			}
 			break;
 			default:
