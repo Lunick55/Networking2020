@@ -173,8 +173,7 @@ int main(void)
 				break;
 			case ID_GAME_MESSAGE:
 			{
-				AndrickPacket* m = (AndrickPacket*)packet->data;
-				unsigned char* dataThing = packet->data;
+				AndrickPacket* data = (AndrickPacket*)packet->data;
 
 				assert(packet->length == sizeof(AndrickPacket));
 				if (packet->length != sizeof(AndrickPacket))
@@ -183,7 +182,7 @@ int main(void)
 					return -1;
 				}
 
-				std::cout << "Incoming message: " << std::string(m->message) << std::endl;
+				std::cout << "Incoming message: " << std::string(data->message) << std::endl;
 			}
 			break;
 			default:
