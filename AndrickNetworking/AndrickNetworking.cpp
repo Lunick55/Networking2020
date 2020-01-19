@@ -7,19 +7,16 @@
 #include "RakNet/RakNetTypes.h"
 
 #pragma pack(push, 1)
-struct Message
+struct AndrickPacket
 {
-	unsigned char typeId;//your type here
-
-	//the message from the user
+	unsigned char packetId;
 	const char* message;
-	//more data goes here
 };
 #pragma pack(pop)
 
 enum GameMessages
 {
-	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
+	ID_GAME_MESSAGE = ID_USER_PACKET_ENUM
 };
 
 void getInput(const char* outputText, std::string& input)
@@ -31,7 +28,7 @@ void getInput(const char* outputText, std::string& input)
 int main(void)
 {
 	unsigned int maxClients = 10;
-	unsigned short serverPort = 600;
+	unsigned short serverPort = 6000;
 
 	RakNet::RakPeerInterface* peer = RakNet::RakPeerInterface::GetInstance();
 	bool isServer;
@@ -75,14 +72,17 @@ int main(void)
 		std::string maxClientInput;
 		getInput("Max Clients: ", maxClientInput);
 
-		try
+		if (!maxClientInput.empty())
 		{
-			maxClients = std::stoi(maxClientInput);
-		}
-		catch (const std::exception& e)
-		{
-			std::cout << "Could not convert Max Client input into a number: " << e.what() << std::endl;
-			return -1;
+			try
+			{
+				maxClients = std::stoi(maxClientInput);
+			}
+			catch (const std::exception & e)
+			{
+				std::cout << "Could not convert Max Client input into a number: " << e.what() << std::endl;
+				return -1;
+			}
 		}
 
 		RakNet::SocketDescriptor sd(serverPort, 0);
@@ -131,19 +131,19 @@ int main(void)
 			{
 				printf("Our connection request has been accepted.\n");
 
-				// Use a BitStream to write a custom user message
-				// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
-				RakNet::BitStream bsOut;
-				Message messageOut;
+				AndrickPacket sendingPacket;
+				sendingPacket.packetId = ID_GAME_MESSAGE;
+				sendingPacket.message = "Hello World!\0";
 
-				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-				messageOut.typeId = ID_GAME_MESSAGE_1;
-
-				bsOut.Write("Hello world");
-				messageOut.message = "Hello there my friend!";
-	
-				//peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				peer->Send((const char*)&messageOut, sizeof(Message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				peer->Send(
+					(const char*)(&sendingPacket),
+					sizeof(AndrickPacket),
+					PacketPriority::IMMEDIATE_PRIORITY,
+					PacketReliability::RELIABLE_ORDERED,
+					0,
+					RakNet::UNASSIGNED_SYSTEM_ADDRESS,
+					true
+				);
 			}
 			case ID_NEW_INCOMING_CONNECTION:
 				printf("A connection is incoming.\n");
@@ -171,24 +171,19 @@ int main(void)
 					printf("Connection lost.\n");
 				}
 				break;
-			case ID_GAME_MESSAGE_1:
+			case ID_GAME_MESSAGE:
 			{
-				Message* m = (Message*)packet->data;
+				AndrickPacket* m = (AndrickPacket*)packet->data;
 				unsigned char* dataThing = packet->data;
 
-				assert(packet->length == sizeof(Message)); // This is a good idea if you’re transmitting structs.
-				if (packet->length != sizeof(Message))
+				assert(packet->length == sizeof(AndrickPacket));
+				if (packet->length != sizeof(AndrickPacket))
 				{
-					std::cout << "Length is the big suck" << std::endl;
-					return 0;
+					std::cout << "Uh oh! Invalid length for AndrickPacket!" << std::endl;
+					return -1;
 				}
 
-				//RakNet::RakString rs;
-				//RakNet::BitStream bsIn(packet->data, packet->length, false);
-				//bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-				//bsIn.Read(rs);
-
-				std::cout << m->message << std::endl;
+				std::cout << "Incoming message: " << std::string(m->message) << std::endl;
 			}
 			break;
 			default:
@@ -198,9 +193,6 @@ int main(void)
 		}
 	}
 
-	// TODO - Add code body here
-
 	RakNet::RakPeerInterface::DestroyInstance(peer);
-
 	return 0;
 }
