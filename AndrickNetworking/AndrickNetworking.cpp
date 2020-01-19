@@ -12,7 +12,7 @@ struct Message
 	unsigned char typeId;//your type here
 
 	//the message from the user
-	std::string message;
+	const char* message;
 	//more data goes here
 };
 #pragma pack(pop)
@@ -140,10 +140,10 @@ int main(void)
 				messageOut.typeId = ID_GAME_MESSAGE_1;
 
 				bsOut.Write("Hello world");
-				messageOut.message = "SUCK MY TITS SLUT";
+				messageOut.message = "Hello there my friend!";
 	
 				//peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-				peer->Send((char*)&messageOut, sizeof(Message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+				peer->Send((const char*)&messageOut, sizeof(Message), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 			}
 			case ID_NEW_INCOMING_CONNECTION:
 				printf("A connection is incoming.\n");
@@ -188,7 +188,6 @@ int main(void)
 				//bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 				//bsIn.Read(rs);
 
-				//this crashes
 				std::cout << m->message << std::endl;
 			}
 			break;
