@@ -141,7 +141,7 @@ int main(void)
 					PacketPriority::IMMEDIATE_PRIORITY,
 					PacketReliability::RELIABLE_ORDERED,
 					0,
-					RakNet::UNASSIGNED_SYSTEM_ADDRESS,
+					packet->systemAddress,
 					true
 				);
 			}
