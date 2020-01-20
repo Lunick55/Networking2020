@@ -171,10 +171,14 @@ int main(void)
 					printf("Connection lost.\n");
 				}
 				break;
+			//If the incoming packet's id equals a game message, extract the packet's string contents
+			//and print it to the console.
 			case ID_GAME_MESSAGE:
 			{
+				//Convert packet data into our AndrickPacket.
 				AndrickPacket* data = (AndrickPacket*)packet->data;
 
+				//Make sure there was no corruption of data over the network.
 				assert(packet->length == sizeof(AndrickPacket));
 				if (packet->length != sizeof(AndrickPacket))
 				{
@@ -182,6 +186,7 @@ int main(void)
 					return -1;
 				}
 
+				//Print the message.
 				std::cout << "Incoming message: " << std::string(data->message) << std::endl;
 			}
 			break;
