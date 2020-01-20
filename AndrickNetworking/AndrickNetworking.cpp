@@ -14,9 +14,35 @@ struct AndrickPacket
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct ChatRequest
+{
+	unsigned char packetId;
+	char username[20];
+	char message[512];
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct ChatDelivery
+{
+	unsigned char packetId;
+	char username[6];
+
+	//whether or not the message is directed at a user, or broadcast
+	bool isPublic = true;
+	
+	char message[512];
+};
+#pragma pack(pop)
+
+
 enum GameMessages
 {
-	ID_GAME_MESSAGE = ID_USER_PACKET_ENUM
+	ID_GAME_MESSAGE = ID_USER_PACKET_ENUM,
+	ID_CHAT_REQUEST, //this may be superflous. we already have a connection request
+	ID_CHAT_DELIVERY,
+	ID_ANDREW_CAN_SUCK_MY_NARDS
 };
 
 void getInput(const char* outputText, std::string& input)
@@ -171,10 +197,11 @@ int main(void)
 					printf("Connection lost.\n");
 				}
 				break;
-			//If the incoming packet's id equals a game message, extract the packet's string contents
-			//and print it to the console.
 			case ID_GAME_MESSAGE:
 			{
+				//If the incoming packet's id equals a game message, extract the packet's string contents
+				//and print it to the console.
+
 				//Convert packet data into our AndrickPacket.
 				AndrickPacket* data = (AndrickPacket*)packet->data;
 
@@ -190,11 +217,14 @@ int main(void)
 				std::cout << "Incoming message: " << std::string(data->message) << std::endl;
 			}
 			break;
+
 			default:
 				printf("Message with identifier %i has arrived.\n", packet->data[0]);
 				break;
 			}
 		}
+
+		//get_asynckey_state
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
