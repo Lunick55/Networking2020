@@ -10,7 +10,7 @@
 struct AndrickPacket
 {
 	unsigned char packetId;
-	const char* message;
+	char message[512];
 };
 #pragma pack(pop)
 
@@ -133,7 +133,7 @@ int main(void)
 
 				AndrickPacket sendingPacket;
 				sendingPacket.packetId = ID_GAME_MESSAGE;
-				sendingPacket.message = "Hello World!\0";
+				strcpy(sendingPacket.message, "Hello World!\0");
 
 				peer->Send(
 					(const char*)(&sendingPacket),
