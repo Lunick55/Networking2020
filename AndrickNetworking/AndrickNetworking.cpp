@@ -142,7 +142,7 @@ int main(void)
 					PacketReliability::RELIABLE_ORDERED,
 					0,
 					packet->systemAddress,
-					true
+					false
 				);
 			}
 			case ID_NEW_INCOMING_CONNECTION:
