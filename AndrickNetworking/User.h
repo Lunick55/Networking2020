@@ -2,12 +2,13 @@
 #define USER_H_
 
 #include "IPacketSender.h"
+#include "IPacketReceiver.h"
 
-class User : IPacketSender
+class User : private IPacketSender, IPacketReceiver
 {
 public:
-	User();
-	~User() = default;
+	explicit User(UserId id, const std::string username, AuthorityId authority, const RakNet::SystemAddress& address);
+	virtual ~User() = default;
 
 	void hostChatroom();
 	void connectToChatroom(const std::string& address);
@@ -17,16 +18,19 @@ public:
 	//If yes, then it sets the User's authority and returns true.
 	bool requestAuthority(AuthorityId authority);
 
-	virtual void sendPacket(const Packet& packet) override;
-
 	inline const UserId& getUserId() const { return mId; }
 	inline const AuthorityId& getAuthority() const { return mAuthority; }
-	inline const RakNet::SystemAddress& getAddress() const { return mUserAddress; }
+	inline const RakNet::SystemAddress& getAddress() const { return mAddress; }
+	inline const std::string& getUsername() const { return mUsername; }
 
 private:
 	UserId mId;
 	AuthorityId mAuthority;
-	RakNet::SystemAddress mUserAddress;
+	RakNet::SystemAddress mAddress;
+	std::string mUsername;
+
+	virtual void sendPacket(const Packet& packet) override;
+	virtual void receivePacket() override;
 };
 
 #endif

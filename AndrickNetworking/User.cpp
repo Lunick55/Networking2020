@@ -1,6 +1,10 @@
 #include "User.h"
 
-User::User()
+User::User(UserId id, const std::string username, AuthorityId authority, const RakNet::SystemAddress& address) :
+	mId(id), 
+	mUsername(username), 
+	mAuthority(authority),
+	mAddress(address)
 {
 
 }
@@ -24,6 +28,12 @@ bool User::requestAuthority(AuthorityId authority)
 }
 
 void User::sendPacket(const Packet& packet)
+{
+
+}
+
+//Check if a packet is incoming
+void User::receivePacket()
 {
 
 }

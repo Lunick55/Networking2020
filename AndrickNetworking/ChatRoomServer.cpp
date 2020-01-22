@@ -1,15 +1,38 @@
-#include "ChatRoom.h"
+#include "ChatRoomServer.h"
 #include "Command.h"
 #include "User.h"
 
-ChatRoom::ChatRoom(const std::string& address, const int port, const int maxUsers) :
+std::shared_ptr<ChatRoomServer> ChatRoomServer::spInstance = nullptr;
+
+bool ChatRoomServer::isInitialized()
+{
+	return (spInstance != nullptr);
+}
+
+bool ChatRoomServer::initChatRoom(const std::string& address, const int port, const int maxUsers)
+{
+	if (!spInstance)
+	{
+		spInstance = std::make_shared<ChatRoomServer>(address, port, maxUsers);
+	}
+
+	return isInitialized();
+}
+
+const ChatRoomServer& ChatRoomServer::get()
+{
+	assert(isInitialized());
+	return *spInstance;
+}
+
+ChatRoomServer::ChatRoomServer(const std::string& address, const int port, const int maxUsers) :
 	mIP_ADDRESS(address), mPORT(port), mMAX_USERS(maxUsers), mIsRunning(false),
 	mpPeer(RakNet::RakPeerInterface::GetInstance())
 {
 
 }
 
-void ChatRoom::startChatRoom()
+void ChatRoomServer::startChatRoom()
 {
 	RakNet::RakPeerInterface* pPeer = RakNet::RakPeerInterface::GetInstance();
 
@@ -29,7 +52,7 @@ void ChatRoom::startChatRoom()
 	}
 }
 
-void ChatRoom::closeChatRoom()
+void ChatRoomServer::closeChatRoom()
 {
 	std::unique_ptr<Packet> serverClosing = std::make_unique<ServerClosingPacket>();
 
@@ -42,7 +65,7 @@ void ChatRoom::closeChatRoom()
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 }
 
-void ChatRoom::sendPacket(const Packet& packet)
+void ChatRoomServer::sendPacket(const Packet& packet)
 {
 	std::map<UserId, std::unique_ptr<User>>::iterator iter;
 
@@ -91,14 +114,20 @@ void ChatRoom::sendPacket(const Packet& packet)
 	}
 }
 
-void ChatRoom::sendPublicMessage(const Packet& packet)
+//Check if a packet is incoming
+void ChatRoomServer::receivePacket()
+{
+
+}
+
+void ChatRoomServer::sendPublicMessage(const Packet& packet)
 {
 	mpPeer->Send((const char*)(&packet), sizeof(packet),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void ChatRoom::sendPrivateMessage(const Packet& packet)
+void ChatRoomServer::sendPrivateMessage(const Packet& packet)
 {
 	const PrivateMessageCommandPacket& p = static_cast<const PrivateMessageCommandPacket&>(packet);
 

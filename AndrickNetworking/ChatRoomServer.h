@@ -1,9 +1,10 @@
-#ifndef CHAT_ROOM_H_
-#define CHAT_ROOM_H_
+#ifndef CHAT_ROOM_SERVER_H_
+#define CHAT_ROOM_SERVER_H_
 
 #include <map>
 
 #include "IPacketSender.h"
+#include "IPacketReceiver.h"
 #include "Command.h"
 
 class User;
@@ -11,19 +12,25 @@ class User;
 /*
 * This class gets created if the user decides to host a server.
 */
-class ChatRoom : public IPacketSender
+class ChatRoomServer : private IPacketSender, IPacketReceiver
 {
 public:
-	ChatRoom(const std::string& address, const int port, const int maxUsers);
-	~ChatRoom() = default;
+	static bool isInitialized();
+	static bool initChatRoom(const std::string& address, const int port, const int maxUsers);
+	static const ChatRoomServer& get();
+
+	explicit ChatRoomServer(const std::string& address, const int port, const int maxUsers);
+	virtual ~ChatRoomServer() = default;
 
 	//Start the server
 	void startChatRoom();
 	void closeChatRoom();
 
-	virtual void sendPacket(const Packet& packet) override;
-
 private:
+	static std::shared_ptr<ChatRoomServer> spInstance;
+
+	static UserId nextUniqueId;
+
 	const int mMAX_USERS;
 	const int mPORT;
 	const std::string mIP_ADDRESS;
@@ -37,6 +44,9 @@ private:
 
 	void sendPublicMessage(const Packet& packet);
 	void sendPrivateMessage(const Packet& packet);
+
+	virtual void sendPacket(const Packet& packet) override;
+	virtual void receivePacket() override;
 };
 
 #pragma pack(push, 1)

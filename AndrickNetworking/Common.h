@@ -14,6 +14,18 @@ static const int sMAX_USERNAME_LENGTH = 20;
 static const int sMAX_MESSAGE_LENGTH = 128;
 static const int sPORT = 5555;
 
+static const HANDLE windowHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+static const int MAX_INPUT_LENGTH = 512;
+static const int ENTER_KEY = 13;
+static const int TAB_KEY = 9;
+static const int ESC_KEY = 27;
+static const int BACKSPACE_KEY = 8;
+
+const enum Keys { ONE = 49, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE };
+
+const enum class SceneId { MAIN_MENU, JOIN_CHATROOM, CREATE_CHATROOM, CHATROOM };
+
+
 enum class AuthorityId : unsigned char
 {
 	NORMAL,
