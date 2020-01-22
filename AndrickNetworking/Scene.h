@@ -90,16 +90,37 @@ private:
 	int mStepCount = ENTER_IP;
 	std::string mIP;
 	std::string mUsername;
+	const int mSTEP1_CLEAR_START_HEIGHT = 6;
+	const int mSTEP1_CLEAR_HEIGHT = 10;
+	const int mSTEP2_CLEAR_START_HEIGHT = 14;
+	const int mSTEP2_CLEAR_HEIGHT = 10;
 };
 
 class CreateChatRoomScene : public Scene
 {
 public:
-	inline CreateChatRoomScene() : Scene(SceneId::CREATE_CHATROOM) {}
+	inline CreateChatRoomScene() : Scene(SceneId::CREATE_CHATROOM), mMaxUsers(sDEFAULT_MAX_USERS) {}
 	virtual void update() override;
 	virtual void render() override;
 	virtual void handleInput(const char& input) override;
 	virtual void drawInitialScene() override;
+
+private:
+	enum StepId
+	{
+		ENTER_MAX_USERS = 0,
+		ENTER_USERNAME
+	};
+
+	int mStepCount = ENTER_MAX_USERS;
+	int mMaxUsers;
+	const int mSTEP1_CLEAR_START_HEIGHT = 7;
+	const int mSTEP1_CLEAR_HEIGHT = 10;
+	const int mSTEP2_CLEAR_START_HEIGHT = 14;
+	const int mSTEP2_CLEAR_HEIGHT = 10;
+	std::string mUsername;
+
+	void initChatRoom();
 };
 
 class ChatRoomScene : public Scene

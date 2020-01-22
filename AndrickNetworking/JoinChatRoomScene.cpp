@@ -32,8 +32,8 @@ void JoinChatRoomScene::handleInput(const char& input)
 		{
 			mStepCount = ENTER_IP;
 			mUsername = "";
-			clearScreenPortion(0, getConsoleCursorY() - 4, getConsoleWidth(), 5);
-			setCursorPosition(0, getConsoleCursorY() - 5);
+			clearScreenPortion(0, mSTEP1_CLEAR_START_HEIGHT, getConsoleWidth(), mSTEP1_CLEAR_HEIGHT);
+			setCursorPosition(0, getConsoleCursorY() - mSTEP1_CLEAR_HEIGHT + 1);
 		}
 	}
 	else if (input == ENTER_KEY)
@@ -54,15 +54,15 @@ void JoinChatRoomScene::handleInput(const char& input)
 			{
 				mUsername = mCurrentInput;
 				clearInput();
+				mStepCount = ENTER_IP;
 				SceneManager::switchScene(SceneId::CHATROOM);
 				return;
 			}
 			else
 			{
 				clearInput();
-				clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-				clearScreenPortion(0, getConsoleCursorY() + 1, getConsoleWidth(), 1);
-				setCursorPosition(0, getConsoleCursorY() + 1);
+				clearScreenPortion(0, mSTEP2_CLEAR_START_HEIGHT, getConsoleWidth(), mSTEP2_CLEAR_HEIGHT);
+				setCursorPosition(0, getConsoleCursorY() - mSTEP2_CLEAR_HEIGHT + 1);
 				std::cerr << "Please enter a username shorter than: " + std::to_string(sMAX_USERNAME_LENGTH) + "!" << std::endl;
 				setCursorPosition(0, getConsoleCursorY() + 1);
 			}
