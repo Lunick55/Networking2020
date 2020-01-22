@@ -158,6 +158,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AndrickNetworking.cpp" />
+    <ClCompile Include="ChatRoom.cpp" />
+    <ClCompile Include="User.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ChatRoom.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="IPacketSender.h" />
+    <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -37,12 +37,11 @@ struct ChatDelivery
 #pragma pack(pop)
 
 
-enum GameMessages
+enum Commands
 {
 	ID_GAME_MESSAGE = ID_USER_PACKET_ENUM,
 	ID_CHAT_REQUEST, //this may be superflous. we already have a connection request
 	ID_CHAT_DELIVERY,
-	ID_ANDREW_CAN_SUCK_MY_NARDS
 };
 
 void getInput(const char* outputText, std::string& input)
