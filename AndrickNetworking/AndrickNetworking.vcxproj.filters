@@ -22,15 +22,15 @@
     <Filter Include="Source Files\Main">
       <UniqueIdentifier>{2b3b1cb0-99e9-45b2-a0da-110fa97dd801}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ChatRoom">
+      <UniqueIdentifier>{d99f67ce-da22-44ab-89bf-1d95dba5fd27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ChatRoom">
+      <UniqueIdentifier>{782b6ac5-e3b0-46f5-b39a-73e21bc470a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AndrickNetworking.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="User.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChatRoomServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MenuScene.cpp">
@@ -54,24 +54,18 @@
     <ClCompile Include="CreateChatRoomScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="ChatRoomServer.cpp">
+      <Filter>Source Files\ChatRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatRoomClient.cpp">
+      <Filter>Source Files\ChatRoom</Filter>
+    </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Source Files\ChatRoom</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="User.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IPacketSender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChatRoomServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IPacketReceiver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
@@ -79,6 +73,30 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoomScene.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoomServer.h">
+      <Filter>Header Files\ChatRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoomClient.h">
+      <Filter>Header Files\ChatRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Header Files\ChatRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="IPacketReceiver.h">
+      <Filter>Header Files\ChatRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="IPacketSender.h">
+      <Filter>Header Files\ChatRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>Header Files\ChatRoom</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatRoomBase.h">
+      <Filter>Header Files\ChatRoom</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

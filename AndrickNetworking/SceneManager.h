@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include "Scene.h"
+#include "ChatRoomScene.h"
 #include <map>
 
 class SceneManager

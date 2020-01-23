@@ -80,6 +80,8 @@ public:
 	virtual void handleInput(const char& input) override;
 	virtual void drawInitialScene() override;
 
+	void initChatRoom();
+
 private:
 	enum StepId
 	{
@@ -121,16 +123,6 @@ private:
 	std::string mUsername;
 
 	void initChatRoom();
-};
-
-class ChatRoomScene : public Scene
-{
-public:
-	inline ChatRoomScene() : Scene(SceneId::CHATROOM) {}
-	virtual void update() override;
-	virtual void render() override;
-	virtual void handleInput(const char& input) override;
-	virtual void drawInitialScene() override;
 };
 
 #endif

@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AndrickNetworking.cpp" />
+    <ClCompile Include="ChatRoomClient.cpp" />
     <ClCompile Include="ChatRoomScene.cpp" />
     <ClCompile Include="ChatRoomServer.cpp" />
     <ClCompile Include="CreateChatRoomScene.cpp" />
@@ -169,6 +170,9 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChatRoomBase.h" />
+    <ClInclude Include="ChatRoomClient.h" />
+    <ClInclude Include="ChatRoomScene.h" />
     <ClInclude Include="ChatRoomServer.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Common.h" />

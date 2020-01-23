@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "SceneManager.h"
+#include "ChatRoomClient.h"
 
 void JoinChatRoomScene::update()
 {
@@ -40,7 +41,8 @@ void JoinChatRoomScene::handleInput(const char& input)
 	{
 		if (mStepCount == ENTER_IP)
 		{
-			mIP = mCurrentInput;
+			mIP = mCurrentInput.empty() ? "127.0.0.1" : mCurrentInput;
+
 			clearInput();
 			++mStepCount;
 			std::cout << std::endl;
@@ -55,6 +57,7 @@ void JoinChatRoomScene::handleInput(const char& input)
 				mUsername = mCurrentInput;
 				clearInput();
 				mStepCount = ENTER_IP;
+				initChatRoom();
 				SceneManager::switchScene(SceneId::CHATROOM);
 				return;
 			}
@@ -81,4 +84,9 @@ void JoinChatRoomScene::handleInput(const char& input)
 		mCurrentInput += input;
 		std::cout << input;
 	}
+}
+
+void JoinChatRoomScene::initChatRoom()
+{
+	ChatRoomClient::initChatRoom(mIP, mUsername);
 }

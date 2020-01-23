@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-struct IPacketSender
+class IPacketSender
 {
 	virtual void sendPacket(const Packet& packet) = 0;
 };

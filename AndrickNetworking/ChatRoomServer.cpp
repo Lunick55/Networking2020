@@ -1,55 +1,64 @@
 #include "ChatRoomServer.h"
 #include "Command.h"
 #include "User.h"
+#include "SceneManager.h"
 
 std::shared_ptr<ChatRoomServer> ChatRoomServer::spInstance = nullptr;
+UserId ChatRoomServer::sNextUniqueId = 0;
 
 bool ChatRoomServer::isInitialized()
 {
 	return (spInstance != nullptr);
 }
 
-bool ChatRoomServer::initChatRoom(const std::string& address, const int port, const int maxUsers)
+bool ChatRoomServer::initChatRoom(const int port, const int maxUsers, const std::string& hostUsername)
 {
 	if (!spInstance)
 	{
-		spInstance = std::make_shared<ChatRoomServer>(address, port, maxUsers);
+		spInstance = std::make_shared<ChatRoomServer>(port, maxUsers, hostUsername);
 	}
 
 	return isInitialized();
 }
 
-const ChatRoomServer& ChatRoomServer::get()
+ChatRoomServer::ChatRoomServer(const int port, const int maxUsers, const std::string& hostUsername) :
+	mPORT(port), 
+	mMAX_USERS(maxUsers), 
+	mIsRunning(false),
+	mpPeer(RakNet::RakPeerInterface::GetInstance()),
+	mpPacket(nullptr),
+	mSocketDescriptor(mPORT, 0)
 {
-	assert(isInitialized());
-	return *spInstance;
+	//Not sure if GetMyBoundAddress() returns the external IP address - have to test that
+	mpHost = std::make_shared<User>(sNextUniqueId++, hostUsername, AuthorityId::ADMIN, mpPeer->GetMyBoundAddress());
+	mpConnectedUsers.insert({ mpHost->getUserId(), mpHost });
+
+	updateServerUserInfo();
 }
 
-ChatRoomServer::ChatRoomServer(const std::string& address, const int port, const int maxUsers) :
-	mIP_ADDRESS(address), mPORT(port), mMAX_USERS(maxUsers), mIsRunning(false),
-	mpPeer(RakNet::RakPeerInterface::GetInstance())
+bool ChatRoomServer::startChatRoom()
 {
-
-}
-
-void ChatRoomServer::startChatRoom()
-{
-	RakNet::RakPeerInterface* pPeer = RakNet::RakPeerInterface::GetInstance();
-
 	if (mIsRunning)
 	{
 		std::cerr << "Server is already running." << std::endl;
-		return;
+		return false;
 	}
 	else
 	{
-		RakNet::SocketDescriptor sd(mPORT, 0);
-		pPeer->Startup(mMAX_USERS, &sd, 1);
+		mpPeer->Startup(mMAX_USERS, &mSocketDescriptor, 1);
+
+		mpPeer->SetMaximumIncomingConnections(mMAX_USERS);
 
 		std::cout << "Server is running!" << std::endl;
-
 		mIsRunning = true;
 	}
+
+	return true;
+}
+
+void ChatRoomServer::update()
+{
+	receivePacket();
 }
 
 void ChatRoomServer::closeChatRoom()
@@ -63,12 +72,12 @@ void ChatRoomServer::closeChatRoom()
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
+	ChatRoomServer::spInstance = nullptr;
+	sNextUniqueId = 0;
 }
 
 void ChatRoomServer::sendPacket(const Packet& packet)
 {
-	std::map<UserId, std::unique_ptr<User>>::iterator iter;
-
 	switch (packet.packetId)
 	{
 	case PacketEventId::SET_AUTHORITY:
@@ -110,19 +119,93 @@ void ChatRoomServer::sendPacket(const Packet& packet)
 		break;
 
 	default:
-		std::cerr << "Unknown packet id" << std::endl;
+		printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
+		break;
 	}
 }
 
 //Check if a packet is incoming
 void ChatRoomServer::receivePacket()
 {
+	//Incoming packets to server from client.
+	for (mpPacket = mpPeer->Receive(); mpPacket; mpPeer->DeallocatePacket(mpPacket), mpPacket = mpPeer->Receive())
+	{
+		switch (mpPacket->data[0])
+		{
+		case PacketEventId::SET_AUTHORITY:
+			break;
 
+		case PacketEventId::SEND_PUBLIC_MESSAGE:
+			break;
+
+		case PacketEventId::SEND_PRIVATE_MESSAGE:
+			break;
+
+		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
+			break;
+
+		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
+			break;
+
+		case PacketEventId::REQUEST_JOIN_SERVER:
+		{
+			RequestJoinServerPacket* requestPacket = (RequestJoinServerPacket*)(mpPacket->data);
+
+			JoinAcceptedPacket joinAcceptedData = JoinAcceptedPacket(
+				requestPacket->username, 
+				mMAX_USERS, 
+				(char)mpConnectedUsers.size(),
+				mServerUserInfo
+			);
+
+			std::shared_ptr<User> newUser = addNewUser(*requestPacket, mpPacket->systemAddress);
+
+			UserJoinedServerPacket userJoinedServerData = UserJoinedServerPacket(
+				newUser->getUserId(),
+				requestPacket->username,
+				(char)mpConnectedUsers.size(),
+				mServerUserInfo
+			);
+
+			//Send to client that just joined
+			mpPeer->Send((const char*)(&joinAcceptedData), sizeof(joinAcceptedData),
+				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+				0, newUser->getAddress(), false);
+
+			//Send to everyone else
+			mpPeer->Send((const char*)(&userJoinedServerData), sizeof(userJoinedServerData),
+				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+				0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+
+			break;
+		}
+		case PacketEventId::JOIN_ACCEPTED:
+			break;
+
+		case PacketEventId::USER_JOINED_SERVER:
+			break;
+
+		case PacketEventId::USER_LEFT_SERVER:
+			break;
+
+		case PacketEventId::SERVER_CLOSING:
+			break;
+
+		case PacketEventId::MUTE_USER:
+			break;
+
+		case PacketEventId::UNMUTE_USER:
+			break;
+		default:
+			printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
+			break;
+		}
+	}
 }
 
 void ChatRoomServer::sendPublicMessage(const Packet& packet)
 {
-	mpPeer->Send((const char*)(&packet), sizeof(packet),
+	mpPeer->Send((const char*)(&packet), sizeof(MessageCommandPacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
@@ -132,7 +215,7 @@ void ChatRoomServer::sendPrivateMessage(const Packet& packet)
 	const PrivateMessageCommandPacket& p = static_cast<const PrivateMessageCommandPacket&>(packet);
 
 	//Send to host
-	mpPeer->Send((const char*)(&packet), sizeof(packet),
+	mpPeer->Send((const char*)(&packet), sizeof(PrivateMessageCommandPacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, mpHost.get()->getAddress(), false);
 
@@ -142,7 +225,7 @@ void ChatRoomServer::sendPrivateMessage(const Packet& packet)
 	{
 		const User& targetUser = *iter->second;
 
-		mpPeer->Send((const char*)(&packet), sizeof(packet),
+		mpPeer->Send((const char*)(&packet), sizeof(PrivateMessageCommandPacket),
 			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 			0, targetUser.getAddress(), false);
 	}
@@ -159,4 +242,62 @@ void ChatRoomServer::sendPrivateMessage(const Packet& packet)
 	mpPeer->Send((const char*)(&packet), sizeof(packet),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, targetUser.getAddress(), false);
+}
+
+//Call everytime a user joins or leaves the server
+void ChatRoomServer::updateServerUserInfo()
+{
+	for (int userIndex = 0; userIndex < sMAX_USERS; ++userIndex)
+	{
+		// [id]["username"]
+		// [*]["whatever"] (DELIMITER = '*') If '*' is in the starting index, then we can stop iterating through the array.
+		mServerUserInfo[userIndex][0] = { DELIMITER };
+	}
+
+	int connecedUsers = (int)mpConnectedUsers.size();
+	for (int userIndex = 0; userIndex < connecedUsers; ++userIndex)
+	{
+		for (int usernameIndex = 0; usernameIndex < sMAX_USERNAME_LENGTH; ++usernameIndex)
+		{
+			if (usernameIndex == 0)
+			{
+				mServerUserInfo[userIndex][0] = mpConnectedUsers.at(userIndex)->getUserId();
+			}
+			else if (usernameIndex == 1)
+			{
+				std::shared_ptr<User> user = mpConnectedUsers.at(userIndex);
+				memcpy(mServerUserInfo[userIndex], user->getUsername().c_str(), user->getUsername().length());
+			}
+		}
+	}
+}
+
+std::shared_ptr<User> ChatRoomServer::addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress)
+{
+	std::shared_ptr<User> newUser = std::make_shared<User>(
+		sNextUniqueId++,
+		requestPacket.username,
+		AuthorityId::NORMAL,
+		ipAddress
+	);
+
+	mpConnectedUsers.insert({ newUser->getUserId(), newUser });
+
+	updateServerUserInfo();
+
+	return newUser;
+}
+
+void ChatRoomServer::removeUser(UserId userId)
+{
+	auto iter = mpConnectedUsers.find(userId);
+
+	if (iter == mpConnectedUsers.end())
+	{
+		std::cout << "Unable to remove user." << std::endl;
+	}
+	else
+	{
+		updateServerUserInfo();
+	}
 }
