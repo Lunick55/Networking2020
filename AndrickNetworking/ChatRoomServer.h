@@ -2,6 +2,7 @@
 #define CHAT_ROOM_SERVER_H_
 
 #include <map>
+#include <list>
 
 #include "IPacketSender.h"
 #include "IPacketReceiver.h"
@@ -39,6 +40,8 @@ private:
 	std::shared_ptr<User> mpHost;
 	char mServerUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];
 
+	std::list<std::string> messageLog;
+
 	bool mIsRunning;
 	RakNet::RakPeerInterface* mpPeer;
 	RakNet::Packet* mpPacket;
@@ -47,14 +50,14 @@ private:
 	std::map<UserId, std::shared_ptr<User>> mpConnectedUsers;
 	std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
 
-	void sendPublicMessage(const Packet& packet);
+	void sendPublicMessage(std::string message);//Packet& packet);
 	void sendPrivateMessage(const Packet& packet);
 
 	void updateServerUserInfo();
 	std::shared_ptr<User> addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress);
 	void removeUser(UserId userId);
 
-	virtual void sendPacket(const Packet& packet) override;
+	//virtual void sendPacket(const Packet& packet) override;
 	virtual void receivePacket() override;
 };
 

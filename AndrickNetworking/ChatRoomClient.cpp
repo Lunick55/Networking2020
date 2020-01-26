@@ -51,16 +51,19 @@ void ChatRoomClient::receivePacket()
 			break;
 
 		case PacketEventId::SEND_PUBLIC_MESSAGE:
+			//TODO:implement this
+			std::cout << "something exists" << std::endl;
 			break;
 
 		case PacketEventId::SEND_PRIVATE_MESSAGE:
 			break;
 
-		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-			break;
-
-		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
-			break;
+		//why would the client deliver a message?
+		//case PacketEventId::DELIVER_PUBLIC_MESSAGE:
+		//	break;
+		//
+		//case PacketEventId::DELIVER_PRIVATE_MESSAGE:
+		//	break;
 
 		case PacketEventId::REQUEST_JOIN_SERVER:
 			break;
@@ -83,6 +86,7 @@ void ChatRoomClient::receivePacket()
 
 			break;
 		}
+		//Are any of the next 3 needed?
 		case PacketEventId::USER_JOINED_SERVER:
 			break;
 
@@ -105,62 +109,62 @@ void ChatRoomClient::receivePacket()
 	}
 }
 
-void ChatRoomClient::sendPacket(const Packet& packet)
-{
-	const Packet p = packet;
-
-	switch (packet.packetId)
-	{
-	case PacketEventId::SET_AUTHORITY:
-		break;
-
-	case PacketEventId::SEND_PUBLIC_MESSAGE:
-		break;
-
-	case PacketEventId::SEND_PRIVATE_MESSAGE:
-		break;
-
-	case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-		break;
-
-	case PacketEventId::DELIVER_PRIVATE_MESSAGE:
-		break;
-
-	case PacketEventId::REQUEST_JOIN_SERVER:
-		mpPeer->Send(
-			(const char*)(&p),
-			sizeof(RequestJoinServerPacket),
-			PacketPriority::IMMEDIATE_PRIORITY,
-			PacketReliability::RELIABLE_ORDERED,
-			0,
-			mpPacket->systemAddress,
-			false
-		);
-
-		break;
-
-	case PacketEventId::JOIN_ACCEPTED:
-		break;
-
-	case PacketEventId::USER_JOINED_SERVER:
-		break;
-
-	case PacketEventId::USER_LEFT_SERVER:
-		break;
-
-	case PacketEventId::SERVER_CLOSING:
-		break;
-
-	case PacketEventId::MUTE_USER:
-		break;
-
-	case PacketEventId::UNMUTE_USER:
-		break;
-
-	default:
-		std::cerr << "Unknown packet id" << std::endl;
-	}
-}
+//void ChatRoomClient::sendPacket(const Packet& packet)
+//{
+//	const Packet p = packet;
+//
+//	switch (packet.packetId)
+//	{
+//	case PacketEventId::SET_AUTHORITY:
+//		break;
+//
+//	case PacketEventId::SEND_PUBLIC_MESSAGE:
+//		break;
+//
+//	case PacketEventId::SEND_PRIVATE_MESSAGE:
+//		break;
+//
+//	case PacketEventId::DELIVER_PUBLIC_MESSAGE:
+//		break;
+//
+//	case PacketEventId::DELIVER_PRIVATE_MESSAGE:
+//		break;
+//
+//	case PacketEventId::REQUEST_JOIN_SERVER:
+//		mpPeer->Send(
+//			(const char*)(&p),
+//			sizeof(RequestJoinServerPacket),
+//			PacketPriority::IMMEDIATE_PRIORITY,
+//			PacketReliability::RELIABLE_ORDERED,
+//			0,
+//			mpPacket->systemAddress,
+//			false
+//		);
+//
+//		break;
+//
+//	case PacketEventId::JOIN_ACCEPTED:
+//		break;
+//
+//	case PacketEventId::USER_JOINED_SERVER:
+//		break;
+//
+//	case PacketEventId::USER_LEFT_SERVER:
+//		break;
+//
+//	case PacketEventId::SERVER_CLOSING:
+//		break;
+//
+//	case PacketEventId::MUTE_USER:
+//		break;
+//
+//	case PacketEventId::UNMUTE_USER:
+//		break;
+//
+//	default:
+//		std::cerr << "Unknown packet id" << std::endl;
+//	}
+//}
 
 bool ChatRoomClient::connectToServer()
 {
@@ -183,5 +187,6 @@ void ChatRoomClient::requestToJoinServer()
 		ChatRoomClient::spInstance->mUsername
 		);
 
-	ChatRoomClient::spInstance->sendPacket(*requestJoinPacket);
+	//ChatRoomClient::spInstance->sendPacket(*requestJoinPacket);
+	mpPeer->Send((const char*)(&requestJoinPacket), sizeof(RequestJoinServerPacket), PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED, 0, mpPacket->systemAddress, false);
 }

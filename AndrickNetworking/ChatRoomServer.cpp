@@ -68,7 +68,9 @@ void ChatRoomServer::closeChatRoom()
 	auto iter = mpConnectedUsers.begin();
 	for (; iter != mpConnectedUsers.end(); ++iter)
 	{
-		sendPacket(*serverClosing.get());
+		//TODO: reimplement this
+		//sendPacket(*serverClosing.get());
+
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
@@ -76,53 +78,53 @@ void ChatRoomServer::closeChatRoom()
 	sNextUniqueId = 0;
 }
 
-void ChatRoomServer::sendPacket(const Packet& packet)
-{
-	switch (packet.packetId)
-	{
-	case PacketEventId::SET_AUTHORITY:
-		break;
-
-	case PacketEventId::SEND_PUBLIC_MESSAGE:
-		sendPublicMessage(packet);
-		break;
-
-	case PacketEventId::SEND_PRIVATE_MESSAGE:
-		sendPrivateMessage(packet);
-		break;
-
-	case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-		break;
-
-	case PacketEventId::DELIVER_PRIVATE_MESSAGE:
-		break;
-
-	case PacketEventId::REQUEST_JOIN_SERVER:
-		break;
-
-	case PacketEventId::JOIN_ACCEPTED:
-		break;
-
-	case PacketEventId::USER_JOINED_SERVER:
-		break;
-
-	case PacketEventId::USER_LEFT_SERVER:
-		break;
-
-	case PacketEventId::SERVER_CLOSING:
-		break;
-
-	case PacketEventId::MUTE_USER:
-		break;
-
-	case PacketEventId::UNMUTE_USER:
-		break;
-
-	default:
-		printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
-		break;
-	}
-}
+//void ChatRoomServer::sendPacket(const Packet& packet)
+//{
+//	switch (packet.packetId)
+//	{
+//	case PacketEventId::SET_AUTHORITY:
+//		break;
+//
+//	case PacketEventId::SEND_PUBLIC_MESSAGE:
+//		sendPublicMessage(packet);
+//		break;
+//
+//	case PacketEventId::SEND_PRIVATE_MESSAGE:
+//		sendPrivateMessage(packet);
+//		break;
+//
+//	case PacketEventId::DELIVER_PUBLIC_MESSAGE:
+//		break;
+//
+//	case PacketEventId::DELIVER_PRIVATE_MESSAGE:
+//		break;
+//
+//	case PacketEventId::REQUEST_JOIN_SERVER:
+//		break;
+//
+//	case PacketEventId::JOIN_ACCEPTED:
+//		break;
+//
+//	case PacketEventId::USER_JOINED_SERVER:
+//		break;
+//
+//	case PacketEventId::USER_LEFT_SERVER:
+//		break;
+//
+//	case PacketEventId::SERVER_CLOSING:
+//		break;
+//
+//	case PacketEventId::MUTE_USER:
+//		break;
+//
+//	case PacketEventId::UNMUTE_USER:
+//		break;
+//
+//	default:
+//		printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
+//		break;
+//	}
+//}
 
 //Check if a packet is incoming
 void ChatRoomServer::receivePacket()
@@ -136,6 +138,8 @@ void ChatRoomServer::receivePacket()
 			break;
 
 		case PacketEventId::SEND_PUBLIC_MESSAGE:
+			//TODO implement this for real
+			std::cout << "A message was sent!" << std::endl;
 			break;
 
 		case PacketEventId::SEND_PRIVATE_MESSAGE:
@@ -172,6 +176,7 @@ void ChatRoomServer::receivePacket()
 				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 				0, newUser->getAddress(), false);
 
+			//TODO: fix this? it doesn't seem to do anything, i think it's the UNASSIGNED_blahblahblah thing
 			//Send to everyone else
 			mpPeer->Send((const char*)(&userJoinedServerData), sizeof(userJoinedServerData),
 				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
@@ -196,6 +201,7 @@ void ChatRoomServer::receivePacket()
 
 		case PacketEventId::UNMUTE_USER:
 			break;
+
 		default:
 			printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
 			break;
@@ -203,11 +209,18 @@ void ChatRoomServer::receivePacket()
 	}
 }
 
-void ChatRoomServer::sendPublicMessage(const Packet& packet)
+void ChatRoomServer::sendPublicMessage(std::string message)//Packet& packet)
 {
-	mpPeer->Send((const char*)(&packet), sizeof(MessageCommandPacket),
+	std::unique_ptr<PublicMessagePacket> messagePacket = std::make_unique<PublicMessagePacket>(message);
+
+	//TODO: The size of this is 1? why?
+	//mpConnectedUsers.at(0)->getAddress();
+
+	mpPeer->Send((const char*)(&messagePacket), sizeof(MessageCommandPacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+
+	
 }
 
 void ChatRoomServer::sendPrivateMessage(const Packet& packet)

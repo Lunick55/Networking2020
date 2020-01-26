@@ -53,6 +53,7 @@ void ChatRoomScene::enteringScene()
 	}
 }
 
+int numMes = 0;
 void ChatRoomScene::handleInput(const char& input)
 {
 	if (input == ESC_KEY)
@@ -71,9 +72,20 @@ void ChatRoomScene::handleInput(const char& input)
 	}
 	else if (input == ENTER_KEY)
 	{
+		//mCurrentInput;
+
+		//TODO: Each participant should send a message to the host, who routes it to the right people?
+		if (ChatRoomClient::isInitialized())
+		{
+			//TODO: do the same for the client as the server does
+		}
+		else if (ChatRoomServer::isInitialized())
+		{
+			ChatRoomServer::spInstance->sendPublicMessage(mCurrentInput);
+		}
 		clearInput();
-		clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-		setCursorPosition(0, getConsoleCursorY());
+		//clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+		setCursorPosition(0, getConsoleCursorY());// + (short)1);
 	}
 	else if (input == BACKSPACE_KEY)
 	{

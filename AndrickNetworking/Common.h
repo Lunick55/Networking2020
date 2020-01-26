@@ -53,7 +53,7 @@ enum PacketEventId : unsigned char
 	SERVER_CLOSING,
 
 	MUTE_USER,
-	UNMUTE_USER
+	UNMUTE_USER,
 };
 
 #pragma pack(push, 1)
@@ -157,6 +157,20 @@ struct ServerClosingPacket : public Packet
 		Packet(PacketEventId::SERVER_CLOSING)
 	{}
 };
+
+struct PublicMessagePacket : public Packet
+{
+	char message[512];
+
+	UserId userId;
+
+	//TODO: init user id also at some point
+	PublicMessagePacket(const std::string& newMessage) : 
+		Packet(PacketEventId::SEND_PUBLIC_MESSAGE)
+	{ 
+		strcpy(message, newMessage.c_str()); 
+	}
+}; 
 
 #pragma pack(pop)
 

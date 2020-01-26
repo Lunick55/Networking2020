@@ -37,7 +37,7 @@ private:
 	RakNet::SocketDescriptor mSocketDescriptor;
 
 	virtual void receivePacket() override;
-	virtual void sendPacket(const Packet& packet) override;
+	//virtual void sendPacket(const Packet& packet) override;
 
 	void requestToJoinServer();
 };

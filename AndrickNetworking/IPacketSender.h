@@ -5,7 +5,7 @@
 
 class IPacketSender
 {
-	virtual void sendPacket(const Packet& packet) = 0;
+	//virtual void sendPacket(const Packet& packet) = 0;
 };
 
 #endif
