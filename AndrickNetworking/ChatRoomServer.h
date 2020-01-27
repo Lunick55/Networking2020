@@ -50,8 +50,8 @@ private:
 	std::map<UserId, std::shared_ptr<User>> mpConnectedUsers;
 	std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
 
-	void sendPublicMessage(std::string message);//Packet& packet);
-	void sendPrivateMessage(const Packet& packet);
+	void sendPublicMessage(std::shared_ptr<User> user, std::string message);//Packet& packet);
+	void sendPrivateMessage();
 
 	void updateServerUserInfo();
 	std::shared_ptr<User> addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress);

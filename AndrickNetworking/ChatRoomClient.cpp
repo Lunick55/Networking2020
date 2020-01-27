@@ -9,20 +9,21 @@ bool ChatRoomClient::isInitialized()
 	return (spInstance != nullptr);
 }
 
-bool ChatRoomClient::initChatRoom(const std::string& serverIP, const std::string& hostUsername)
+bool ChatRoomClient::initChatRoom(bool isHost, const std::string& serverIP, const std::string& hostUsername)
 {
 	if (!spInstance)
 	{
-		spInstance = std::make_shared<ChatRoomClient>(serverIP, hostUsername);
+		spInstance = std::make_shared<ChatRoomClient>(isHost, serverIP, hostUsername);
 	}
 
 	return isInitialized();
 }
 
-ChatRoomClient::ChatRoomClient(const std::string& serverIP, const std::string& username) :
+ChatRoomClient::ChatRoomClient(bool isHost, const std::string& serverIP, const std::string& username) :
 	mServerIP(serverIP),
 	mUsername(username),
-	mClient(nullptr),
+	mIsHost(isHost),
+	mpClient(nullptr),
 	mpPeer(RakNet::RakPeerInterface::GetInstance()),
 	mpPacket(nullptr)
 {
@@ -43,18 +44,21 @@ void ChatRoomClient::receivePacket()
 		switch (mpPacket->data[0])
 		{
 		case ID_CONNECTION_REQUEST_ACCEPTED:
+		{
 			std::cout << "Our connection request has been accepted." << std::endl;
 			requestToJoinServer();
 			break;
-
+		}
 		case PacketEventId::SET_AUTHORITY:
 			break;
 
 		case PacketEventId::SEND_PUBLIC_MESSAGE:
-			//TODO:implement this
-			std::cout << "something exists" << std::endl;
-			break;
+		{
+			PublicMessagePacket* data = (PublicMessagePacket*)(mpPacket->data);
 
+			std::cout << data->message << std::endl;
+			break;
+		}
 		case PacketEventId::SEND_PRIVATE_MESSAGE:
 			break;
 
@@ -70,7 +74,7 @@ void ChatRoomClient::receivePacket()
 
 		case PacketEventId::JOIN_ACCEPTED:
 		{
-			Packet* data = (JoinAcceptedPacket*)mpPacket->data;
+			JoinAcceptedPacket* data = (JoinAcceptedPacket*)mpPacket->data;
 			
 			//Make sure there was no corruption of data over the network.
 			assert(mpPacket->length == sizeof(JoinAcceptedPacket));
@@ -81,6 +85,9 @@ void ChatRoomClient::receivePacket()
 			}
 			else
 			{
+				mHostAddress = mpPacket->systemAddress;
+				mpClient = std::make_unique<User>(data->userId, data->username, AuthorityId::NORMAL, mpPeer->GetSystemAddressFromGuid(mpPeer->GetMyGUID()));
+
 				std::cout << "We got the packet!" << std::endl;
 			}
 
@@ -88,6 +95,7 @@ void ChatRoomClient::receivePacket()
 		}
 		//Are any of the next 3 needed?
 		case PacketEventId::USER_JOINED_SERVER:
+			std::cout << "There be a USER in this chat!" << std::endl;
 			break;
 
 		case PacketEventId::USER_LEFT_SERVER:
@@ -103,68 +111,20 @@ void ChatRoomClient::receivePacket()
 			break;
 
 		default:
-			printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
+			printf("Yo, ~I just got a packet, ~I just got a packet! ~I just got a packet, ~don't know; ~what it's; ~from!\n", mpPacket->data[0]);
 			break;
 		}
 	}
 }
 
-//void ChatRoomClient::sendPacket(const Packet& packet)
-//{
-//	const Packet p = packet;
-//
-//	switch (packet.packetId)
-//	{
-//	case PacketEventId::SET_AUTHORITY:
-//		break;
-//
-//	case PacketEventId::SEND_PUBLIC_MESSAGE:
-//		break;
-//
-//	case PacketEventId::SEND_PRIVATE_MESSAGE:
-//		break;
-//
-//	case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-//		break;
-//
-//	case PacketEventId::DELIVER_PRIVATE_MESSAGE:
-//		break;
-//
-//	case PacketEventId::REQUEST_JOIN_SERVER:
-//		mpPeer->Send(
-//			(const char*)(&p),
-//			sizeof(RequestJoinServerPacket),
-//			PacketPriority::IMMEDIATE_PRIORITY,
-//			PacketReliability::RELIABLE_ORDERED,
-//			0,
-//			mpPacket->systemAddress,
-//			false
-//		);
-//
-//		break;
-//
-//	case PacketEventId::JOIN_ACCEPTED:
-//		break;
-//
-//	case PacketEventId::USER_JOINED_SERVER:
-//		break;
-//
-//	case PacketEventId::USER_LEFT_SERVER:
-//		break;
-//
-//	case PacketEventId::SERVER_CLOSING:
-//		break;
-//
-//	case PacketEventId::MUTE_USER:
-//		break;
-//
-//	case PacketEventId::UNMUTE_USER:
-//		break;
-//
-//	default:
-//		std::cerr << "Unknown packet id" << std::endl;
-//	}
-//}
+void ChatRoomClient::sendPublicMessage(std::string message)//Packet& packet)
+{
+	PublicMessagePacket messagePacket = PublicMessagePacket(mpClient->getUserId(), mpClient->getUsername(), message);
+
+	mpPeer->Send((const char*)(&messagePacket), sizeof(PublicMessagePacket),
+		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+		0, mHostAddress, false);
+}
 
 bool ChatRoomClient::connectToServer()
 {
@@ -182,8 +142,10 @@ void ChatRoomClient::leaveServer()
 
 void ChatRoomClient::requestToJoinServer()
 {
+	std::cout << "Requesting to join server..." << std::endl;
+
 	//We are a client connecting.
-	std::unique_ptr<Packet> requestJoinPacket = std::make_unique<RequestJoinServerPacket>(
+	RequestJoinServerPacket requestJoinPacket = RequestJoinServerPacket(
 		ChatRoomClient::spInstance->mUsername
 		);
 

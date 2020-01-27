@@ -88,5 +88,5 @@ void JoinChatRoomScene::handleInput(const char& input)
 
 void JoinChatRoomScene::initChatRoom()
 {
-	ChatRoomClient::initChatRoom(mIP, mUsername);
+	ChatRoomClient::initChatRoom(false, mIP, mUsername);
 }

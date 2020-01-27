@@ -30,7 +30,7 @@ ChatRoomServer::ChatRoomServer(const int port, const int maxUsers, const std::st
 	mSocketDescriptor(mPORT, 0)
 {
 	//Not sure if GetMyBoundAddress() returns the external IP address - have to test that
-	mpHost = std::make_shared<User>(sNextUniqueId++, hostUsername, AuthorityId::ADMIN, mpPeer->GetMyBoundAddress());
+	mpHost = std::make_shared<User>(sNextUniqueId++, hostUsername, AuthorityId::ADMIN, mpPeer->GetSystemAddressFromGuid(mpPeer->GetMyGUID()));
 	mpConnectedUsers.insert({ mpHost->getUserId(), mpHost });
 
 	updateServerUserInfo();
@@ -63,7 +63,7 @@ void ChatRoomServer::update()
 
 void ChatRoomServer::closeChatRoom()
 {
-	std::unique_ptr<Packet> serverClosing = std::make_unique<ServerClosingPacket>();
+	std::unique_ptr<ServerClosingPacket> serverClosing = std::make_unique<ServerClosingPacket>();
 
 	auto iter = mpConnectedUsers.begin();
 	for (; iter != mpConnectedUsers.end(); ++iter)
@@ -138,10 +138,12 @@ void ChatRoomServer::receivePacket()
 			break;
 
 		case PacketEventId::SEND_PUBLIC_MESSAGE:
-			//TODO implement this for real
-			std::cout << "A message was sent!" << std::endl;
-			break;
+		{
+			PublicMessagePacket* data = (PublicMessagePacket*)(mpPacket->data);
 
+			std::cout << data->message << std::endl;
+			break;
+		}
 		case PacketEventId::SEND_PRIVATE_MESSAGE:
 			break;
 
@@ -154,14 +156,6 @@ void ChatRoomServer::receivePacket()
 		case PacketEventId::REQUEST_JOIN_SERVER:
 		{
 			RequestJoinServerPacket* requestPacket = (RequestJoinServerPacket*)(mpPacket->data);
-
-			JoinAcceptedPacket joinAcceptedData = JoinAcceptedPacket(
-				requestPacket->username, 
-				mMAX_USERS, 
-				(char)mpConnectedUsers.size(),
-				mServerUserInfo
-			);
-
 			std::shared_ptr<User> newUser = addNewUser(*requestPacket, mpPacket->systemAddress);
 
 			UserJoinedServerPacket userJoinedServerData = UserJoinedServerPacket(
@@ -171,16 +165,26 @@ void ChatRoomServer::receivePacket()
 				mServerUserInfo
 			);
 
+			JoinAcceptedPacket joinAcceptedData = JoinAcceptedPacket(
+				newUser->getUserId(),
+				requestPacket->username, 
+				mMAX_USERS, 
+				(char)mpConnectedUsers.size(),
+				mServerUserInfo
+			);
+
 			//Send to client that just joined
-			mpPeer->Send((const char*)(&joinAcceptedData), sizeof(joinAcceptedData),
+			mpPeer->Send((const char*)(&joinAcceptedData), sizeof(JoinAcceptedPacket),
 				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 				0, newUser->getAddress(), false);
 
 			//TODO: fix this? it doesn't seem to do anything, i think it's the UNASSIGNED_blahblahblah thing
 			//Send to everyone else
-			mpPeer->Send((const char*)(&userJoinedServerData), sizeof(userJoinedServerData),
+			mpPeer->Send((const char*)(&userJoinedServerData), sizeof(UserJoinedServerPacket),
 				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 				0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+
+			std::cout << "User has joined!" << std::endl;
 
 			break;
 		}
@@ -188,6 +192,7 @@ void ChatRoomServer::receivePacket()
 			break;
 
 		case PacketEventId::USER_JOINED_SERVER:
+			std::cout << "User has joined the channel!" << std::endl;
 			break;
 
 		case PacketEventId::USER_LEFT_SERVER:
@@ -201,60 +206,59 @@ void ChatRoomServer::receivePacket()
 
 		case PacketEventId::UNMUTE_USER:
 			break;
-
+		case ID_NEW_INCOMING_CONNECTION:
+			//this just eats raknets trash
+			break;
 		default:
-			printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
+			printf("I just got a packet, and I don't know how to read it!\n", mpPacket->data[0]);
 			break;
 		}
 	}
 }
 
-void ChatRoomServer::sendPublicMessage(std::string message)//Packet& packet)
+void ChatRoomServer::sendPublicMessage(std::shared_ptr<User> user, std::string message)//Packet& packet)
 {
-	std::unique_ptr<PublicMessagePacket> messagePacket = std::make_unique<PublicMessagePacket>(message);
+	PublicMessagePacket messagePacket = PublicMessagePacket(user->getUserId(), user->getUsername(), message);
 
-	//TODO: The size of this is 1? why?
-	//mpConnectedUsers.at(0)->getAddress();
-
-	mpPeer->Send((const char*)(&messagePacket), sizeof(MessageCommandPacket),
+	mpPeer->Send((const char*)(&messagePacket), sizeof(PublicMessagePacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 
 	
 }
 
-void ChatRoomServer::sendPrivateMessage(const Packet& packet)
+void ChatRoomServer::sendPrivateMessage()
 {
-	const PrivateMessageCommandPacket& p = static_cast<const PrivateMessageCommandPacket&>(packet);
-
-	//Send to host
-	mpPeer->Send((const char*)(&packet), sizeof(PrivateMessageCommandPacket),
-		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-		0, mpHost.get()->getAddress(), false);
-
-	//Send to target user
-	auto iter = mpConnectedUsers.find(p.userToSendTo);
-	if (iter != mpConnectedUsers.end())
-	{
-		const User& targetUser = *iter->second;
-
-		mpPeer->Send((const char*)(&packet), sizeof(PrivateMessageCommandPacket),
-			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-			0, targetUser.getAddress(), false);
-	}
-
-	//Send to original user
-	//If original user is the host, we don't need to send it to them again
-	if (p.userWhoExecutedCommand == mpHost.get()->getUserId()) return;
-
-	//We shouldn't need to check if they're in the list
-	//since this user just sent this command, but we can always 
-	//perform a check like above in the future if necessary
-	const User& targetUser = *mpConnectedUsers.find(p.userWhoExecutedCommand)->second;
-
-	mpPeer->Send((const char*)(&packet), sizeof(packet),
-		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-		0, targetUser.getAddress(), false);
+//	const PrivateMessageCommandPacket& p = static_cast<const PrivateMessageCommandPacket&>(packet);
+//
+//	//Send to host
+//	mpPeer->Send((const char*)(&packet), sizeof(PrivateMessageCommandPacket),
+//		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+//		0, mpHost.get()->getAddress(), false);
+//
+//	//Send to target user
+//	auto iter = mpConnectedUsers.find(p.userToSendTo);
+//	if (iter != mpConnectedUsers.end())
+//	{
+//		const User& targetUser = *iter->second;
+//
+//		mpPeer->Send((const char*)(&packet), sizeof(PrivateMessageCommandPacket),
+//			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+//			0, targetUser.getAddress(), false);
+//	}
+//
+//	//Send to original user
+//	//If original user is the host, we don't need to send it to them again
+//	if (p.userWhoExecutedCommand == mpHost.get()->getUserId()) return;
+//
+//	//We shouldn't need to check if they're in the list
+//	//since this user just sent this command, but we can always 
+//	//perform a check like above in the future if necessary
+//	const User& targetUser = *mpConnectedUsers.find(p.userWhoExecutedCommand)->second;
+//
+//	mpPeer->Send((const char*)(&packet), sizeof(packet),
+//		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+//		0, targetUser.getAddress(), false);
 }
 
 //Call everytime a user joins or leaves the server

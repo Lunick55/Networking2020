@@ -56,122 +56,125 @@ enum PacketEventId : unsigned char
 	UNMUTE_USER,
 };
 
-#pragma pack(push, 1)
-
-struct Packet
-{
-	PacketEventId packetId;
-
-	Packet(PacketEventId id) :
-		packetId(id) 
-	{}
-};
-
-//Base for all join events
-struct JoinPacket : public Packet
-{
-	char username[sMAX_MESSAGE_LENGTH];
-
-protected:
-	JoinPacket(PacketEventId id, const std::string& name) :
-		Packet(id)
-	{
-		strcpy(username, name.c_str());
-	}
-};
 
 //Client sends to server to join.
-struct RequestJoinServerPacket : public JoinPacket
+#pragma pack(push, 1)
+struct RequestJoinServerPacket
 {
-	//Defaults to request join
-	RequestJoinServerPacket(const std::string& name) :
-		JoinPacket(PacketEventId::REQUEST_JOIN_SERVER, name)
-	{}
+	PacketEventId packetId;
+	char username[sMAX_USERNAME_LENGTH];
 
-protected:
-	RequestJoinServerPacket(PacketEventId id, const std::string& name) :
-		JoinPacket(id, name)
-	{}
+	RequestJoinServerPacket(const std::string& name) : 
+		packetId(PacketEventId::REQUEST_JOIN_SERVER) 
+	{ 
+		strcpy(username, name.c_str()); 
+	}
 };
+#pragma pack(pop)
 
 //Server sends to client that just joined.
 //Server sends private welcome message to client.
-struct JoinAcceptedPacket : public JoinPacket
+#pragma pack(push, 1)
+struct JoinAcceptedPacket
 {
+	PacketEventId packetId;
+	char username[sMAX_USERNAME_LENGTH];
+
 	//The maximum amount of users that can be on the server.
 	char maxUserCount;
-
 	char connectedUserCount;
+
+	//The server assigns the client a userId and sends it to them!
+	UserId userId;
 
 	//Holds user [id, username]
 	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];	//[connectedUserCount][message length]
 
-	JoinAcceptedPacket(const std::string& name, char maxUsers, char currentUserCount,
-		char userInfo[][sMAX_USERNAME_LENGTH]) :
-		JoinPacket(PacketEventId::JOIN_ACCEPTED, name),
+	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount, char userInfo[][sMAX_USERNAME_LENGTH]) : 
+		userId(user),
+		packetId(PacketEventId::JOIN_ACCEPTED), 
 		maxUserCount(maxUsers),
 		connectedUserCount(currentUserCount)
 	{
-		//I tested this in another project and it works
+		strcpy(username, name.c_str());
 		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * sMAX_USERNAME_LENGTH);
 	}
 };
+#pragma pack(pop)
 
 //Server sends to everyone else in the chat that someone joined.
 //Server sends a public message saying this user joined.
-struct UserJoinedServerPacket : public RequestJoinServerPacket
+#pragma pack(push, 1)
+struct UserJoinedServerPacket
 {
+	PacketEventId packetId;
 	UserId userId;
-
+	char username[sMAX_USERNAME_LENGTH];
 	char connectedUserCount;
 
 	//Holds user [id, username]
 	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];
 
-	UserJoinedServerPacket(UserId user, const std::string& name, char currentUserCount,
-		char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH]) :
-		RequestJoinServerPacket(PacketEventId::USER_JOINED_SERVER, name),
-		userId(user),
+	UserJoinedServerPacket(UserId user, const std::string& name, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH]) : 
+		packetId(PacketEventId::USER_JOINED_SERVER),
+		userId(user), 
 		connectedUserCount(currentUserCount)
 	{
-		memcpy(connectedUserInfo, userInfo, sizeof(char)* sMAX_USERS * sMAX_USERNAME_LENGTH);
+		strcpy(username, name.c_str());
+		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * sMAX_USERNAME_LENGTH);
 	}
 };
+#pragma pack(pop)
 
 //Client that left sends this to the server.
 //The server sends this to everyone in the chat.
 //The server then sends a public message saying this user left.
-struct UserLeftServerPacket : public Packet
+#pragma pack(push, 1)
+struct UserLeftServerPacket
 {
+	PacketEventId packetId;
 	UserId userId;
+	char username[sMAX_USERNAME_LENGTH];
 
-	UserLeftServerPacket(UserId user) :
-		Packet(PacketEventId::USER_LEFT_SERVER),
+	UserLeftServerPacket(UserId user, const std::string& name) : 
+		packetId(PacketEventId::USER_LEFT_SERVER),
 		userId(user)
-	{}
+	{
+		strcpy(username, name.c_str());
+	}
 };
+#pragma pack(pop)
 
-struct ServerClosingPacket : public Packet
+#pragma pack(push, 1)
+struct ServerClosingPacket
 {
+	PacketEventId packetId;
+
 	ServerClosingPacket() :
-		Packet(PacketEventId::SERVER_CLOSING)
-	{}
+		packetId(PacketEventId::SERVER_CLOSING)
+	{
+		
+	}
 };
+#pragma pack(pop)
 
-struct PublicMessagePacket : public Packet
+#pragma pack(push, 1)
+struct PublicMessagePacket
 {
-	char message[512];
-
+	PacketEventId packetId;
 	UserId userId;
+	char username[sMAX_USERNAME_LENGTH];
+	char message[sMAX_MESSAGE_LENGTH];
 
 	//TODO: init user id also at some point
-	PublicMessagePacket(const std::string& newMessage) : 
-		Packet(PacketEventId::SEND_PUBLIC_MESSAGE)
+	PublicMessagePacket(UserId user, const std::string& name, const std::string& newMessage) :
+		packetId(PacketEventId::SEND_PUBLIC_MESSAGE),
+		userId(user)
 	{ 
+		strcpy(username, name.c_str()); 
 		strcpy(message, newMessage.c_str()); 
 	}
 }; 
-
 #pragma pack(pop)
 
 #endif

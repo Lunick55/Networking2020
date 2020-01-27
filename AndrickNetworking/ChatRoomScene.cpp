@@ -5,14 +5,12 @@
 
 void ChatRoomScene::update()
 {
-	if (ChatRoomClient::isInitialized())
-	{
-		ChatRoomClient::spInstance->update();
-	}
-	else if (ChatRoomServer::isInitialized())
+	if (ChatRoomClient::isHost())
 	{
 		ChatRoomServer::spInstance->update();
 	}
+
+	ChatRoomClient::spInstance->update();
 }
 
 void ChatRoomScene::render()
@@ -31,7 +29,7 @@ void ChatRoomScene::enteringScene()
 {
 	Scene::enteringScene();
 
-	if (ChatRoomServer::isInitialized())
+	if (ChatRoomClient::isHost())
 	{
 		//We are the server host.
 		ChatRoomServer::spInstance->startChatRoom();
@@ -58,13 +56,13 @@ void ChatRoomScene::handleInput(const char& input)
 {
 	if (input == ESC_KEY)
 	{
-		if (ChatRoomClient::isInitialized())
-		{
-			ChatRoomClient::spInstance->leaveServer();
-		}
-		else if (ChatRoomServer::isInitialized())
+		if (ChatRoomClient::isHost())
 		{
 			ChatRoomServer::spInstance->closeChatRoom();
+		}
+		else
+		{
+			ChatRoomClient::spInstance->leaveServer();
 		}
 
 		SceneManager::switchScene(SceneId::MAIN_MENU);
@@ -75,17 +73,19 @@ void ChatRoomScene::handleInput(const char& input)
 		//mCurrentInput;
 
 		//TODO: Each participant should send a message to the host, who routes it to the right people?
-		if (ChatRoomClient::isInitialized())
+		if (ChatRoomClient::isHost())
+		{
+			ChatRoomServer::spInstance->sendPublicMessage(ChatRoomServer::spInstance->mpHost, mCurrentInput);
+		}
+		else
 		{
 			//TODO: do the same for the client as the server does
+			ChatRoomClient::spInstance->sendPublicMessage(mCurrentInput);
 		}
-		else if (ChatRoomServer::isInitialized())
-		{
-			ChatRoomServer::spInstance->sendPublicMessage(mCurrentInput);
-		}
+
 		clearInput();
 		//clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-		setCursorPosition(0, getConsoleCursorY());// + (short)1);
+		setCursorPosition(0, getConsoleCursorY() + (std::size_t)1);
 	}
 	else if (input == BACKSPACE_KEY)
 	{

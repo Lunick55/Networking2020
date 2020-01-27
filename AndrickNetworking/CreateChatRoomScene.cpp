@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "ChatRoomServer.h"
+#include "ChatRoomClient.h"
 #include <exception>
 
 void CreateChatRoomScene::update()
@@ -109,5 +110,6 @@ void CreateChatRoomScene::handleInput(const char& input)
 
 void CreateChatRoomScene::initChatRoom()
 {
+	ChatRoomClient::initChatRoom(true, "127.0.0.1", mUsername);
 	ChatRoomServer::initChatRoom(sPORT, mMaxUsers, mUsername);
 }

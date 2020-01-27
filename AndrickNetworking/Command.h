@@ -29,12 +29,14 @@ private:
 
 #pragma pack(push, 1)
 //Base for all command events
-struct CommandPacket : public Packet
+struct CommandPacket
 {
+	PacketEventId packetId;
+
 	UserId userWhoExecutedCommand;
 
 	CommandPacket(PacketEventId id, UserId user) :
-		Packet(id), userWhoExecutedCommand(user)
+		packetId(id), userWhoExecutedCommand(user)
 	{}
 };
 

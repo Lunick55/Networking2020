@@ -14,11 +14,13 @@ class ChatRoomClient : public IPacketReceiver, IPacketSender
 
 public:
 	static bool isInitialized();
-	static bool initChatRoom(const std::string& serverIP, const std::string& clientUsername);
+	static bool initChatRoom(bool isHost, const std::string& serverIP, const std::string& clientUsername);
 
-	ChatRoomClient(const std::string& serverIP, const std::string& username);
+	ChatRoomClient(bool isHost, const std::string& serverIP, const std::string& username);
 
 	void update();
+
+	static bool isHost() { return spInstance->mIsHost; };
 
 	bool connectToServer();
 	void leaveServer();
@@ -28,16 +30,20 @@ private:
 	
 	std::string mServerIP;
 	std::string mUsername;
+	bool mIsHost;
 
 	//Gets initialized when the server sends back a packet with
 	//the info.
-	std::unique_ptr<User> mClient;
+	std::unique_ptr<User> mpClient;
+	RakNet::SystemAddress mHostAddress;
 	RakNet::RakPeerInterface* mpPeer;
 	RakNet::Packet* mpPacket;
 	RakNet::SocketDescriptor mSocketDescriptor;
 
 	virtual void receivePacket() override;
 	//virtual void sendPacket(const Packet& packet) override;
+
+	void sendPublicMessage(std::string message);
 
 	void requestToJoinServer();
 };
