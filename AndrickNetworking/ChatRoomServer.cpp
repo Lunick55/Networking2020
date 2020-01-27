@@ -320,3 +320,21 @@ void ChatRoomServer::sendOncePacket(const char* packetData, std::size_t packetSi
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, ipAddress, false);
 }
+
+void ChatRoomServer::listUserInfoRequest()
+{
+	ChatRoomServer::spInstance->printUserInfo();
+}
+
+void ChatRoomServer::printUserInfo()
+{
+	auto iter = mpConnectedUsers.begin();
+
+	ChatRoomScene::printMessageToChatRoom("");
+	ChatRoomScene::printMessageToChatRoom("Active Users: " + std::to_string(mpConnectedUsers.size()) + "/" + std::to_string(mMAX_USERS));
+
+	for (; iter != mpConnectedUsers.end(); ++iter)
+	{
+		ChatRoomScene::printMessageToChatRoom("  " + std::to_string(iter->second->getUserId()) + " - " + iter->second->getUsername());
+	}
+}

@@ -181,6 +181,8 @@ void ChatRoomClient::requestToJoinServer()
 		ChatRoomClient::spInstance->mUsername
 	);
 
+	requestJoinPacket.username[ChatRoomClient::spInstance->mUsername.length()] = '\0';
+
 	//ChatRoomClient::spInstance->sendPacket(*requestJoinPacket);
 	mpPeer->Send((const char*)(&requestJoinPacket), sizeof(RequestJoinServerPacket), PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED, 0, mpPacket->systemAddress, false);
 }
@@ -224,30 +226,4 @@ void ChatRoomClient::initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LEN
 			}
 		}
 	}
-}
-
-void ChatRoomClient::listUserInfoRequest()
-{
-	if (ChatRoomClient::isHost())
-	{
-		ChatRoomClient::spInstance->printUserInfo();
-	}
-	else
-	{
-
-	}
-}
-
-void ChatRoomClient::printUserInfo()
-{
-	auto iter = mUsernameMap.begin();
-
-	ChatRoomScene::printMessageToChatRoom("");
-	ChatRoomScene::printMessageToChatRoom("Active Users: " + std::to_string(mUsernameMap.size()) + "/" + std::to_string(mMaxUsers));
-
-	for (; iter != mUsernameMap.end(); ++iter)
-	{
-		ChatRoomScene::printMessageToChatRoom(" - " + iter->second);
-	}
-
 }

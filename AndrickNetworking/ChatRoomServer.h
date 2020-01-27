@@ -24,6 +24,9 @@ public:
 	explicit ChatRoomServer(const int port, const int maxUsers, const std::string& hostUsername);
 	virtual ~ChatRoomServer() = default;
 
+	static void listUserInfoRequest();
+	void printUserInfo();
+
 	void update();
 
 	std::shared_ptr<User> getUserFromId(UserId userId);

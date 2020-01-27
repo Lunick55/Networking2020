@@ -22,6 +22,7 @@ void ChatRoomScene::drawInitialScene()
 {
 	std::cout << generateCenteredText("Welcome to the Chat Room Scene!");
 	std::cout << generateCenteredText("'/whisper username, message' to send private messages.");
+	std::cout << generateCenteredText("'/list if you are the host to display all active users.");
 	drawLine(2);
 	std::cout << std::endl;
 	/*std::cout << generateCenteredText("You are now hosting your own chatroom.") << std::endl;*/
@@ -109,7 +110,20 @@ void ChatRoomScene::handleInput(const char& input)
 			}
 			else if (currCommand == LIST_USERS)
 			{
-				ChatRoomClient::listUserInfoRequest();
+				if (ChatRoomClient::isHost())
+				{
+					clearInput();
+					ChatRoomServer::listUserInfoRequest();
+					ChatRoomScene::printMessageToChatRoom("");
+					return;
+				}
+				else
+				{
+					clearInput();
+					ChatRoomScene::printMessageToChatRoom("You don't have permission for this command!");
+					ChatRoomScene::printMessageToChatRoom("");
+					return;
+				}
 			}
 		}
 
