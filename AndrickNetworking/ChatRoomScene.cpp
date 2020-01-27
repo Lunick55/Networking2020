@@ -70,16 +70,8 @@ void ChatRoomScene::handleInput(const char& input)
 	}
 	else if (input == ENTER_KEY)
 	{
-		//
-		//
-		//
-		//*
-		//[User]Helloefsff
-		//_______?
-
-
 		clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-		//setCursorPosition(0, getConsoleCursorY() + 1);
+		setCursorPosition(0, getConsoleCursorY());
 
 		if (ChatRoomClient::isHost())
 		{
@@ -92,7 +84,7 @@ void ChatRoomScene::handleInput(const char& input)
 		}
 
 		clearInput();
-		setCursorPosition(0, getConsoleCursorY() + 1);
+		//setCursorPosition(0, getConsoleCursorY());
 	}
 	else if (input == BACKSPACE_KEY)
 	{
