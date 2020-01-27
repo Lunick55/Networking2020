@@ -52,7 +52,7 @@ void ChatRoomClient::receivePacket()
 		}
 		case PacketEventId::SET_AUTHORITY:
 			break;
-			
+
 		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
 		{
 			DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(mpPacket->data);
@@ -71,18 +71,17 @@ void ChatRoomClient::receivePacket()
 
 			mHostAddress = mpPacket->systemAddress;
 			mpClient = std::make_unique<User>(joinAcceptedPacket->userId, joinAcceptedPacket->username, AuthorityId::NORMAL, mpPeer->GetSystemAddressFromGuid(mpPeer->GetMyGUID()));
-
-			initUsernameMap(joinAcceptedPacket->connectedUserInfo, joinAcceptedPacket->connectedUserCount);
+			mMaxUsers = joinAcceptedPacket->maxUserCount;
 			addUserIdToMap(joinAcceptedPacket->userId, joinAcceptedPacket->username);
 
 			//TODO: Send private message from server to user
-			
+
 			break;
 		}
 		case PacketEventId::USER_JOINED_SERVER:
 		{
 			UserJoinedServerPacket* userJoinedPacket = (UserJoinedServerPacket*)(mpPacket->data);
-			
+
 			addUserIdToMap(userJoinedPacket->userId, userJoinedPacket->username);
 			//ChatRoomScene::printMessageToChatRoom("There be a USER in this chat!");
 			break;
@@ -90,7 +89,7 @@ void ChatRoomClient::receivePacket()
 		case PacketEventId::USER_LEFT_SERVER:
 		{
 			UserLeftServerPacket* userLeftPacket = (UserLeftServerPacket*)(mpPacket->data);
-			
+
 			std::string username = mUsernameMap.find(userLeftPacket->userId)->second;
 
 			removeUserFromMap(userLeftPacket->userId);
@@ -180,7 +179,7 @@ void ChatRoomClient::requestToJoinServer()
 	//We are a client connecting.
 	RequestJoinServerPacket requestJoinPacket = RequestJoinServerPacket(
 		ChatRoomClient::spInstance->mUsername
-		);
+	);
 
 	//ChatRoomClient::spInstance->sendPacket(*requestJoinPacket);
 	mpPeer->Send((const char*)(&requestJoinPacket), sizeof(RequestJoinServerPacket), PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED, 0, mpPacket->systemAddress, false);
@@ -225,4 +224,30 @@ void ChatRoomClient::initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LEN
 			}
 		}
 	}
+}
+
+void ChatRoomClient::listUserInfoRequest()
+{
+	if (ChatRoomClient::isHost())
+	{
+		ChatRoomClient::spInstance->printUserInfo();
+	}
+	else
+	{
+
+	}
+}
+
+void ChatRoomClient::printUserInfo()
+{
+	auto iter = mUsernameMap.begin();
+
+	ChatRoomScene::printMessageToChatRoom("");
+	ChatRoomScene::printMessageToChatRoom("Active Users: " + std::to_string(mUsernameMap.size()) + "/" + std::to_string(mMaxUsers));
+
+	for (; iter != mUsernameMap.end(); ++iter)
+	{
+		ChatRoomScene::printMessageToChatRoom(" - " + iter->second);
+	}
+
 }
