@@ -8,6 +8,8 @@
 
 class SceneManager
 {
+	friend class ChatRoomScene;
+
 public:
 	static void initSceneManager();
 	static void start();

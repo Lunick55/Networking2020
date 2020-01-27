@@ -23,7 +23,7 @@ public:
 	static void requestQuit();
 	static void clearScreen();
 
-	void clearScreenPortion(std::size_t startX, std::size_t startY, std::size_t lengthX, std::size_t lengthY);
+	static void clearScreenPortion(std::size_t startX, std::size_t startY, std::size_t lengthX, std::size_t lengthY);
 
 	//Returns the console cursor x position.
 	static int getConsoleCursorX();

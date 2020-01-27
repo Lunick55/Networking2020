@@ -40,7 +40,7 @@ private:
 	const int mMAX_USERS;
 	const int mPORT;
 	std::shared_ptr<User> mpHost;
-	char mServerUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];
+	char mServerUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];
 
 	std::list<std::string> messageLog;
 
@@ -50,10 +50,10 @@ private:
 	RakNet::SocketDescriptor mSocketDescriptor;
 
 	std::map<UserId, std::shared_ptr<User>> mpConnectedUsers;
-	std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
+	//std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
 
-	void deliverPublicMessage(std::shared_ptr<User> user, std::string message);//Packet& packet);
-	void deliverPrivateMessage();
+	void deliverPublicMessage(std::shared_ptr<User> user, std::string message);
+	void deliverPrivateMessage(UserId fromUserId, UserId toUserId, const std::string& message);
 
 	void updateServerUserInfo();
 	std::shared_ptr<User> addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress);
@@ -61,6 +61,9 @@ private:
 
 	//virtual void sendPacket(const Packet& packet) override;
 	virtual void receivePacket() override;
+
+	void broadcastPacket(const char* packetData, std::size_t packetSize);
+	void sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress);
 };
 
 #endif

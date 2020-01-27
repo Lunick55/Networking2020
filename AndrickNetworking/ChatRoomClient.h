@@ -15,12 +15,11 @@ class ChatRoomClient : public IPacketReceiver, IPacketSender
 public:
 	static bool isInitialized();
 	static bool initChatRoom(bool isHost, const std::string& serverIP, const std::string& clientUsername);
+	static bool isHost() { return spInstance->mIsHost; };
 
 	ChatRoomClient(bool isHost, const std::string& serverIP, const std::string& username);
 
 	void update();
-
-	static bool isHost() { return spInstance->mIsHost; };
 
 	bool connectToServer();
 	void leaveServer();
@@ -32,9 +31,12 @@ private:
 	std::string mUsername;
 	bool mIsHost;
 
-	//Gets initialized when the server sends back a packet with
-	//the info.
+	//Gets initialized when the server sends back a packet with the client.
 	std::unique_ptr<User> mpClient;
+
+	//Gets initialized and updated when users join and leave the server.
+	std::map<UserId, std::string> mUsernameMap;
+
 	RakNet::SystemAddress mHostAddress;
 	RakNet::RakPeerInterface* mpPeer;
 	RakNet::Packet* mpPacket;
@@ -43,7 +45,12 @@ private:
 	virtual void receivePacket() override;
 	//virtual void sendPacket(const Packet& packet) override;
 
-	void sendPublicMessage(std::string message);
+	void sendPublicMessage(const std::string& message);
+	bool sendPrivateMessageRequest(const std::string& message, const std::string& toUsername);
+
+	void addUserIdToMap(UserId userId, char name[sMAX_USERNAME_LENGTH]);
+	void removeUserFromMap(UserId userId);
+	void initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1], int connectedUsers);
 
 	void requestToJoinServer();
 };

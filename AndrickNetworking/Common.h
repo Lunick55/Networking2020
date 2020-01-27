@@ -24,6 +24,8 @@ static const int TAB_KEY = 9;
 static const int ESC_KEY = 27;
 static const int BACKSPACE_KEY = 8;
 
+static const std::string WHISPER_COMMAND = "whisper";
+
 const enum Keys { ONE = 49, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE };
 
 const enum class SceneId { MAIN_MENU, JOIN_CHATROOM, CREATE_CHATROOM, CHATROOM };
@@ -88,16 +90,16 @@ struct JoinAcceptedPacket
 	UserId userId;
 
 	//Holds user [id, username]
-	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];	//[connectedUserCount][message length]
+	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];	//[connectedUserCount][message length]
 
-	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount, char userInfo[][sMAX_USERNAME_LENGTH]) : 
+	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount, char userInfo[][sMAX_USERNAME_LENGTH + 1]) : 
 		userId(user),
 		packetId(PacketEventId::JOIN_ACCEPTED), 
 		maxUserCount(maxUsers),
 		connectedUserCount(currentUserCount)
 	{
 		strcpy(username, name.c_str());
-		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * sMAX_USERNAME_LENGTH);
+		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * (sMAX_USERNAME_LENGTH + 1));
 	}
 };
 #pragma pack(pop)
@@ -109,17 +111,21 @@ struct UserJoinedServerPacket
 {
 	PacketEventId packetId;
 	UserId userId;
-	char connectedUserCount;
+	char username[sMAX_USERNAME_LENGTH];
+
+	//char connectedUserCount;
 
 	//Holds user [id, username]
-	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];
+	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];
 
-	UserJoinedServerPacket(UserId user, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH]) : 
+	UserJoinedServerPacket(UserId user, const std::string& name/*, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1]*/) : 
 		packetId(PacketEventId::USER_JOINED_SERVER),
-		userId(user), 
-		connectedUserCount(currentUserCount)
+		userId(user),
+		username()
+		//connectedUserCount(currentUserCount)
 	{
-		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * sMAX_USERNAME_LENGTH);
+		strcpy(username, name.c_str());
+		//memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * (sMAX_USERNAME_LENGTH + 1));
 	}
 };
 #pragma pack(pop)
@@ -181,7 +187,7 @@ struct SendPrivateMessageRequestPacket
 	char message[sMAX_MESSAGE_LENGTH];
 
 	SendPrivateMessageRequestPacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
-		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
+		packetId(PacketEventId::SEND_PRIVATE_MESSAGE_REQUEST),
 		fromUserId(fromUser),
 		toUserId(toUser)
 	{ 
@@ -209,15 +215,15 @@ struct DeliverPublicMessagePacket
 #pragma pack(pop)
 
 #pragma pack(push, 1)
-struct DeliverPrivateMessageRequestPacket
+struct DeliverPrivateMessagePacket
 {
 	PacketEventId packetId;
 	UserId fromUserId;
 	UserId toUserId;
 	char message[sMAX_MESSAGE_LENGTH];
 
-	DeliverPrivateMessageRequestPacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
-		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
+	DeliverPrivateMessagePacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
+		packetId(PacketEventId::DELIVER_PRIVATE_MESSAGE),
 		fromUserId(fromUser),
 		toUserId(toUser)
 	{ 

@@ -13,6 +13,8 @@ public:
 	virtual void handleInput(const char& input) override;
 	virtual void drawInitialScene() override;
 	virtual void enteringScene() override;
+
+	static void printMessageToChatRoom(const std::string& message);
 };
 
 #endif

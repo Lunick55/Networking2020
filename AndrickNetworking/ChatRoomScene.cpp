@@ -2,6 +2,7 @@
 #include "SceneManager.h"
 #include "ChatRoomServer.h"
 #include "ChatRoomClient.h"
+#include "User.h"
 
 void ChatRoomScene::update()
 {
@@ -38,11 +39,11 @@ void ChatRoomScene::enteringScene()
 	{
 		if (ChatRoomClient::spInstance->connectToServer())
 		{
-			std::cout << "Trying to connect..." << std::endl;
+			ChatRoomScene::printMessageToChatRoom("Trying to connect...");
 		}
 		else
 		{
-			std::cout << "Failed to connect to server." << std::endl;
+			ChatRoomScene::printMessageToChatRoom("Failed to connect to server.");
 		}
 	}
 	else
@@ -73,25 +74,60 @@ void ChatRoomScene::handleInput(const char& input)
 		clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
 		setCursorPosition(0, getConsoleCursorY());
 
+		///   /whisper Suck me fuck me, I love you
+		if (mCurrentInput[0] == '/')
+		{
+			std::size_t spaceIndex = mCurrentInput.find_first_of(' ');
+			std::string currCommand = mCurrentInput.substr(1, spaceIndex - 1);
+
+			if(currCommand == WHISPER_COMMAND)
+			{
+				std::string toUser;
+
+				for (int i = spaceIndex + 1; i < mCurrentInput.length(); ++i)
+				{
+					if (mCurrentInput[i] != ',')
+					{
+						toUser += mCurrentInput[i];
+					}
+					else
+					{
+						//send a private message
+						if (ChatRoomClient::isHost())
+						{
+							//ChatRoomServer::spInstance->deliverPrivateMessage(ChatRoomServer::spInstance->mpHost->getUserId(), mCurrentInput);
+						}
+						else
+						{
+							ChatRoomClient::spInstance->sendPrivateMessageRequest(mCurrentInput, toUser);
+						}
+
+						return;
+					}
+				}
+			}
+		}
+
 		if (ChatRoomClient::isHost())
 		{
 			ChatRoomServer::spInstance->deliverPublicMessage(ChatRoomServer::spInstance->mpHost, mCurrentInput);
 		}
 		else
 		{
-			//TODO: do the same for the client as the server does
 			ChatRoomClient::spInstance->sendPublicMessage(mCurrentInput);
 		}
-
 		clearInput();
 		//setCursorPosition(0, getConsoleCursorY());
 	}
 	else if (input == BACKSPACE_KEY)
 	{
-		mCurrentInput.pop_back();
-		setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
-		std::cout << " ";
-		setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
+		if (!mCurrentInput.empty())
+		{
+			mCurrentInput.pop_back();
+			setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
+			std::cout << " ";
+			setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
+		}
 	}
 	else
 	{
@@ -99,4 +135,16 @@ void ChatRoomScene::handleInput(const char& input)
 		mCurrentInput += input;
 		std::cout << input;
 	}
+}
+
+void ChatRoomScene::printMessageToChatRoom(const std::string& message)
+{
+	SceneManager instance = SceneManager::instance();
+	std::shared_ptr<ChatRoomScene> chatInstance = instance.mpChatRoomScene;
+
+	clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+	setCursorPosition(0, getConsoleCursorY());
+
+	std::cout << message << std::endl;
+	std::cout << chatInstance->mCurrentInput;
 }
