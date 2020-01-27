@@ -70,9 +70,17 @@ void ChatRoomScene::handleInput(const char& input)
 	}
 	else if (input == ENTER_KEY)
 	{
-		//mCurrentInput;
+		//
+		//
+		//
+		//*
+		//[User]Helloefsff
+		//_______?
 
-		//TODO: Each participant should send a message to the host, who routes it to the right people?
+
+		clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+		//setCursorPosition(0, getConsoleCursorY() + 1);
+
 		if (ChatRoomClient::isHost())
 		{
 			ChatRoomServer::spInstance->sendPublicMessage(ChatRoomServer::spInstance->mpHost, mCurrentInput);
@@ -84,8 +92,7 @@ void ChatRoomScene::handleInput(const char& input)
 		}
 
 		clearInput();
-		//clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-		setCursorPosition(0, getConsoleCursorY() + (std::size_t)1);
+		setCursorPosition(0, getConsoleCursorY() + 1);
 	}
 	else if (input == BACKSPACE_KEY)
 	{

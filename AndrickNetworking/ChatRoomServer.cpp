@@ -141,7 +141,19 @@ void ChatRoomServer::receivePacket()
 		{
 			PublicMessagePacket* data = (PublicMessagePacket*)(mpPacket->data);
 
-			std::cout << data->message << std::endl;
+			PublicMessagePacket messagePacket = PublicMessagePacket(data->userId, data->username, data->message);
+
+
+			std::map<UserId, std::shared_ptr<User>>::iterator iter = mpConnectedUsers.find(data->userId);
+			if (iter != mpConnectedUsers.end())
+			{
+				sendPublicMessage(iter->second, data->message);			
+			}
+			else
+			{
+				//Couldn't find user!!!
+			}
+
 			break;
 		}
 		case PacketEventId::SEND_PRIVATE_MESSAGE:
@@ -183,8 +195,18 @@ void ChatRoomServer::receivePacket()
 			mpPeer->Send((const char*)(&userJoinedServerData), sizeof(UserJoinedServerPacket),
 				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 				0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
-
-			std::cout << "User has joined!" << std::endl;
+			
+			std::map<UserId, std::shared_ptr<User>>::iterator iter = mpConnectedUsers.find(newUser->getUserId());
+			if (iter != mpConnectedUsers.end())
+			{
+				std::string serverMessage = newUser->getUsername() + " has joined!";
+				//std::cout << serverMessage << std::endl;
+				sendPublicMessage(iter->second, serverMessage);
+			}
+			else
+			{
+				//Couldn't find user!!!
+			}
 
 			break;
 		}
@@ -216,15 +238,17 @@ void ChatRoomServer::receivePacket()
 	}
 }
 
-void ChatRoomServer::sendPublicMessage(std::shared_ptr<User> user, std::string message)//Packet& packet)
+void ChatRoomServer::sendPublicMessage(std::shared_ptr<User> user, std::string message)
 {
-	PublicMessagePacket messagePacket = PublicMessagePacket(user->getUserId(), user->getUsername(), message);
+	std::string decoratedMessage = User::formatMessage(user->getUsername(), message, user->getAuthority());
+
+	PublicMessagePacket messagePacket = PublicMessagePacket(user->getUserId(), user->getUsername(), decoratedMessage);
 
 	mpPeer->Send((const char*)(&messagePacket), sizeof(PublicMessagePacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 
-	
+	std::cout << decoratedMessage << std::endl;
 }
 
 void ChatRoomServer::sendPrivateMessage()

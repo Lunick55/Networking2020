@@ -20,6 +20,9 @@ public:
 	inline const RakNet::SystemAddress& getAddress() const { return mAddress; }
 	inline const std::string& getUsername() const { return mUsername; }
 
+	static std::string formatMessage(const char* username, const char* message, AuthorityId authority);
+	static std::string formatMessage(const std::string& username, const std::string& message, AuthorityId authority);
+
 private:
 	UserId mId;
 	AuthorityId mAuthority;
