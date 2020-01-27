@@ -71,9 +71,10 @@ void ChatRoomClient::receivePacket()
 
 			mHostAddress = mpPacket->systemAddress;
 			mpClient = std::make_unique<User>(joinAcceptedPacket->userId, joinAcceptedPacket->username, AuthorityId::NORMAL, mpPeer->GetSystemAddressFromGuid(mpPeer->GetMyGUID()));
-			
+
+			initUsernameMap(joinAcceptedPacket->connectedUserInfo, joinAcceptedPacket->connectedUserCount);
 			addUserIdToMap(joinAcceptedPacket->userId, joinAcceptedPacket->username);
-			
+
 			//TODO: Send private message from server to user
 			
 			break;
