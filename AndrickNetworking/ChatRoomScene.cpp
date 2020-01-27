@@ -23,7 +23,7 @@ void ChatRoomScene::drawInitialScene()
 	std::cout << generateCenteredText("Welcome to the Chat Room Scene!");
 	std::cout << generateCenteredText("'/whisper username, message' to send private messages.");
 	std::cout << generateCenteredText("'/list if you are the host to display all active users.");
-	drawLine(2);
+	drawLine(3);
 	std::cout << std::endl;
 	/*std::cout << generateCenteredText("You are now hosting your own chatroom.") << std::endl;*/
 }
@@ -86,7 +86,7 @@ void ChatRoomScene::handleInput(const char& input)
 			{
 				std::string toUser;
 
-				for (int i = spaceIndex + 1; i < mCurrentInput.length(); ++i)
+				for (int i = spaceIndex + 1; i < mCurrentInput.length() - 1; ++i)
 				{
 					if (mCurrentInput[i] != ',')
 					{
@@ -94,23 +94,29 @@ void ChatRoomScene::handleInput(const char& input)
 					}
 					else
 					{
-						//send a private message
-						if (ChatRoomClient::isHost())
+						int startIndex = (i + 2);
+						if (startIndex < mCurrentInput.length())
 						{
-							ChatRoomServer::spInstance->deliverPersonalMessage(toUser, mCurrentInput);
-							clearInput();
-							clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-							setCursorPosition(0, getConsoleCursorY());
-						}
-						else
-						{
-							ChatRoomClient::spInstance->sendPrivateMessageRequest(mCurrentInput, toUser);
-							clearInput();
-							clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
-							setCursorPosition(0, getConsoleCursorY());
-						}
+							std::string secret = mCurrentInput.substr(startIndex);
 
-						return;
+							//send a private message
+							if (ChatRoomClient::isHost())
+							{
+								ChatRoomServer::spInstance->deliverPersonalMessage(toUser, secret);
+								clearInput();
+								clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+								setCursorPosition(0, getConsoleCursorY());
+							}
+							else
+							{
+								ChatRoomClient::spInstance->sendPrivateMessageRequest(secret, toUser);
+								clearInput();
+								clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+								setCursorPosition(0, getConsoleCursorY());
+							}
+
+							return;
+						}
 					}
 				}
 			}
