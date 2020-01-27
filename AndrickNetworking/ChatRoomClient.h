@@ -47,7 +47,7 @@ private:
 	//virtual void sendPacket(const Packet& packet) override;
 
 	void sendPublicMessage(const std::string& message);
-	bool sendPrivateMessageRequest(const std::string& message, const std::string& toUsername);
+	void sendPrivateMessageRequest(const std::string& message, const std::string& toUsername);
 
 	void addUserIdToMap(UserId userId, char name[sMAX_USERNAME_LENGTH]);
 	void removeUserFromMap(UserId userId);

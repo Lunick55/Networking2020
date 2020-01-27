@@ -64,7 +64,12 @@ void ChatRoomClient::receivePacket()
 			break;
 		}
 		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
+		{
+			DeliverPrivateMessagePacket* data = (DeliverPrivateMessagePacket*)(mpPacket->data);
+
+			ChatRoomScene::printMessageToChatRoom(data->message);
 			break;
+		}
 		case PacketEventId::JOIN_ACCEPTED:
 		{
 			JoinAcceptedPacket* joinAcceptedPacket = (JoinAcceptedPacket*)mpPacket->data;
@@ -99,8 +104,10 @@ void ChatRoomClient::receivePacket()
 			break;
 		}
 		case PacketEventId::SERVER_CLOSING:
+		{
+			ChatRoomScene::printMessageToChatRoom("The server closed. Press ESC to return to the main menu.");
 			break;
-
+		}
 		case PacketEventId::MUTE_USER:
 			break;
 
@@ -123,39 +130,14 @@ void ChatRoomClient::sendPublicMessage(const std::string& message)
 		0, mHostAddress, false);
 }
 
-bool ChatRoomClient::sendPrivateMessageRequest(const std::string& message, const std::string& toUserName)
+void ChatRoomClient::sendPrivateMessageRequest(const std::string& message, const std::string& toUserName)
 {
-	bool success = false;
-	UserId foundUserId{};
+	//Send packet 
+	SendPrivateMessageRequestPacket messagePacket = SendPrivateMessageRequestPacket(mpClient->getUserId(), toUserName, message);
 
-	std::map<UserId, std::string>::iterator iter = mUsernameMap.begin();
-	for (; iter != mUsernameMap.end(); ++iter)
-	{
-		if (iter->second.compare(toUserName) == 0)
-		{
-			//Found
-			foundUserId = iter->first;
-			break;
-		}
-	}
-
-	success = (iter != mUsernameMap.end());
-
-	if (success)
-	{
-		//Send packet
-		SendPrivateMessageRequestPacket messagePacket = SendPrivateMessageRequestPacket(mpClient->getUserId(), foundUserId, message);
-
-		mpPeer->Send((const char*)(&messagePacket), sizeof(SendPrivateMessageRequestPacket),
-			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-			0, mHostAddress, false);
-	}
-	else
-	{
-		//User wasn't found
-	}
-
-	return success;
+	mpPeer->Send((const char*)(&messagePacket), sizeof(SendPrivateMessageRequestPacket),
+		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+		0, mHostAddress, false);
 }
 
 bool ChatRoomClient::connectToServer()
@@ -167,6 +149,14 @@ bool ChatRoomClient::connectToServer()
 void ChatRoomClient::leaveServer()
 {
 	//Send a leaving packet.
+	UserLeftServerPacket userLeavingPacket = UserLeftServerPacket(
+		mpClient->getUserId()
+	);
+
+	mpPeer->Send((const char*)(&userLeavingPacket), sizeof(UserLeftServerPacket),
+		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+		0, mHostAddress, false);
+
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 	spInstance = nullptr;
 	SceneManager::switchScene(SceneId::MAIN_MENU);

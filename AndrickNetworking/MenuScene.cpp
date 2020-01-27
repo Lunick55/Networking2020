@@ -42,10 +42,13 @@ void MenuScene::handleInput(const char& input)
 	}
 	else if (input == BACKSPACE_KEY)
 	{
-		mCurrentInput.pop_back();
-		setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
-		std::cout << " ";
-		setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
+		if (!mCurrentInput.empty())
+		{
+			mCurrentInput.pop_back();
+			setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
+			std::cout << " ";
+			setCursorPosition(mCurrentInput.length(), getConsoleCursorY());
+		}
 	}
 	else
 	{

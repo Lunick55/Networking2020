@@ -15,6 +15,7 @@ class User;
 */
 class ChatRoomServer : public IPacketSender, IPacketReceiver
 {
+	friend class ChatRoomClient;
 	friend class ChatRoomScene;
 
 public:
@@ -54,6 +55,8 @@ private:
 
 	std::map<UserId, std::shared_ptr<User>> mpConnectedUsers;
 	//std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
+
+	void deliverPersonalMessage(const std::string& userName, const std::string& message);
 
 	void deliverPublicMessage(std::shared_ptr<User> user, std::string message);
 	void deliverPrivateMessage(UserId fromUserId, UserId toUserId, const std::string& message);

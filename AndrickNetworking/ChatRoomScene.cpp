@@ -97,11 +97,17 @@ void ChatRoomScene::handleInput(const char& input)
 						//send a private message
 						if (ChatRoomClient::isHost())
 						{
-							//ChatRoomServer::spInstance->deliverPrivateMessage(ChatRoomServer::spInstance->mpHost->getUserId(), mCurrentInput);
+							ChatRoomServer::spInstance->deliverPersonalMessage(toUser, mCurrentInput);
+							clearInput();
+							clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+							setCursorPosition(0, getConsoleCursorY());
 						}
 						else
 						{
 							ChatRoomClient::spInstance->sendPrivateMessageRequest(mCurrentInput, toUser);
+							clearInput();
+							clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+							setCursorPosition(0, getConsoleCursorY());
 						}
 
 						return;
@@ -130,13 +136,17 @@ void ChatRoomScene::handleInput(const char& input)
 		if (ChatRoomClient::isHost())
 		{
 			ChatRoomServer::spInstance->deliverPublicMessage(ChatRoomServer::spInstance->mpHost, mCurrentInput);
+			clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+			clearInput();
 		}
 		else
 		{
 			ChatRoomClient::spInstance->sendPublicMessage(mCurrentInput);
+			clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
+			clearInput();
 		}
-		clearInput();
-		//setCursorPosition(0, getConsoleCursorY());
+
+		setCursorPosition(0, getConsoleCursorY());
 	}
 	else if (input == BACKSPACE_KEY)
 	{

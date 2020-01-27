@@ -184,15 +184,15 @@ struct SendPrivateMessageRequestPacket
 {
 	PacketEventId packetId;
 	UserId fromUserId;
-	UserId toUserId;
+	char toUsername[sMAX_MESSAGE_LENGTH];
 	char message[sMAX_MESSAGE_LENGTH];
 
-	SendPrivateMessageRequestPacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
+	SendPrivateMessageRequestPacket(UserId fromUser, const std::string& toUser, const std::string& newMessage) :
 		packetId(PacketEventId::SEND_PRIVATE_MESSAGE_REQUEST),
-		fromUserId(fromUser),
-		toUserId(toUser)
+		fromUserId(fromUser)
 	{ 
 		strcpy(message, newMessage.c_str()); 
+		strcpy(toUsername, toUser.c_str()); 
 	}
 }; 
 #pragma pack(pop)
