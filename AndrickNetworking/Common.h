@@ -39,8 +39,8 @@ enum PacketEventId : unsigned char
 {
 	SET_AUTHORITY = ID_USER_PACKET_ENUM,
 
-	SEND_PUBLIC_MESSAGE,		//Clientside command
-	SEND_PRIVATE_MESSAGE,		//Clientside command
+	SEND_PUBLIC_MESSAGE_REQUEST,		//Clientside command
+	SEND_PRIVATE_MESSAGE_REQUEST,		//Clientside command
 
 	DELIVER_PUBLIC_MESSAGE,		//Serverside command
 	DELIVER_PRIVATE_MESSAGE,	//Serverside command
@@ -109,18 +109,16 @@ struct UserJoinedServerPacket
 {
 	PacketEventId packetId;
 	UserId userId;
-	char username[sMAX_USERNAME_LENGTH];
 	char connectedUserCount;
 
 	//Holds user [id, username]
 	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH];
 
-	UserJoinedServerPacket(UserId user, const std::string& name, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH]) : 
+	UserJoinedServerPacket(UserId user, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH]) : 
 		packetId(PacketEventId::USER_JOINED_SERVER),
 		userId(user), 
 		connectedUserCount(currentUserCount)
 	{
-		strcpy(username, name.c_str());
 		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * sMAX_USERNAME_LENGTH);
 	}
 };
@@ -134,13 +132,12 @@ struct UserLeftServerPacket
 {
 	PacketEventId packetId;
 	UserId userId;
-	char username[sMAX_USERNAME_LENGTH];
 
-	UserLeftServerPacket(UserId user, const std::string& name) : 
+	UserLeftServerPacket(UserId user) : 
 		packetId(PacketEventId::USER_LEFT_SERVER),
 		userId(user)
 	{
-		strcpy(username, name.c_str());
+
 	}
 };
 #pragma pack(pop)
@@ -158,20 +155,72 @@ struct ServerClosingPacket
 };
 #pragma pack(pop)
 
+//The message sent to host asking to be delivered
 #pragma pack(push, 1)
-struct PublicMessagePacket
+struct SendPublicMessageRequestPacket
 {
 	PacketEventId packetId;
 	UserId userId;
-	char username[sMAX_USERNAME_LENGTH];
+	char message[sMAX_MESSAGE_LENGTH];
+
+	SendPublicMessageRequestPacket(UserId user, const std::string& newMessage) :
+		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
+		userId(user)
+	{ 
+		strcpy(message, newMessage.c_str()); 
+	}
+}; 
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct SendPrivateMessageRequestPacket
+{
+	PacketEventId packetId;
+	UserId fromUserId;
+	UserId toUserId;
+	char message[sMAX_MESSAGE_LENGTH];
+
+	SendPrivateMessageRequestPacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
+		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
+		fromUserId(fromUser),
+		toUserId(toUser)
+	{ 
+		strcpy(message, newMessage.c_str()); 
+	}
+}; 
+#pragma pack(pop)
+
+//A message sent out. Broadcast by Host
+#pragma pack(push, 1)
+struct DeliverPublicMessagePacket
+{
+	PacketEventId packetId;
+	UserId userId;
 	char message[sMAX_MESSAGE_LENGTH];
 
 	//TODO: init user id also at some point
-	PublicMessagePacket(UserId user, const std::string& name, const std::string& newMessage) :
-		packetId(PacketEventId::SEND_PUBLIC_MESSAGE),
+	DeliverPublicMessagePacket(UserId user, const std::string& newMessage) :
+		packetId(PacketEventId::DELIVER_PUBLIC_MESSAGE),
 		userId(user)
+	{
+		strcpy(message, newMessage.c_str());
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct DeliverPrivateMessageRequestPacket
+{
+	PacketEventId packetId;
+	UserId fromUserId;
+	UserId toUserId;
+	char message[sMAX_MESSAGE_LENGTH];
+
+	DeliverPrivateMessageRequestPacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
+		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
+		fromUserId(fromUser),
+		toUserId(toUser)
 	{ 
-		strcpy(username, name.c_str()); 
 		strcpy(message, newMessage.c_str()); 
 	}
 }; 

@@ -78,53 +78,18 @@ void ChatRoomServer::closeChatRoom()
 	sNextUniqueId = 0;
 }
 
-//void ChatRoomServer::sendPacket(const Packet& packet)
-//{
-//	switch (packet.packetId)
-//	{
-//	case PacketEventId::SET_AUTHORITY:
-//		break;
-//
-//	case PacketEventId::SEND_PUBLIC_MESSAGE:
-//		sendPublicMessage(packet);
-//		break;
-//
-//	case PacketEventId::SEND_PRIVATE_MESSAGE:
-//		sendPrivateMessage(packet);
-//		break;
-//
-//	case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-//		break;
-//
-//	case PacketEventId::DELIVER_PRIVATE_MESSAGE:
-//		break;
-//
-//	case PacketEventId::REQUEST_JOIN_SERVER:
-//		break;
-//
-//	case PacketEventId::JOIN_ACCEPTED:
-//		break;
-//
-//	case PacketEventId::USER_JOINED_SERVER:
-//		break;
-//
-//	case PacketEventId::USER_LEFT_SERVER:
-//		break;
-//
-//	case PacketEventId::SERVER_CLOSING:
-//		break;
-//
-//	case PacketEventId::MUTE_USER:
-//		break;
-//
-//	case PacketEventId::UNMUTE_USER:
-//		break;
-//
-//	default:
-//		printf("Message with identifier %i has arrived.\n", mpPacket->data[0]);
-//		break;
-//	}
-//}
+std::shared_ptr<User> ChatRoomServer::getUserFromId(UserId userId)
+{
+	std::shared_ptr<User> foundUser = nullptr;
+
+	std::map<UserId, std::shared_ptr<User>>::iterator iter = mpConnectedUsers.find(userId);
+	if (iter != mpConnectedUsers.end())
+	{
+		foundUser = iter->second;		
+	}
+
+	return foundUser;
+}
 
 //Check if a packet is incoming
 void ChatRoomServer::receivePacket()
@@ -137,17 +102,16 @@ void ChatRoomServer::receivePacket()
 		case PacketEventId::SET_AUTHORITY:
 			break;
 
-		case PacketEventId::SEND_PUBLIC_MESSAGE:
+		case PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST:
 		{
-			PublicMessagePacket* data = (PublicMessagePacket*)(mpPacket->data);
+			SendPublicMessageRequestPacket* data = (SendPublicMessageRequestPacket*)(mpPacket->data);
 
-			PublicMessagePacket messagePacket = PublicMessagePacket(data->userId, data->username, data->message);
+			SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(data->userId, data->message);
 
-
-			std::map<UserId, std::shared_ptr<User>>::iterator iter = mpConnectedUsers.find(data->userId);
-			if (iter != mpConnectedUsers.end())
+			std::shared_ptr<User> user = getUserFromId(data->userId);
+			if (user != nullptr)
 			{
-				sendPublicMessage(iter->second, data->message);			
+				deliverPublicMessage(user, data->message);			
 			}
 			else
 			{
@@ -156,7 +120,7 @@ void ChatRoomServer::receivePacket()
 
 			break;
 		}
-		case PacketEventId::SEND_PRIVATE_MESSAGE:
+		case PacketEventId::SEND_PRIVATE_MESSAGE_REQUEST:
 			break;
 
 		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
@@ -172,7 +136,6 @@ void ChatRoomServer::receivePacket()
 
 			UserJoinedServerPacket userJoinedServerData = UserJoinedServerPacket(
 				newUser->getUserId(),
-				requestPacket->username,
 				(char)mpConnectedUsers.size(),
 				mServerUserInfo
 			);
@@ -196,17 +159,8 @@ void ChatRoomServer::receivePacket()
 				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 				0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 			
-			std::map<UserId, std::shared_ptr<User>>::iterator iter = mpConnectedUsers.find(newUser->getUserId());
-			if (iter != mpConnectedUsers.end())
-			{
-				std::string serverMessage = newUser->getUsername() + " has joined!";
-				//std::cout << serverMessage << std::endl;
-				sendPublicMessage(iter->second, serverMessage);
-			}
-			else
-			{
-				//Couldn't find user!!!
-			}
+			std::string serverMessage = newUser->getUsername() + " has joined!";
+			deliverPublicMessage(newUser, serverMessage);
 
 			break;
 		}
@@ -238,20 +192,20 @@ void ChatRoomServer::receivePacket()
 	}
 }
 
-void ChatRoomServer::sendPublicMessage(std::shared_ptr<User> user, std::string message)
+void ChatRoomServer::deliverPublicMessage(std::shared_ptr<User> user, std::string message)
 {
 	std::string decoratedMessage = User::formatMessage(user->getUsername(), message, user->getAuthority());
 
-	PublicMessagePacket messagePacket = PublicMessagePacket(user->getUserId(), user->getUsername(), decoratedMessage);
+	DeliverPublicMessagePacket messagePacket = DeliverPublicMessagePacket(user->getUserId(), decoratedMessage);
 
-	mpPeer->Send((const char*)(&messagePacket), sizeof(PublicMessagePacket),
+	mpPeer->Send((const char*)(&messagePacket), sizeof(DeliverPublicMessagePacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 
 	std::cout << decoratedMessage << std::endl;
 }
 
-void ChatRoomServer::sendPrivateMessage()
+void ChatRoomServer::deliverPrivateMessage()
 {
 //	const PrivateMessageCommandPacket& p = static_cast<const PrivateMessageCommandPacket&>(packet);
 //

@@ -75,7 +75,7 @@ void ChatRoomScene::handleInput(const char& input)
 
 		if (ChatRoomClient::isHost())
 		{
-			ChatRoomServer::spInstance->sendPublicMessage(ChatRoomServer::spInstance->mpHost, mCurrentInput);
+			ChatRoomServer::spInstance->deliverPublicMessage(ChatRoomServer::spInstance->mpHost, mCurrentInput);
 		}
 		else
 		{

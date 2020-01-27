@@ -26,6 +26,8 @@ public:
 
 	void update();
 
+	std::shared_ptr<User> getUserFromId(UserId userId);
+
 	//Start the server
 	bool startChatRoom();
 	void closeChatRoom();
@@ -50,8 +52,8 @@ private:
 	std::map<UserId, std::shared_ptr<User>> mpConnectedUsers;
 	std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
 
-	void sendPublicMessage(std::shared_ptr<User> user, std::string message);//Packet& packet);
-	void sendPrivateMessage();
+	void deliverPublicMessage(std::shared_ptr<User> user, std::string message);//Packet& packet);
+	void deliverPrivateMessage();
 
 	void updateServerUserInfo();
 	std::shared_ptr<User> addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress);

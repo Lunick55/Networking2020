@@ -52,23 +52,15 @@ void ChatRoomClient::receivePacket()
 		case PacketEventId::SET_AUTHORITY:
 			break;
 
-		case PacketEventId::SEND_PUBLIC_MESSAGE:
+		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
 		{
-			PublicMessagePacket* data = (PublicMessagePacket*)(mpPacket->data);
+			DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(mpPacket->data);
 
 			std::cout << data->message << std::endl;
 			break;
 		}
-		case PacketEventId::SEND_PRIVATE_MESSAGE:
+		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
 			break;
-
-		//why would the client deliver a message?
-		//case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-		//	break;
-		//
-		//case PacketEventId::DELIVER_PRIVATE_MESSAGE:
-		//	break;
-
 		case PacketEventId::REQUEST_JOIN_SERVER:
 			break;
 
@@ -119,9 +111,9 @@ void ChatRoomClient::receivePacket()
 
 void ChatRoomClient::sendPublicMessage(std::string message)//Packet& packet)
 {
-	PublicMessagePacket messagePacket = PublicMessagePacket(mpClient->getUserId(), mpClient->getUsername(), message);
+	SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(mpClient->getUserId(), message);
 
-	mpPeer->Send((const char*)(&messagePacket), sizeof(PublicMessagePacket),
+	mpPeer->Send((const char*)(&messagePacket), sizeof(SendPublicMessageRequestPacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, mHostAddress, false);
 }

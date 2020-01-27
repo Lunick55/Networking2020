@@ -57,7 +57,7 @@ struct MessageCommandPacket : public CommandPacket
 
 	//Defaults to public message
 	MessageCommandPacket(UserId userThatExecuted, const std::string& m) :
-		MessageCommandPacket(PacketEventId::SEND_PUBLIC_MESSAGE, userThatExecuted, m)
+		MessageCommandPacket(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST, userThatExecuted, m)
 	{}
 
 protected:
@@ -73,7 +73,7 @@ struct PrivateMessageCommandPacket : public MessageCommandPacket
 	UserId userToSendTo;
 
 	PrivateMessageCommandPacket(UserId userThatExecuted, UserId receiver, const std::string& m) :
-		MessageCommandPacket(PacketEventId::SEND_PRIVATE_MESSAGE, userThatExecuted, m),
+		MessageCommandPacket(PacketEventId::SEND_PRIVATE_MESSAGE_REQUEST, userThatExecuted, m),
 		userToSendTo(receiver)
 	{}
 };
