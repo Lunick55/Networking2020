@@ -71,7 +71,7 @@ void ChatRoomClient::receivePacket()
 
 			mHostAddress = mpPacket->systemAddress;
 			mpClient = std::make_unique<User>(joinAcceptedPacket->userId, joinAcceptedPacket->username, AuthorityId::NORMAL, mpPeer->GetSystemAddressFromGuid(mpPeer->GetMyGUID()));
-			
+			mMaxUsers = joinAcceptedPacket->maxUserCount;
 			addUserIdToMap(joinAcceptedPacket->userId, joinAcceptedPacket->username);
 			
 			//TODO: Send private message from server to user
@@ -224,4 +224,30 @@ void ChatRoomClient::initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LEN
 			}
 		}
 	}
+}
+
+void ChatRoomClient::listUserInfoRequest()
+{
+	if (ChatRoomClient::isHost())
+	{
+		ChatRoomClient::spInstance->printUserInfo();
+	}
+	else
+	{
+
+	}
+}
+
+void ChatRoomClient::printUserInfo()
+{
+	auto iter = mUsernameMap.begin();
+
+	ChatRoomScene::printMessageToChatRoom("");
+	ChatRoomScene::printMessageToChatRoom("Active Users: " + std::to_string(mUsernameMap.size()) + "/" + std::to_string(mMaxUsers));
+
+	for (; iter != mUsernameMap.end(); ++iter)
+	{
+		ChatRoomScene::printMessageToChatRoom(" - " + iter->second);
+	}
+
 }

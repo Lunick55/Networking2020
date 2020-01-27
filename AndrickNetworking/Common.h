@@ -25,6 +25,7 @@ static const int ESC_KEY = 27;
 static const int BACKSPACE_KEY = 8;
 
 static const std::string WHISPER_COMMAND = "whisper";
+static const std::string LIST_USERS = "list";
 
 const enum Keys { ONE = 49, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE };
 

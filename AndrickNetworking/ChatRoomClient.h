@@ -16,6 +16,8 @@ public:
 	static bool isInitialized();
 	static bool initChatRoom(bool isHost, const std::string& serverIP, const std::string& clientUsername);
 	static bool isHost() { return spInstance->mIsHost; };
+	static void listUserInfoRequest();
+	void printUserInfo();
 
 	ChatRoomClient(bool isHost, const std::string& serverIP, const std::string& username);
 
@@ -29,6 +31,7 @@ private:
 	
 	std::string mServerIP;
 	std::string mUsername;
+	int mMaxUsers;
 	bool mIsHost;
 
 	//Gets initialized when the server sends back a packet with the client.

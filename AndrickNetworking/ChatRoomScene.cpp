@@ -21,7 +21,8 @@ void ChatRoomScene::render()
 void ChatRoomScene::drawInitialScene()
 {
 	std::cout << generateCenteredText("Welcome to the Chat Room Scene!");
-	drawLine(1);
+	std::cout << generateCenteredText("'/whisper username, message' to send private messages.");
+	drawLine(2);
 	std::cout << std::endl;
 	/*std::cout << generateCenteredText("You are now hosting your own chatroom.") << std::endl;*/
 }
@@ -105,6 +106,10 @@ void ChatRoomScene::handleInput(const char& input)
 						return;
 					}
 				}
+			}
+			else if (currCommand == LIST_USERS)
+			{
+				ChatRoomClient::listUserInfoRequest();
 			}
 		}
 
