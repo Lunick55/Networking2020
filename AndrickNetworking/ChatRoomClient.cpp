@@ -157,6 +157,7 @@ void ChatRoomClient::leaveServer()
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, mHostAddress, false);
 
+
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 	spInstance = nullptr;
 	SceneManager::switchScene(SceneId::MAIN_MENU);

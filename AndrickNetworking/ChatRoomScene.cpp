@@ -76,7 +76,7 @@ void ChatRoomScene::handleInput(const char& input)
 		clearScreenPortion(0, getConsoleCursorY(), getConsoleWidth(), 1);
 		setCursorPosition(0, getConsoleCursorY());
 
-		///   /whisper Suck me fuck me, I love you
+		///   /whisper username, message
 		if (mCurrentInput[0] == '/')
 		{
 			std::size_t spaceIndex = mCurrentInput.find_first_of(' ');
