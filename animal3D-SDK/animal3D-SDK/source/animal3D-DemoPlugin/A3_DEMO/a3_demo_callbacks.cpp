@@ -91,6 +91,15 @@ struct a3_DemoState
 	a3_Timer renderTimer[1];
 
 	RakNet::RakPeerInterface* peer;
+	//RakPeerInteface has a lot of good stuff.
+
+	struct RemoteInformation
+	{
+		char remoteName[32];
+		int rgrgnrig;
+	};
+
+	RemoteInformation remote[20];
 };
 
 //-----------------------------------------------------------------------------
@@ -171,14 +180,19 @@ inline void a3demoCB_keyCharHold_main(a3_DemoState *demoState, a3i32 asciiKey)
 }
 
 #include <GL/glew.h>
+#include "_andrick_Scene/andrick_scene.h"
 
 void a3demoTestRender(a3_DemoState const* demoState)
 {
 	//clear color
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	static Scene testScene;
+	testScene.helloWorld = "HELLO WORLD!";
+
 	//draw text
-	a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%+.3lf", (a3f32)demoState->renderTimer->totalTime);
+	//a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%+.3lf", (a3f32)demoState->renderTimer->totalTime);
+	a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%s", testScene.helloWorld.c_str());
 }
 
 void a3DemoNetworking(a3_DemoState const* demoState)
@@ -193,7 +207,13 @@ void a3DemoTestUpdate(a3_DemoState const* demoState)
 
 void a3DemoTestInput(a3_DemoState const* demoState)
 {
+	//Key was pressed
+	//if (demoState->keyboard->key.key['b'])
+	//or
+	if (a3keyboardGetState(demoState->keyboard, a3key_B) > 0)
+	{
 
+	}
 }
 
 void a3demoNTestNetworking_recieve(a3_DemoState const* demoState)

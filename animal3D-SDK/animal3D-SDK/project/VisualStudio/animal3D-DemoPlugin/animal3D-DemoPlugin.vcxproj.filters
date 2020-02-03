@@ -61,6 +61,9 @@
     <Filter Include="Source Files\common\A3_DEMO\a3_Networking">
       <UniqueIdentifier>{7cd1e83b-1cfa-4949-86a4-d5e0bf1c265a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_scene">
+      <UniqueIdentifier>{ea9228df-7b79-4233-baa3-b22dd8ba1f49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_utilities\a3_DemoShaderProgram.h">
       <Filter>Header Files\A3_DEMO\_utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
