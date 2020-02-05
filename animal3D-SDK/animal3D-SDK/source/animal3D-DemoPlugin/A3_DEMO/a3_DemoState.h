@@ -286,7 +286,6 @@ extern "C"
 	void a3demo_initScene(a3_DemoState *demoState);
 	void a3demo_initSceneRefresh(a3_DemoState *demoState);
 
-
 //-----------------------------------------------------------------------------
 
 

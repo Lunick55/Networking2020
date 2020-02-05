@@ -36,6 +36,7 @@
 //-----------------------------------------------------------------------------
 // INITIALIZE
 
+
 // initialize non-asset objects
 void a3demo_initScene(a3_DemoState *demoState)
 {

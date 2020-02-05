@@ -187,12 +187,12 @@ void a3demoTestRender(a3_DemoState const* demoState)
 	//clear color
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	static Scene testScene;
-	testScene.helloWorld = "HELLO WORLD!";
+	//static Scene testScene;
+	//testScene.helloWorld = "HELLO WORLD!";
 
 	//draw text
 	//a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%+.3lf", (a3f32)demoState->renderTimer->totalTime);
-	a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%s", testScene.helloWorld.c_str());
+	//a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%s", testScene.helloWorld.c_str());
 }
 
 void a3DemoNetworking(a3_DemoState const* demoState)
