@@ -67,6 +67,12 @@
     <Filter Include="Source Files\common\A3_DEMO\_andrick_scene">
       <UniqueIdentifier>{8f55a004-4c09-4a48-97b9-58e7b7baf28c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_demostate">
+      <UniqueIdentifier>{2507fd02-7102-43c3-9e4d-550cfa15f795}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_demostate">
+      <UniqueIdentifier>{8407a650-fa53-4ee3-bf24-c570ea908c06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -120,6 +126,9 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_mainmenu.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -144,6 +153,12 @@
       <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_manager.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Demostate\andrick_demostate.h">
+      <Filter>Header Files\A3_DEMO\_andrick_demostate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
     </ClInclude>
   </ItemGroup>
