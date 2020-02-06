@@ -2,7 +2,12 @@
 #define ANDRICK_SCENE_MANAGER_H_
 
 #include <memory>
-#include "andrick_scene_mainmenu.h"
+#include "andrick_scene.h"
+
+class MainMenuScene;
+class TictactoeScene;
+
+struct a3_DemoState;
 
 class SceneManager
 {
@@ -12,13 +17,16 @@ public:
 
 	void switchToScene(enum class SceneId id);
 
-	void update();
-	void render();
-	void input();
+	void input(const a3_DemoState* demoState);
+	void networkReceive(const a3_DemoState* demoState);
+	void update(const a3_DemoState* demoState);
+	void networkSend(const a3_DemoState* demoState);
+	void render(const a3_DemoState* demoState);
 
 private:
-	std::shared_ptr<Scene> mpCurrentScene;
-	std::shared_ptr<MainMenuScene> mpMainMenu;
+	Scene* mpCurrentScene;
+	MainMenuScene* mpMainMenu;
+	TictactoeScene* mpTictactoe;
 };
 
 #endif

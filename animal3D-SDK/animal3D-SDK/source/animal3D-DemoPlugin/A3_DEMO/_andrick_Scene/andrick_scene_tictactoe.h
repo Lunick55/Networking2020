@@ -1,13 +1,13 @@
-#ifndef ANDRICK_SCENE_MAINMENU_H_
-#define ANDRICK_SCENE_MAINMENU_H_
+#ifndef ANDRICK_SCENE_TICTACTOE_H_
+#define ANDRICK_SCENE_TICTACTOE_H_
 
 #include "andrick_scene.h"
 
-class MainMenuScene : public Scene
+class TictactoeScene : public Scene
 {
 public:
-	MainMenuScene();
-	virtual ~MainMenuScene() = default;
+	TictactoeScene();
+	virtual ~TictactoeScene() = default;
 
 protected:
 	virtual void input(const a3_DemoState* demoState) override;
