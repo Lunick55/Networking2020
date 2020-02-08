@@ -1,10 +1,9 @@
 #ifndef ANDRICK_SCENE_MANAGER_H_
 #define ANDRICK_SCENE_MANAGER_H_
 
-#include <memory>
 #include "andrick_scene.h"
 
-class MainMenuScene;
+class SelectRoleScene;
 class TictactoeScene;
 
 struct a3_DemoState;
@@ -25,7 +24,7 @@ public:
 
 private:
 	Scene* mpCurrentScene;
-	MainMenuScene* mpMainMenu;
+	SelectRoleScene* mpSelectRole;
 	TictactoeScene* mpTictactoe;
 };
 

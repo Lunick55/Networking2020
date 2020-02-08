@@ -27,7 +27,6 @@
 	********************************************
 */
 
-
 #include "a3_dylib_config_export.h"
 
 #include <stdio.h>
@@ -35,14 +34,7 @@
 #include <string.h>
 
 #include "_andrick_Demostate/andrick_demostate.h"
-
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// miscellaneous functions
+#include "_andrick_Scene/andrick_scene.h"
 
 // get the size of the persistent state to allocate
 //	(good idea to keep it relatively constant, so that addresses don't change 
@@ -56,17 +48,13 @@ inline a3ui32 a3demo_getPersistentStateSize()
 	return size;
 }
 
-
 // consistent text initialization
 inline void a3demo_initializeText(a3_TextRenderer *text)
 {
 	a3textInitialize(text, 18, 1, 0, 0, 0);
 }
 
-
-//-----------------------------------------------------------------------------
 // callback sub-routines
-
 inline void a3demoCB_keyCharPress_main(a3_DemoState *demoState, a3i32 asciiKey,
 	const a3ui32 demoSubMode, const a3ui32 demoOutput,
 	const a3ui32 demoSubModeCount, const a3ui32 demoOutputCount)
@@ -118,57 +106,6 @@ inline void a3demoCB_keyCharHold_main(a3_DemoState *demoState, a3i32 asciiKey)
 	}
 }
 
-#include "_andrick_Scene/andrick_scene.h"
-
-void a3demoTestRender(a3_DemoState const* demoState)
-{
-	//clear color
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	demoState->sceneManager->render(demoState);
-
-	//static Scene testScene;
-	//testScene.helloWorld = "HELLO WORLD!";
-
-	//draw text
-	//a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%+.3lf", (a3f32)demoState->renderTimer->totalTime);
-	//a3textDraw(demoState->text, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, "%s", testScene.helloWorld.c_str());
-}
-
-void a3DemoNetworking(a3_DemoState const* demoState)
-{
-	//demoState->sceneManager->networking(demoState);
-}
-
-void a3DemoTestUpdate(a3_DemoState const* demoState)
-{
-	demoState->sceneManager->update(demoState);
-}
-
-void a3DemoTestInput(a3_DemoState const* demoState)
-{
-	//Key was pressed
-	//if (demoState->keyboard->key.key['b'])
-	//or
-	//if (a3keyboardGetState(demoState->keyboard, a3key_B) > 0)
-	//{
-	//
-	//}
-
-	demoState->sceneManager->input(demoState);
-}
-
-void a3demoNTestNetworking_recieve(a3_DemoState const* demoState)
-{
-
-}
-
-void a3demoNTestNetworking_send(a3_DemoState const* demoState)
-{
-	//big packet switch case loop
-}
-
-
 //-----------------------------------------------------------------------------
 // callback prototypes
 // NOTE: do not move to header; they should be private to this file
@@ -178,7 +115,6 @@ void a3demoNTestNetworking_send(a3_DemoState const* demoState)
 // copy this config line and the DLL to your main config with a new name when 
 //	you're happy with it: 
 //	"<root>/resource/animal3D-data/animal3D-demoinfo.txt"
-
 
 #ifdef __cplusplus
 extern "C"
@@ -209,17 +145,51 @@ extern "C"
 }
 #endif	// __cplusplus
 
-
 //-----------------------------------------------------------------------------
 // callback implementations
 
-// demo is loaded
-A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hotbuild)
+// window idles
+A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 {
-	
+	// perform any idle tasks, such as rendering
+	if (!demoState->exitFlag)
+	{
+		if (a3timerUpdate(demoState->renderTimer) > 0)
+		{
+			// render timer ticked, update demo state and draw
+			//a3demo_update(demoState, demoState->renderTimer->secondsPerTick);
+			//a3demo_input(demoState, demoState->renderTimer->secondsPerTick);
+			//a3demo_render(demoState);
+
+			demoState->sceneManager->input(demoState);
+			demoState->sceneManager->networkReceive(demoState);
+			demoState->sceneManager->update(demoState);
+			demoState->sceneManager->networkSend(demoState);
+			demoState->sceneManager->render(demoState);
+
+			// update input
+			a3mouseUpdate(demoState->mouse);
+			a3keyboardUpdate(demoState->keyboard);
+			a3XboxControlUpdate(demoState->xcontrol);
+
+			// render occurred this idle: return +1
+			return +1;
+		}
+
+		// nothing happened this idle: return 0
+		return 0;
+	}
+
+	// demo should exit now: return -1
+	return -1;
+}
+
+// demo is loaded
+A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hotbuild)
+{
 	const a3ui32 stateSize = a3demo_getPersistentStateSize();
 	const a3ui32 trigSamplesPerDegree = 4;
-	
+
 	// do any re-allocation tasks
 	if (demoState && hotbuild)
 	{
@@ -228,7 +198,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 
 		// example 1: copy memory directly
 		free(demoState);
-		demoState = (a3_DemoState *)malloc(stateSize);
+		demoState = (a3_DemoState*)malloc(stateSize);
 		memset(demoState, 0, stateSize);
 		*demoState = copy;
 
@@ -237,14 +207,14 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		//a3demo_initSceneRefresh(demoState);
 		a3trigInitSetTables(trigSamplesPerDegree, demoState->trigTable);
 	}
-	
+
 	// do any initial allocation tasks
 	else
 	{
 		// HEAP allocate persistent state
 		// stack object will be deleted at the end of the function
 		// good idea to set the whole block of memory to zero
-		demoState = (a3_DemoState *)malloc(stateSize);
+		demoState = (a3_DemoState*)malloc(stateSize);
 		memset(demoState, 0, stateSize);
 
 		// set up trig table (A3DM)
@@ -262,11 +232,12 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
 
 		demoState->sceneManager = std::make_shared<SceneManager>();
-
+		
+		//Init
+		TextFormatter::get();
 
 		// enable asset streaming between loads
-	//	demoState->streaming = 1;
-
+		//	demoState->streaming = 1;
 
 		// create directory for data
 		a3fileStreamMakeDirectory("./data");
@@ -295,13 +266,12 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_load(a3_DemoState *demoState, a3boolean hot
 
 	// return persistent state pointer
 	return demoState;
-	
 }
 
 // demo is unloaded; option to unload to prep for hotbuild
-A3DYLIBSYMBOL a3_DemoState *a3demoCB_unload(a3_DemoState *demoState, a3boolean hotbuild)
+A3DYLIBSYMBOL a3_DemoState* a3demoCB_unload(a3_DemoState* demoState, a3boolean hotbuild)
 {
-	
+
 	// release things that need releasing always, whether hotbuilding or not
 	// e.g. kill thread
 	// nothing in this example, but then...
@@ -319,7 +289,7 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_unload(a3_DemoState *demoState, a3boolean h
 		// free graphics objects
 		a3demo_unloadGeometry(demoState);
 		a3demo_unloadShaders(demoState);
-		
+
 		// validate unload
 		a3demo_validateUnload(demoState);
 		*/
@@ -342,54 +312,15 @@ A3DYLIBSYMBOL a3_DemoState *a3demoCB_unload(a3_DemoState *demoState, a3boolean h
 
 	// return state pointer
 	return demoState;
-	
 }
 
 // window updates display
 // **NOTE: DO NOT USE FOR RENDERING**
-A3DYLIBSYMBOL a3i32 a3demoCB_display(a3_DemoState *demoState)
+A3DYLIBSYMBOL a3i32 a3demoCB_display(a3_DemoState* demoState)
 {
 	// do nothing, should just return 1 to indicate that the 
 	//	window's display area is controlled by the demo
 	return 1;
-}
-
-// window idles
-A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
-{
-	// perform any idle tasks, such as rendering
-	if (!demoState->exitFlag)
-	{
-		if (a3timerUpdate(demoState->renderTimer) > 0)
-		{
-			// render timer ticked, update demo state and draw
-			//a3demo_update(demoState, demoState->renderTimer->secondsPerTick);
-			//a3demo_input(demoState, demoState->renderTimer->secondsPerTick);
-			//a3demo_render(demoState);
-
-			a3DemoTestInput(demoState);
-			a3demoNTestNetworking_recieve(demoState);
-			a3DemoTestUpdate(demoState);
-			a3demoNTestNetworking_send(demoState);
-			a3demoTestRender(demoState);
-
-
-			// update input
-			a3mouseUpdate(demoState->mouse);
-			a3keyboardUpdate(demoState->keyboard);
-			a3XboxControlUpdate(demoState->xcontrol);
-
-			// render occurred this idle: return +1
-			return +1;
-		}
-
-		// nothing happened this idle: return 0
-		return 0;
-	}
-
-	// demo should exit now: return -1
-	return -1;
-	
 }
 
 // window gains focus
@@ -680,6 +611,5 @@ A3DYLIBSYMBOL void a3demoCB_mouseLeave(a3_DemoState *demoState)
 	// reset mouse state or any buttons pressed will freeze
 	a3mouseReset(demoState->mouse);
 }
-
 
 //-----------------------------------------------------------------------------

@@ -4,14 +4,10 @@
 #include <string>
 #include <GL/glew.h>
 
-struct a3_DemoState;
+#include "A3_DEMO/_andrick_Utils/_andrick_text_formatter.h"
+#include "A3_DEMO/_andrick_Utils/andrick_common.h"
 
-enum class SceneId
-{
-	MainMenu = 0,
-	Tictactoe,
-	Count
-};
+struct a3_DemoState;
 
 class Scene
 {

@@ -73,6 +73,18 @@
     <Filter Include="Header Files\A3_DEMO\_andrick_demostate">
       <UniqueIdentifier>{8407a650-fa53-4ee3-bf24-c570ea908c06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_network">
+      <UniqueIdentifier>{5b0f1e86-36eb-4698-a5ad-af112230b629}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\andrick_network">
+      <UniqueIdentifier>{1f6da248-2e13-461d-9240-a217d3d26c58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_util">
+      <UniqueIdentifier>{cf0decfe-f893-45f2-9f6f-9cddc5f0ec8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_util">
+      <UniqueIdentifier>{81e379d0-f26c-4ef9-9f08-4962ea39aacc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -129,6 +141,21 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_user.cpp">
+      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_host.cpp">
+      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_client.cpp">
+      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_selectrole.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Utils\_andrick_text_formatter.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -160,6 +187,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_user.h">
+      <Filter>Header Files\A3_DEMO\_andrick_network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_client.h">
+      <Filter>Header Files\A3_DEMO\_andrick_network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_host.h">
+      <Filter>Header Files\A3_DEMO\_andrick_network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_selectrole.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Utils\andrick_common.h">
+      <Filter>Header Files\A3_DEMO\_andrick_util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Utils\_andrick_text_formatter.h">
+      <Filter>Header Files\A3_DEMO\_andrick_util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

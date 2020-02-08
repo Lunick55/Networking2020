@@ -11,7 +11,7 @@ void TictactoeScene::input(const a3_DemoState* demoState)
 {
 	if (a3keyboardIsChanged(demoState->keyboard, a3key_enter) > 0)
 	{
-		demoState->sceneManager->switchToScene(SceneId::MainMenu);
+		demoState->sceneManager->switchToScene(SceneId::SelectRole);
 	}
 }
 
