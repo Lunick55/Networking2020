@@ -32,6 +32,8 @@ struct a3_DemoState
 	a3real frameWidthInv, frameHeightInv, frameAspect;
 	a3i32 frameBorder;
 
+	bool isKeyHeld;
+	a3i32 currentKey;
 
 	//---------------------------------------------------------------------
 	// objects that have known or fixed instance count in the whole demo
@@ -65,5 +67,5 @@ struct a3_DemoState
 
 	RemoteInformation remote[20];
 
-	std::shared_ptr<SceneManager> sceneManager;
+	std::shared_ptr<SceneManager> mpSceneManager;
 };

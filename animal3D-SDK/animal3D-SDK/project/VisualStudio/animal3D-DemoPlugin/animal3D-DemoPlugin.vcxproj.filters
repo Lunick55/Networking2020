@@ -135,9 +135,6 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_mainmenu.cpp">
-      <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
     </ClCompile>
@@ -174,9 +171,6 @@
       <Filter>Header Files\A3_DEMO\_utilities</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene.h">
-      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_mainmenu.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_manager.h">

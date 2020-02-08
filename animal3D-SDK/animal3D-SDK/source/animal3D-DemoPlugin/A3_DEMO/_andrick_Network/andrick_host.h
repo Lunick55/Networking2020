@@ -4,18 +4,17 @@
 #include <map>
 #include <list>
 
-#include "andrick_common.h"
+#include "../_andrick_Utils/andrick_common.h"
 #include "andrick_client.h"
 #include "andrick_user.h"
+
+struct a3_DemoState;
 
 /*
 * This class gets created if the user decides to host a server.
 */
-class Host : public User
+class Host
 {
-	friend class ChatRoomClient;
-	friend class ChatRoomScene;
-
 public:
 	static bool isInitialized();
 	static bool initChatRoom(const int port, const int maxUsers, const std::string& hostUsername);
@@ -23,19 +22,19 @@ public:
 	explicit Host(const int port, const int maxUsers, const std::string& hostUsername);
 	virtual ~Host() = default;
 
-	static void listUserInfoRequest();
-	void printUserInfo();
+	static void listUserInfoRequest(const a3_DemoState* demoState);
+	void printUserInfo(const a3_DemoState* demoState);
 
-	void update();
+	void update(const a3_DemoState* demoState);
 
 	std::shared_ptr<User> getUserFromId(UserId userId);
 
 	//Start the server
-	bool startChatRoom();
+	bool startChatRoom(const a3_DemoState* demoState);
 	void closeChatRoom();
 
 private:
-	static std::shared_ptr<Client> spInstance;
+	static std::shared_ptr<Host> spInstance;
 
 	static UserId sNextUniqueId;
 
@@ -54,16 +53,16 @@ private:
 	std::map<UserId, std::shared_ptr<User>> mpConnectedUsers;
 	//std::map<PacketEventId, std::shared_ptr<Command>> mpValidCommands;
 
-	void deliverPersonalMessage(const std::string& userName, const std::string& message);
+	void deliverPersonalMessage(const a3_DemoState* demoState, const std::string& userName, const std::string& message);
 
-	void deliverPublicMessage(std::shared_ptr<User> user, std::string message);
-	void deliverPrivateMessage(UserId fromUserId, UserId toUserId, const std::string& message);
+	void deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<User> user, std::string message);
+	void deliverPrivateMessage(const a3_DemoState* demoState, UserId fromUserId, UserId toUserId, const std::string& message);
 
 	void updateServerUserInfo();
 	std::shared_ptr<User> addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress);
-	void removeUser(UserId userId);
+	void removeUser(const a3_DemoState* demoState, UserId userId);
 
-	virtual void receivePacket() override;
+	void receivePacket(const a3_DemoState* demoState);
 
 	void broadcastPacket(const char* packetData, std::size_t packetSize);
 	void sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress);

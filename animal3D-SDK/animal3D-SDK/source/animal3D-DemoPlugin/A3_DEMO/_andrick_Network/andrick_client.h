@@ -1,17 +1,17 @@
 #ifndef CHAT_ROOM_CLIENT_H_
 #define CHAT_ROOM_CLIENT_H_
 
-#include "andrick_common.h"
+#include "../_andrick_Utils/andrick_common.h"
 #include "andrick_user.h"
 #include <map>
+
+struct a3_DemoState;
 
 /*
 * This class gets created if the user decides to join another server.
 */
-class Client : public User
+class Client
 {
-	friend class ChatRoomScene;
-
 public:
 	static bool isInitialized();
 	static bool initChatRoom(bool isHost, const std::string& serverIP, const std::string& clientUsername);
@@ -19,10 +19,10 @@ public:
 
 	Client(bool isHost, const std::string& serverIP, const std::string& username);
 
-	void update();
+	void update(const a3_DemoState* demoState);
 
 	bool connectToServer();
-	void leaveServer();
+	void leaveServer(const a3_DemoState* demoState);
 
 private:
 	static std::shared_ptr<Client> spInstance;
@@ -43,7 +43,7 @@ private:
 	RakNet::Packet* mpPacket;
 	RakNet::SocketDescriptor mSocketDescriptor;
 
-	virtual void receivePacket() override;
+	void receivePacket(const a3_DemoState* demoState);
 
 	void sendPublicMessage(const std::string& message);
 	void sendPrivateMessageRequest(const std::string& message, const std::string& toUsername);
@@ -52,7 +52,7 @@ private:
 	void removeUserFromMap(UserId userId);
 	void initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1], int connectedUsers);
 
-	void requestToJoinServer();
+	void requestToJoinServer(const a3_DemoState* demoState);
 };
 
 #endif

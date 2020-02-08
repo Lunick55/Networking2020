@@ -17,7 +17,21 @@ protected:
 	virtual void render(const a3_DemoState* demoState) override;
 
 private:
+	enum class SelectRoleStep : a3byte
+	{
+		CLOSE_PROGRAM = -1,
+		IS_CLIENT_OR_HOST,
 
+		CLIENT_ENTER_USERNAME,
+		CLIENT_ENTER_IP,
+
+		HOST_ENTER_USERNAME,
+		HOST_MAX_CLIENTS,
+		HOST_VALIDATE_MAX_CLIENTS
+	};
+
+	SelectRoleStep mCurrentStep;
+	bool mIsHost;
 };
 
 #endif

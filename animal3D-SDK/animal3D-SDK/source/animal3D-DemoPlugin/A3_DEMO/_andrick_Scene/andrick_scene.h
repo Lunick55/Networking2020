@@ -23,6 +23,8 @@ public:
 	const SceneId getId() const;
 
 protected:
+	std::string mCurrentInput;
+
 	virtual void input(const a3_DemoState* demoState) = 0;
 	virtual void networkReceive(const a3_DemoState* demoState) = 0;
 	virtual void update(const a3_DemoState* demoState) = 0;

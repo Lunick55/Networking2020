@@ -1,4 +1,4 @@
-#include "User.h"
+#include "andrick_user.h"
 
 User::User(UserId id, const std::string username, AuthorityId authority, const RakNet::SystemAddress& address) :
 	mId(id), 
@@ -8,14 +8,6 @@ User::User(UserId id, const std::string username, AuthorityId authority, const R
 {
 
 }
-
-//Checks with the server if this is a valid request.
-//If not, then it returns false.
-//If yes, then it sets the User's authority and returns true.
-//bool User::requestAuthority(AuthorityId authority)
-//{
-//	return false;
-//}
 
 std::string User::formatMessage(const char* username, const char* message, AuthorityId authority)
 {

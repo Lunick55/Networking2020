@@ -1,43 +1,45 @@
-#include "ChatRoomClient.h"
-#include "User.h"
-#include "SceneManager.h"
+#include "andrick_client.h"
+#include "../_andrick_Utils/_andrick_text_formatter.h"
+#include "../_andrick_Scene/andrick_scene_manager.h"
+#include "../_andrick_Demostate/andrick_demostate.h"
 
-std::shared_ptr<ChatRoomClient> ChatRoomClient::spInstance = nullptr;
+std::shared_ptr<Client> Client::spInstance = nullptr;
 
-bool ChatRoomClient::isInitialized()
+bool Client::isInitialized()
 {
 	return (spInstance != nullptr);
 }
 
-bool ChatRoomClient::initChatRoom(bool isHost, const std::string& serverIP, const std::string& hostUsername)
+bool Client::initChatRoom(bool isHost, const std::string& serverIP, const std::string& hostUsername)
 {
 	if (!spInstance)
 	{
-		spInstance = std::make_shared<ChatRoomClient>(isHost, serverIP, hostUsername);
+		spInstance = std::make_shared<Client>(isHost, serverIP, hostUsername);
 	}
 
 	return isInitialized();
 }
 
-ChatRoomClient::ChatRoomClient(bool isHost, const std::string& serverIP, const std::string& username) :
+Client::Client(bool isHost, const std::string& serverIP, const std::string& username) :
 	mServerIP(serverIP),
 	mUsername(username),
 	mIsHost(isHost),
 	mpClient(nullptr),
 	mUsernameMap(std::map<UserId, std::string>()),
 	mpPeer(RakNet::RakPeerInterface::GetInstance()),
-	mpPacket(nullptr)
+	mpPacket(nullptr),
+	mMaxUsers(sMAX_USERS)
 {
 	mpPeer->Startup(1, &mSocketDescriptor, 1);
 }
 
-void ChatRoomClient::update()
+void Client::update(const a3_DemoState* demoState)
 {
-	receivePacket();
+	receivePacket(demoState);
 }
 
 //Always looping to get new packet data
-void ChatRoomClient::receivePacket()
+void Client::receivePacket(const a3_DemoState* demoState)
 {
 	//Incoming packets to client from server.
 	for (mpPacket = mpPeer->Receive(); mpPacket; mpPeer->DeallocatePacket(mpPacket), mpPacket = mpPeer->Receive())
@@ -46,8 +48,9 @@ void ChatRoomClient::receivePacket()
 		{
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			ChatRoomScene::printMessageToChatRoom("Our connection request has been accepted.");
-			requestToJoinServer();
+			TextFormatter::get().drawText(demoState, "Our connection request has been accepted.");
+			TextFormatter::get().newLine();
+			requestToJoinServer(demoState);
 			break;
 		}
 		case PacketEventId::SET_AUTHORITY:
@@ -59,15 +62,16 @@ void ChatRoomClient::receivePacket()
 
 			//TODO: Call message to print to console.
 			//std::cout << data->message << std::endl;
-			ChatRoomScene::printMessageToChatRoom(data->message);
-
+			TextFormatter::get().drawText(demoState, data->message);
+			TextFormatter::get().newLine();
 			break;
 		}
 		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
 		{
 			DeliverPrivateMessagePacket* data = (DeliverPrivateMessagePacket*)(mpPacket->data);
 
-			ChatRoomScene::printMessageToChatRoom(data->message);
+			TextFormatter::get().drawText(demoState, data->message);
+			TextFormatter::get().newLine();
 			break;
 		}
 		case PacketEventId::JOIN_ACCEPTED:
@@ -99,13 +103,14 @@ void ChatRoomClient::receivePacket()
 
 			removeUserFromMap(userLeftPacket->userId);
 
-			ChatRoomScene::printMessageToChatRoom(username + " left the server.");
-
+			TextFormatter::get().drawText(demoState, username + " left the server.");
+			TextFormatter::get().newLine();
 			break;
 		}
 		case PacketEventId::SERVER_CLOSING:
 		{
-			ChatRoomScene::printMessageToChatRoom("The server closed. Press ESC to return to the main menu.");
+			TextFormatter::get().drawText(demoState, "The server closed. Press ESC to return to the main menu.");
+			TextFormatter::get().newLine();
 			break;
 		}
 		case PacketEventId::MUTE_USER:
@@ -115,13 +120,14 @@ void ChatRoomClient::receivePacket()
 			break;
 
 		default:
-			ChatRoomScene::printMessageToChatRoom("Yo, ~I just got a packet, ~I just got a packet! ~I just got a packet, ~don't know; ~what it's; ~from!");
+			TextFormatter::get().drawText(demoState, "Yo, ~I just got a packet, ~I just got a packet! ~I just got a packet, ~don't know; ~what it's; ~from!");
+			TextFormatter::get().newLine();
 			break;
 		}
 	}
 }
 
-void ChatRoomClient::sendPublicMessage(const std::string& message)
+void Client::sendPublicMessage(const std::string& message)
 {
 	SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(mpClient->getUserId(), message);
 
@@ -130,7 +136,7 @@ void ChatRoomClient::sendPublicMessage(const std::string& message)
 		0, mHostAddress, false);
 }
 
-void ChatRoomClient::sendPrivateMessageRequest(const std::string& message, const std::string& toUserName)
+void Client::sendPrivateMessageRequest(const std::string& message, const std::string& toUserName)
 {
 	//Send packet 
 	SendPrivateMessageRequestPacket messagePacket = SendPrivateMessageRequestPacket(mpClient->getUserId(), toUserName, message);
@@ -140,13 +146,13 @@ void ChatRoomClient::sendPrivateMessageRequest(const std::string& message, const
 		0, mHostAddress, false);
 }
 
-bool ChatRoomClient::connectToServer()
+bool Client::connectToServer()
 {
 	RakNet::ConnectionAttemptResult result = mpPeer->Connect(mServerIP.c_str(), sPORT, 0, 0);
 	return result == RakNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED;
 }
 
-void ChatRoomClient::leaveServer()
+void Client::leaveServer(const a3_DemoState* demoState)
 {
 	//Send a leaving packet.
 	UserLeftServerPacket userLeavingPacket = UserLeftServerPacket(
@@ -160,30 +166,31 @@ void ChatRoomClient::leaveServer()
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 	spInstance = nullptr;
-	SceneManager::switchScene(SceneId::MAIN_MENU);
+	demoState->mpSceneManager->switchToScene(SceneId::SelectRole);
 }
 
-void ChatRoomClient::requestToJoinServer()
+void Client::requestToJoinServer(const a3_DemoState* demoState)
 {
-	ChatRoomScene::printMessageToChatRoom("Requesting to join server...");
+	TextFormatter::get().drawText(demoState, "Requesting to join server...");
+	TextFormatter::get().newLine();
 
 	//We are a client connecting.
 	RequestJoinServerPacket requestJoinPacket = RequestJoinServerPacket(
-		ChatRoomClient::spInstance->mUsername
+		Client::spInstance->mUsername
 	);
 
-	requestJoinPacket.username[ChatRoomClient::spInstance->mUsername.length()] = '\0';
+	requestJoinPacket.username[Client::spInstance->mUsername.length()] = '\0';
 
-	//ChatRoomClient::spInstance->sendPacket(*requestJoinPacket);
+	//Client::spInstance->sendPacket(*requestJoinPacket);
 	mpPeer->Send((const char*)(&requestJoinPacket), sizeof(RequestJoinServerPacket), PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED, 0, mpPacket->systemAddress, false);
 }
 
-void ChatRoomClient::addUserIdToMap(UserId userId, char name[sMAX_USERNAME_LENGTH])
+void Client::addUserIdToMap(UserId userId, char name[sMAX_USERNAME_LENGTH])
 {
 	mUsernameMap.insert({ userId, name });
 }
 
-void ChatRoomClient::removeUserFromMap(UserId userId)
+void Client::removeUserFromMap(UserId userId)
 {
 	auto iter = mUsernameMap.find(userId);
 	if (iter != mUsernameMap.end())
@@ -192,7 +199,7 @@ void ChatRoomClient::removeUserFromMap(UserId userId)
 	}
 }
 
-void ChatRoomClient::initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1], int connectedUsers)
+void Client::initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1], int connectedUsers)
 {
 	mUsernameMap.clear();
 

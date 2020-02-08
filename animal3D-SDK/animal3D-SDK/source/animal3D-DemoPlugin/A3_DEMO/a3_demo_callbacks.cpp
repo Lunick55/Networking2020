@@ -161,11 +161,11 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 			//a3demo_input(demoState, demoState->renderTimer->secondsPerTick);
 			//a3demo_render(demoState);
 
-			demoState->sceneManager->input(demoState);
-			demoState->sceneManager->networkReceive(demoState);
-			demoState->sceneManager->update(demoState);
-			demoState->sceneManager->networkSend(demoState);
-			demoState->sceneManager->render(demoState);
+			demoState->mpSceneManager->input(demoState);
+			demoState->mpSceneManager->networkReceive(demoState);
+			demoState->mpSceneManager->update(demoState);
+			demoState->mpSceneManager->networkSend(demoState);
+			demoState->mpSceneManager->render(demoState);
 
 			// update input
 			a3mouseUpdate(demoState->mouse);
@@ -231,7 +231,7 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		demoState->textMode = 1;
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
 
-		demoState->sceneManager = std::make_shared<SceneManager>();
+		demoState->mpSceneManager = std::make_shared<SceneManager>();
 		
 		//Init
 		TextFormatter::get();
@@ -394,6 +394,8 @@ A3DYLIBSYMBOL void a3demoCB_keyPress(a3_DemoState *demoState, a3i32 virtualKey)
 {
 	// persistent state update
 	a3keyboardSetState(demoState->keyboard, (a3_KeyboardKey)virtualKey, a3input_down);
+	demoState->currentKey = virtualKey;
+	demoState->isKeyHeld = false;
 }
 
 // any key is held
@@ -401,6 +403,8 @@ A3DYLIBSYMBOL void a3demoCB_keyHold(a3_DemoState *demoState, a3i32 virtualKey)
 {
 	// persistent state update
 	a3keyboardSetState(demoState->keyboard, (a3_KeyboardKey)virtualKey, a3input_down);
+	demoState->currentKey = virtualKey;
+	demoState->isKeyHeld = true;
 }
 
 // any key is released
@@ -408,6 +412,8 @@ A3DYLIBSYMBOL void a3demoCB_keyRelease(a3_DemoState *demoState, a3i32 virtualKey
 {
 	// persistent state update
 	a3keyboardSetState(demoState->keyboard, (a3_KeyboardKey)virtualKey, a3input_up);
+	demoState->currentKey = virtualKey;
+	demoState->isKeyHeld = false;
 }
 
 // ASCII key is pressed (immediately preceded by "any key" pressed call above)

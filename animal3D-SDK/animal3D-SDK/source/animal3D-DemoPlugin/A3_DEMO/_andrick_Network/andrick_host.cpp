@@ -1,27 +1,27 @@
 #include "andrick_host.h"
-#include "Command.h"
-#include "User.h"
-#include "SceneManager.h"
+#include "andrick_user.h"
+#include "../_andrick_Utils/_andrick_text_formatter.h"
+#include "../_andrick_Demostate/andrick_demostate.h"
 
-std::shared_ptr<ChatRoomServer> ChatRoomServer::spInstance = nullptr;
-UserId ChatRoomServer::sNextUniqueId = 0;
+std::shared_ptr<Host> Host::spInstance = nullptr;
+UserId Host::sNextUniqueId = 0;
 
-bool ChatRoomServer::isInitialized()
+bool Host::isInitialized()
 {
 	return (spInstance != nullptr);
 }
 
-bool ChatRoomServer::initChatRoom(const int port, const int maxUsers, const std::string& hostUsername)
+bool Host::initChatRoom(const int port, const int maxUsers, const std::string& hostUsername)
 {
 	if (!spInstance)
 	{
-		spInstance = std::make_shared<ChatRoomServer>(port, maxUsers, hostUsername);
+		spInstance = std::make_shared<Host>(port, maxUsers, hostUsername);
 	}
 
 	return isInitialized();
 }
 
-ChatRoomServer::ChatRoomServer(const int port, const int maxUsers, const std::string& hostUsername) :
+Host::Host(const int port, const int maxUsers, const std::string& hostUsername) :
 	mPORT(port), 
 	mMAX_USERS(maxUsers), 
 	mIsRunning(false),
@@ -36,11 +36,12 @@ ChatRoomServer::ChatRoomServer(const int port, const int maxUsers, const std::st
 	updateServerUserInfo();
 }
 
-bool ChatRoomServer::startChatRoom()
+bool Host::startChatRoom(const a3_DemoState* demoState)
 {
 	if (mIsRunning)
 	{
-		ChatRoomScene::printMessageToChatRoom("Server is already running.");
+		TextFormatter::get().drawText(demoState, "Server is already running.");
+		TextFormatter::get().newLine();
 		return false;
 	}
 	else
@@ -49,30 +50,31 @@ bool ChatRoomServer::startChatRoom()
 
 		mpPeer->SetMaximumIncomingConnections(mMAX_USERS);
 
-		ChatRoomScene::printMessageToChatRoom("Server is running!");
+		TextFormatter::get().drawText(demoState, "Server is running!");
+		TextFormatter::get().newLine();
 		mIsRunning = true;
 	}
 
 	return true;
 }
 
-void ChatRoomServer::update()
+void Host::update(const a3_DemoState* demoState)
 {
-	receivePacket();
+	receivePacket(demoState);
 }
 
-void ChatRoomServer::closeChatRoom()
+void Host::closeChatRoom()
 {
 	ServerClosingPacket serverClosing = ServerClosingPacket();
 
 	broadcastPacket((const char*)(&serverClosing), sizeof(ServerClosingPacket));
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
-	ChatRoomServer::spInstance = nullptr;
+	Host::spInstance = nullptr;
 	sNextUniqueId = 0;
 }
 
-std::shared_ptr<User> ChatRoomServer::getUserFromId(UserId userId)
+std::shared_ptr<User> Host::getUserFromId(UserId userId)
 {
 	std::shared_ptr<User> foundUser = nullptr;
 
@@ -86,7 +88,7 @@ std::shared_ptr<User> ChatRoomServer::getUserFromId(UserId userId)
 }
 
 //Check if a packet is incoming
-void ChatRoomServer::receivePacket()
+void Host::receivePacket(const a3_DemoState* demoState)
 {
 	//Incoming packets to server from client.
 	for (mpPacket = mpPeer->Receive(); mpPacket; mpPeer->DeallocatePacket(mpPacket), mpPacket = mpPeer->Receive())
@@ -105,7 +107,7 @@ void ChatRoomServer::receivePacket()
 			std::shared_ptr<User> user = getUserFromId(data->userId);
 			if (user != nullptr)
 			{
-				deliverPublicMessage(user, data->message);			
+				deliverPublicMessage(demoState, user, data->message);
 			}
 			else
 			{
@@ -132,7 +134,7 @@ void ChatRoomServer::receivePacket()
 
 			if (iter != mpConnectedUsers.end())
 			{
-				deliverPrivateMessage(requestPacket->fromUserId, toUserId, requestPacket->message);
+				deliverPrivateMessage(demoState, requestPacket->fromUserId, toUserId, requestPacket->message);
 			}
 
 			break;
@@ -162,22 +164,26 @@ void ChatRoomServer::receivePacket()
 
 			//Print to server console
 			std::string serverMessage = newUser->getUsername() + " has joined!";
-			deliverPublicMessage(mpHost, serverMessage);
+			deliverPublicMessage(demoState, mpHost, serverMessage);
 
 			break;
 		}
 		case PacketEventId::USER_JOINED_SERVER:
-			ChatRoomScene::printMessageToChatRoom("User has joined the channel!");
+		{
+			TextFormatter::get().drawText(demoState, "User has joined the channel!");
+			TextFormatter::get().newLine();
 			break;
+		}
 		case PacketEventId::USER_LEFT_SERVER:
 		{
 			UserLeftServerPacket* userLeftPacket = (UserLeftServerPacket*)(mpPacket->data);
 			std::shared_ptr<User> user = getUserFromId(userLeftPacket->userId);
-			removeUser(userLeftPacket->userId);
+			removeUser(demoState, userLeftPacket->userId);
 
 			broadcastPacket((const char*)(userLeftPacket), sizeof(UserLeftServerPacket));
 
-			ChatRoomScene::printMessageToChatRoom(user->getUsername() + " has left the server.");
+			TextFormatter::get().drawText(demoState, user->getUsername() + " has left the server.");
+			TextFormatter::get().newLine();
 			break;
 		}
 		case PacketEventId::SERVER_CLOSING:
@@ -192,13 +198,16 @@ void ChatRoomServer::receivePacket()
 			//this just eats raknets trash
 			break;
 		default:
-			ChatRoomScene::printMessageToChatRoom("I just got a packet, and I don't know how to read it!");
+		{
+			TextFormatter::get().drawText(demoState, "I just got a packet, and I don't know how to read it!");
+			TextFormatter::get().newLine();
 			break;
+		}
 		}
 	}
 }
 
-void ChatRoomServer::deliverPublicMessage(std::shared_ptr<User> user, std::string message)
+void Host::deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<User> user, std::string message)
 {
 	std::string decoratedMessage = User::formatMessage(user->getUsername(), message, user->getAuthority());
 
@@ -206,11 +215,12 @@ void ChatRoomServer::deliverPublicMessage(std::shared_ptr<User> user, std::strin
 
 	broadcastPacket((const char*)(&messagePacket), sizeof(DeliverPublicMessagePacket));
 
-	ChatRoomScene::printMessageToChatRoom(decoratedMessage);
+	TextFormatter::get().drawText(demoState, decoratedMessage);
+	TextFormatter::get().newLine();
 }
 
 //Used for host only
-void ChatRoomServer::deliverPersonalMessage(const std::string& userName, const std::string& message)
+void Host::deliverPersonalMessage(const a3_DemoState* demoState, const std::string& userName, const std::string& message)
 {
 	UserId toUserId;
 
@@ -226,12 +236,12 @@ void ChatRoomServer::deliverPersonalMessage(const std::string& userName, const s
 
 	if (iter != mpConnectedUsers.end())
 	{
-		deliverPrivateMessage(mpHost->getUserId(), toUserId, message);
+		deliverPrivateMessage(demoState, mpHost->getUserId(), toUserId, message);
 	}
 
 }
 
-void ChatRoomServer::deliverPrivateMessage(UserId fromUserId, UserId toUserId, const std::string& message)
+void Host::deliverPrivateMessage(const a3_DemoState* demoState, UserId fromUserId, UserId toUserId, const std::string& message)
 {
 	std::shared_ptr<User> toUser = getUserFromId(toUserId);
 	std::shared_ptr<User> fromUser = getUserFromId(fromUserId);
@@ -245,7 +255,8 @@ void ChatRoomServer::deliverPrivateMessage(UserId fromUserId, UserId toUserId, c
 		decoratedMessage
 	);
 
-	ChatRoomScene::printMessageToChatRoom(decoratedMessage);
+	TextFormatter::get().drawText(demoState, decoratedMessage);
+	TextFormatter::get().newLine();
 
 	//Send to target user
 	if (toUser != nullptr)
@@ -264,7 +275,7 @@ void ChatRoomServer::deliverPrivateMessage(UserId fromUserId, UserId toUserId, c
 }
 
 //Call everytime a user joins or leaves the server
-void ChatRoomServer::updateServerUserInfo()
+void Host::updateServerUserInfo()
 {
 	for (int userIndex = 0; userIndex < sMAX_USERS; ++userIndex)
 	{
@@ -294,7 +305,7 @@ void ChatRoomServer::updateServerUserInfo()
 	}
 }
 
-std::shared_ptr<User> ChatRoomServer::addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress)
+std::shared_ptr<User> Host::addNewUser(const RequestJoinServerPacket& requestPacket, RakNet::SystemAddress ipAddress)
 {
 	std::shared_ptr<User> newUser = std::make_shared<User>(
 		sNextUniqueId++,
@@ -310,13 +321,14 @@ std::shared_ptr<User> ChatRoomServer::addNewUser(const RequestJoinServerPacket& 
 	return newUser;
 }
 
-void ChatRoomServer::removeUser(UserId userId)
+void Host::removeUser(const a3_DemoState* demoState, UserId userId)
 {
 	auto iter = mpConnectedUsers.find(userId);
 
 	if (iter == mpConnectedUsers.end())
 	{
-		ChatRoomScene::printMessageToChatRoom("Unable to remove user.");
+		TextFormatter::get().drawText(demoState, "Unable to remove user.");
+		TextFormatter::get().newLine();
 	}
 	else
 	{
@@ -325,34 +337,36 @@ void ChatRoomServer::removeUser(UserId userId)
 	}
 }
 
-void ChatRoomServer::broadcastPacket(const char* packetData, std::size_t packetSize)
+void Host::broadcastPacket(const char* packetData, std::size_t packetSize)
 {
 	mpPeer->Send(packetData, (int)packetSize,
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
-void ChatRoomServer::sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress)
+void Host::sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress)
 {
 	mpPeer->Send(packetData, (int)packetSize,
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 		0, ipAddress, false);
 }
 
-void ChatRoomServer::listUserInfoRequest()
+void Host::listUserInfoRequest(const a3_DemoState* demoState)
 {
-	ChatRoomServer::spInstance->printUserInfo();
+	Host::spInstance->printUserInfo(demoState);
 }
 
-void ChatRoomServer::printUserInfo()
+void Host::printUserInfo(const a3_DemoState* demoState)
 {
 	auto iter = mpConnectedUsers.begin();
 
-	ChatRoomScene::printMessageToChatRoom("");
-	ChatRoomScene::printMessageToChatRoom("Active Users: " + std::to_string(mpConnectedUsers.size()) + "/" + std::to_string(mMAX_USERS));
+	TextFormatter::get().newLine();
+	TextFormatter::get().drawText(demoState, "Active Users: " + std::to_string(mpConnectedUsers.size()) + "/" + std::to_string(mMAX_USERS));
+	TextFormatter::get().newLine();
 
 	for (; iter != mpConnectedUsers.end(); ++iter)
 	{
-		ChatRoomScene::printMessageToChatRoom("  " + std::to_string(iter->second->getUserId()) + " - " + iter->second->getUsername());
+		TextFormatter::get().drawText(demoState, "  " + std::to_string(iter->second->getUserId()) + " - " + iter->second->getUsername());
+		TextFormatter::get().newLine();
 	}
 }
