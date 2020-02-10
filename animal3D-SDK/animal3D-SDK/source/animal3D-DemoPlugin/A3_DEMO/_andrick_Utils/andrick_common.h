@@ -8,7 +8,7 @@
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/MessageIdentifiers.h>
 
-typedef unsigned char UserId;
+typedef char UserId;
 
 static const int INVALID_USER_ID = -1;
 

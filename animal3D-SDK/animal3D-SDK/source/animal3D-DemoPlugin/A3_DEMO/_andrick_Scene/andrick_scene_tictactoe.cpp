@@ -60,21 +60,52 @@ void TictactoeScene::input(a3_DemoState* demoState)
 								}
 								else
 								{
-									delimiterIndex = i;
+									delimiterIndex = i + 2;
 									break;
 								}
 							}
 
-							if (delimiterIndex + 2 < mCurrentInput.length())
-							{
-								player2 = mCurrentInput.substr(delimiterIndex + 2);
+							//  /PLAYERS Andy608, Hi
 
-								//Start game
-								setupPlayers(player1, player2);
+							if (delimiterIndex < mCurrentInput.length())
+							{
+								player2 = mCurrentInput.substr(delimiterIndex);
+								int count = 0;
+								bool success = false;
+
+								auto iter = Host::spInstance->mpConnectedUsers.begin();
+								for (; iter != Host::spInstance->mpConnectedUsers.end(); ++iter)
+								{
+									if (iter->second->getUsername().compare(player1) == 0)
+									{
+										++count;
+									}
+								}
+
+								iter = Host::spInstance->mpConnectedUsers.begin();
+								for (; iter != Host::spInstance->mpConnectedUsers.end(); ++iter)
+								{
+									if (iter->second->getUsername().compare(player2) == 0)
+									{
+										++count;
+									}
+								}
+
+								if (count == 2)
+								{
+									//Start game
+									setupPlayers(player1, player2);
+								}
+								else
+								{
+									//invalid players
+									addToChatList(MessageType::PLAYER, "Invalid players. Try again.", 1, TextFormatter::BLACK);
+								}
 							}
 							else
 							{
 								//invalid player 2
+								addToChatList(MessageType::PLAYER, "Invalid players. Try again.", 1, TextFormatter::BLACK);
 							}
 						}
 					}
