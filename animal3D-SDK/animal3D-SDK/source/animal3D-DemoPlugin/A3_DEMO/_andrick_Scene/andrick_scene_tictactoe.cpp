@@ -327,6 +327,12 @@ void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 	{
 		switch (Client::spInstance->mpPacket->data[0])
 		{
+			case PacketEventId::SERVER_TRAVEL:
+			{
+				ServerTravel* serverTravelPacket = (ServerTravel*)(Client::spInstance->mpPacket->data);
+				demoState->mpSceneManager->switchToScene(demoState, serverTravelPacket->sceneId);
+				break;
+			}
 			case PacketEventId::DELIVER_PUBLIC_MESSAGE:
 			{
 				DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(Client::spInstance->mpPacket->data);

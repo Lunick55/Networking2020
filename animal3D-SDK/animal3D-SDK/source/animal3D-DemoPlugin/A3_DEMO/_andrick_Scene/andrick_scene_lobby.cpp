@@ -185,21 +185,6 @@ void LobbyScene::input(a3_DemoState* demoState)
 void LobbyScene::networkReceive(const a3_DemoState* demoState)
 {
 	Scene::networkReceive(demoState);
-
-	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
-	{
-		switch (Client::spInstance->mpPacket->data[0])
-		{
-		case PacketEventId::SERVER_TRAVEL:
-		{
-			ServerTravel* serverTravelPacket = (ServerTravel*)(Client::spInstance->mpPacket->data);
-			demoState->mpSceneManager->switchToScene(demoState, serverTravelPacket->sceneId);
-			return;
-		}
-		default:
-			break;
-		}
-	}
 }
 
 void LobbyScene::update(const a3_DemoState* demoState)

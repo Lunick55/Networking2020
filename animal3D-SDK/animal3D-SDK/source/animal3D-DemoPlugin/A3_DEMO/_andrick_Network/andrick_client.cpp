@@ -46,6 +46,12 @@ void Client::receivePacket(const a3_DemoState* demoState)
 	{
 		switch (mpPacket->data[0])
 		{
+		case PacketEventId::SERVER_TRAVEL:
+		{
+			ServerTravel* serverTravelPacket = (ServerTravel*)(Client::spInstance->mpPacket->data);
+			demoState->mpSceneManager->switchToScene(demoState, serverTravelPacket->sceneId);
+			break;
+		}
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
 			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Our connection request has been accepted.");
