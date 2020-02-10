@@ -19,8 +19,9 @@ static const int sPORT = 5555;
 
 static const int MAX_INPUT_LENGTH = 512;
 
-static const std::string WHISPER_COMMAND = "whisper";
-static const std::string LIST_USERS = "list";
+static const std::string WHISPER_COMMAND = "WHISPER";
+static const std::string START_GAME_COMMAND = "GAME";
+static const std::string LIST_USERS = "LIST";
 
 const enum class SceneId
 {

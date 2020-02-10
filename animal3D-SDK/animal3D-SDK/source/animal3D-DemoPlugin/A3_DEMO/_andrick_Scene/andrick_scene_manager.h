@@ -9,6 +9,9 @@ class TictactoeScene;
 
 class SceneManager
 {
+	friend class Host;
+	friend class Client;
+
 public:
 	SceneManager();
 	~SceneManager();

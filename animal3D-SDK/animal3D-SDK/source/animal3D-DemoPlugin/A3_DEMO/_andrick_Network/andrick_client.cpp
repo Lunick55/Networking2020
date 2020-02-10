@@ -48,8 +48,7 @@ void Client::receivePacket(const a3_DemoState* demoState)
 		{
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			TextFormatter::get().drawText(demoState, "Our connection request has been accepted.");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Our connection request has been accepted.");
 			requestToJoinServer(demoState);
 			break;
 		}
@@ -62,16 +61,14 @@ void Client::receivePacket(const a3_DemoState* demoState)
 
 			//TODO: Call message to print to console.
 			//std::cout << data->message << std::endl;
-			TextFormatter::get().drawText(demoState, data->message);
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, std::string(data->message));
 			break;
 		}
 		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
 		{
 			DeliverPrivateMessagePacket* data = (DeliverPrivateMessagePacket*)(mpPacket->data);
 
-			TextFormatter::get().drawText(demoState, data->message);
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, std::string(data->message));
 			break;
 		}
 		case PacketEventId::JOIN_ACCEPTED:
@@ -103,14 +100,12 @@ void Client::receivePacket(const a3_DemoState* demoState)
 
 			removeUserFromMap(userLeftPacket->userId);
 
-			TextFormatter::get().drawText(demoState, username + " left the server.");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, username + " left the server.");
 			break;
 		}
 		case PacketEventId::SERVER_CLOSING:
 		{
-			TextFormatter::get().drawText(demoState, "The server closed. Press ESC to return to the main menu.");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "The server closed. Press ESC to return to the main menu.");
 			break;
 		}
 		case PacketEventId::MUTE_USER:
@@ -120,8 +115,7 @@ void Client::receivePacket(const a3_DemoState* demoState)
 			break;
 
 		default:
-			TextFormatter::get().drawText(demoState, "Yo, ~I just got a packet, ~I just got a packet! ~I just got a packet, ~don't know; ~what it's; ~from!");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Yo, ~I just got a packet, ~I just got a packet! ~I just got a packet, ~don't know; ~what it's; ~from!");
 			break;
 		}
 	}
@@ -171,8 +165,7 @@ void Client::leaveServer(const a3_DemoState* demoState)
 
 void Client::requestToJoinServer(const a3_DemoState* demoState)
 {
-	TextFormatter::get().drawText(demoState, "Requesting to join server...");
-	TextFormatter::get().newLine();
+	demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Requesting to join server...");
 
 	//We are a client connecting.
 	RequestJoinServerPacket requestJoinPacket = RequestJoinServerPacket(

@@ -40,8 +40,7 @@ bool Host::startChatRoom(const a3_DemoState* demoState)
 {
 	if (mIsRunning)
 	{
-		TextFormatter::get().drawText(demoState, "Server is already running.");
-		TextFormatter::get().newLine();
+		demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Server is already running.", 2);
 		return false;
 	}
 	else
@@ -50,8 +49,7 @@ bool Host::startChatRoom(const a3_DemoState* demoState)
 
 		mpPeer->SetMaximumIncomingConnections(mMAX_USERS);
 
-		TextFormatter::get().drawText(demoState, "Server is running!");
-		TextFormatter::get().newLine();
+		demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Server is running!", 2);
 		mIsRunning = true;
 	}
 
@@ -165,13 +163,11 @@ void Host::receivePacket(const a3_DemoState* demoState)
 			//Print to server console
 			std::string serverMessage = newUser->getUsername() + " has joined!";
 			deliverPublicMessage(demoState, mpHost, serverMessage);
-
 			break;
 		}
 		case PacketEventId::USER_JOINED_SERVER:
 		{
-			TextFormatter::get().drawText(demoState, "User has joined the channel!");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "User has joined the channel!");
 			break;
 		}
 		case PacketEventId::USER_LEFT_SERVER:
@@ -182,8 +178,7 @@ void Host::receivePacket(const a3_DemoState* demoState)
 
 			broadcastPacket((const char*)(userLeftPacket), sizeof(UserLeftServerPacket));
 
-			TextFormatter::get().drawText(demoState, user->getUsername() + " has left the server.");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, user->getUsername() + " has left the server.");
 			break;
 		}
 		case PacketEventId::SERVER_CLOSING:
@@ -199,8 +194,7 @@ void Host::receivePacket(const a3_DemoState* demoState)
 			break;
 		default:
 		{
-			TextFormatter::get().drawText(demoState, "I just got a packet, and I don't know how to read it!");
-			TextFormatter::get().newLine();
+			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "I just got a packet, and I don't know how to read it!");
 			break;
 		}
 		}
@@ -215,8 +209,7 @@ void Host::deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<U
 
 	broadcastPacket((const char*)(&messagePacket), sizeof(DeliverPublicMessagePacket));
 
-	TextFormatter::get().drawText(demoState, decoratedMessage);
-	TextFormatter::get().newLine();
+	demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, decoratedMessage);
 }
 
 //Used for host only
@@ -255,8 +248,7 @@ void Host::deliverPrivateMessage(const a3_DemoState* demoState, UserId fromUserI
 		decoratedMessage
 	);
 
-	TextFormatter::get().drawText(demoState, decoratedMessage);
-	TextFormatter::get().newLine();
+	demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, decoratedMessage);
 
 	//Send to target user
 	if (toUser != nullptr)
@@ -327,8 +319,7 @@ void Host::removeUser(const a3_DemoState* demoState, UserId userId)
 
 	if (iter == mpConnectedUsers.end())
 	{
-		TextFormatter::get().drawText(demoState, "Unable to remove user.");
-		TextFormatter::get().newLine();
+		demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Unable to remove user.");
 	}
 	else
 	{
@@ -360,13 +351,11 @@ void Host::printUserInfo(const a3_DemoState* demoState)
 {
 	auto iter = mpConnectedUsers.begin();
 
-	TextFormatter::get().newLine();
-	TextFormatter::get().drawText(demoState, "Active Users: " + std::to_string(mpConnectedUsers.size()) + "/" + std::to_string(mMAX_USERS));
-	TextFormatter::get().newLine();
+	demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "");
+	demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Active Users: " + std::to_string(mpConnectedUsers.size()) + "/" + std::to_string(mMAX_USERS));
 
 	for (; iter != mpConnectedUsers.end(); ++iter)
 	{
-		TextFormatter::get().drawText(demoState, "  " + std::to_string(iter->second->getUserId()) + " - " + iter->second->getUsername());
-		TextFormatter::get().newLine();
+		demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "  " + std::to_string(iter->second->getUserId()) + " - " + iter->second->getUsername());
 	}
 }

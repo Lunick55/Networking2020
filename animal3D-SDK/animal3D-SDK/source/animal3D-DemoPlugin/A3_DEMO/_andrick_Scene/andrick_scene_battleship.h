@@ -1,13 +1,13 @@
-#ifndef ANDRICK_SCENE_LOBBY_H_
-#define ANDRICK_SCENE_LOBBY_H_
+#ifndef ANDRICK_SCENE_BATTLESHIP_H_
+#define ANDRICK_SCENE_BATTLESHIP_H_
 
 #include "andrick_scene.h"
 
-class LobbyScene : public Scene
+class BattleShipScene : public Scene
 {
 public:
-	LobbyScene();
-	virtual ~LobbyScene() = default;
+	BattleShipScene();
+	virtual ~BattleShipScene() = default;
 
 protected:
 	virtual void enteringScene(const a3_DemoState* demoState) override;
@@ -18,22 +18,7 @@ protected:
 	virtual void render(const a3_DemoState* demoState) override;
 
 private:
-	enum class GameType : a3byte
-	{
-		NONE,
-		TICTAC,
-		BATTLESHIP
-	};
 
-	enum class LobbyStep : a3byte
-	{
-		LEAVE_SERVER = -1,
-		LEAVE_SERVER_ARE_YOU_SURE,
-		CHATROOM
-	};
-
-	LobbyStep mCurrentStep;
-	GameType mSelectedGame;
 };
 
 #endif

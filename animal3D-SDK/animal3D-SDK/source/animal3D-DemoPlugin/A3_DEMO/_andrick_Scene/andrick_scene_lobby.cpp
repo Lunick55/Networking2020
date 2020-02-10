@@ -4,7 +4,7 @@
 
 LobbyScene::LobbyScene() :
 	Scene(SceneId::Lobby),
-	mCurrentStep(LobbyStep::ATTEMPTING_TO_CONNECT),
+	mCurrentStep(LobbyStep::CHATROOM),
 	mSelectedGame(GameType::NONE)
 {
 
@@ -20,45 +20,164 @@ void LobbyScene::enteringScene(const a3_DemoState* demoState)
 	{
 		if (Client::spInstance->connectToServer())
 		{
-			mCurrentStep = LobbyStep::ATTEMPTING_TO_CONNECT;
-			mCurrentInput = "Trying to connect...";
+			addToChatList(MessageType::EITHER, "Trying to connect...");
 		}
 		else
 		{
-			mCurrentStep = LobbyStep::CONNECTION_FAILED;
-			mCurrentInput = "Failed to connect to server.";
+			addToChatList(MessageType::EITHER, "Failed to connect to server.");
 		}
 	}
 	else
 	{
-		//Uh oh, Something went wrong!
-		mCurrentStep = LobbyStep::UNKNOWN_ERROR;
+		addToChatList(MessageType::EITHER, "Uh oh, something went wrong!");
 	}
 }
 
 void LobbyScene::input(a3_DemoState* demoState)
 {
-	//TODO: maybe use a command? like "/play" followed by game
-	if (isKeyPressed(demoState, a3key_escape))
+	if (mCurrentStep == LobbyStep::CHATROOM)
 	{
-		demoState->exitFlag = 1;
-		return;
+		if (isKeyPressed(demoState, a3key_escape))
+		{
+			mCurrentStep = LobbyStep::LEAVE_SERVER_ARE_YOU_SURE;
+			return;
+		}
+		else if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
+		{
+			if (demoState->currentKey == a3key_enter)
+			{
+				if (!mCurrentInput.empty())
+				{
+					//commands
+					if (mCurrentInput[0] == '/')
+					{
+						std::size_t spaceIndex = mCurrentInput.find_first_of(' ');
+						std::string currCommand = mCurrentInput.substr(1, spaceIndex - 1);
+
+						if (currCommand == WHISPER_COMMAND)
+						{
+							std::string toUser;
+
+							for (std::size_t i = spaceIndex + 1; i < mCurrentInput.length() - 1; ++i)
+							{
+								if (mCurrentInput[i] != ',')
+								{
+									toUser += mCurrentInput[i];
+								}
+								else
+								{
+									std::size_t startIndex = (i + 2);
+									if (startIndex < mCurrentInput.length())
+									{
+										std::string secret = mCurrentInput.substr(startIndex);
+
+										//send a private message
+										if (Client::isHost())
+										{
+											Host::spInstance->deliverPersonalMessage(demoState, toUser, secret);
+											mCurrentInput.clear();
+										}
+										else
+										{
+											Client::spInstance->sendPrivateMessageRequest(secret, toUser);
+											mCurrentInput.clear();
+										}
+
+										return;
+									}
+								}
+							}
+						}
+						else if (currCommand == START_GAME_COMMAND)
+						{
+							std::string input;
+							for (std::string::size_type i = 0; i < mCurrentInput.length(); ++i)
+								input += std::tolower(mCurrentInput[i]);
+
+							if (input.find("tic") != std::string::npos)
+							{
+								//Go to tictactoe scene
+								mSelectedGame = GameType::TICTAC;
+								return;
+							}
+							else if (input.find("battle") != std::string::npos)
+							{
+								//Go to battleship scene
+								mSelectedGame = GameType::BATTLESHIP;
+								return;
+							}
+						}
+						else if (currCommand == LIST_USERS)
+						{
+							mCurrentInput.clear();
+
+							//List users
+							if (Client::isHost())
+							{
+								Host::listUserInfoRequest(demoState);
+								return;
+							}
+							else
+							{
+								addToChatList(MessageType::EITHER, "You don't have permission for this command!");
+								return;
+							}
+						}
+					}
+					else
+					{
+						//Send chat message
+						if (Client::isHost())
+						{
+							Host::spInstance->deliverPublicMessage(demoState, Host::spInstance->mpHost, mCurrentInput);
+							mCurrentInput.clear();
+						}
+						else
+						{
+							Client::spInstance->sendPublicMessage(mCurrentInput);
+							mCurrentInput.clear();
+						}
+					}
+
+					mCurrentInput.clear();
+				}
+			}
+			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
+			{
+				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
+			}
+			else if (demoState->currentKey == a3key_period)
+			{
+				mCurrentInput += ".";
+			}
+			else if (demoState->currentKey == a3key_slash)
+			{
+				mCurrentInput += "/";
+			}
+			else
+			{
+				//This doesn't work for all keys since they're not completely mapped to ascii.
+				mCurrentInput += (char)(demoState->currentKey);
+			}
+		}
 	}
-	else if (isKeyPressed(demoState, a3key_T))
+	else if (mCurrentStep == LobbyStep::LEAVE_SERVER_ARE_YOU_SURE)
 	{
-		//only if host pressed
-		mSelectedGame = GameType::TICTAC;
-	}
-	else if (isKeyPressed(demoState, a3key_B))
-	{
-		//only if host pressed
-		mSelectedGame = GameType::BATTLESHIP;
+		if (isKeyPressed(demoState, a3key_escape))
+		{
+			mCurrentStep = LobbyStep::LEAVE_SERVER;
+			return;
+		}
+		else
+		{
+			mCurrentStep = LobbyStep::CHATROOM;
+			return;
+		}
 	}
 }
 
 void LobbyScene::networkReceive(const a3_DemoState* demoState)
 {
-	//TODO: uhhh. unsure
 	if (Client::isHost())
 	{
 		Host::spInstance->update(demoState);
@@ -69,52 +188,43 @@ void LobbyScene::networkReceive(const a3_DemoState* demoState)
 
 void LobbyScene::update(const a3_DemoState* demoState)
 {
-	//INIT CHAT ROOM AND GO TO LOBBY SCENE
 	if (mSelectedGame == GameType::TICTAC)
 	{
-		//TODO: GO to the tic tac scene!
-		//if (Host::initChatRoom(sPORT, maxUsers, mUsername))
-		//{
-		//	demoState->mpSceneManager->switchToScene(SceneId::Lobby);
-		//}
+		//Go to tictactoe scene
+		demoState->mpSceneManager->switchToScene(demoState, SceneId::Tictactoe);
+		return;
 	}
 	else if (mSelectedGame == GameType::BATTLESHIP)
 	{
-		//TODO: GO to the boat scene!
+		//Go to battleship scene
+		demoState->mpSceneManager->switchToScene(demoState, SceneId::Battleship);
+		return;
 	}
 }
 
 void LobbyScene::render(const a3_DemoState* demoState)
 {
-	glClearColor(1.0f, 0.5f, 2.0f, 1.0f);
+	glClearColor(1.0f, 0.5f, 1.0f, 1.0f);
 
-	TextFormatter::get().setLine(0);
-	TextFormatter::get().drawText(demoState, "Lobby Scene", TextFormatter::WHITE, TextFormatter::TextAlign::CENTER_X);
-	TextFormatter::get().offsetLine(2);
+	TextFormatter& formatter = TextFormatter::get();
 
-	if (mCurrentStep == LobbyStep::ATTEMPTING_TO_CONNECT ||
-		mCurrentStep == LobbyStep::CONNECTION_FAILED ||
-		mCurrentStep == LobbyStep::UNKNOWN_ERROR)
+	formatter.setLine(0);
+	formatter.drawText(demoState, "Lobby Scene", TextFormatter::WHITE, TextFormatter::TextAlign::CENTER_X);
+	formatter.offsetLine(2);
+
+	//There is no differentiation between players and spectators in the lobby scene.
+	std::vector<LogInfo>::iterator iter = mChatLog.begin();
+	for (; iter != mChatLog.end(); ++iter)
 	{
-		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
-	}
-	else if (mCurrentStep == LobbyStep::CHOOSE_GAME)
-	{
-		TextFormatter::get().drawText(demoState, "TIC(T) or Boat(B)?? ;P", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
+		formatter.drawText(demoState, iter->text);
 	}
 
-	//TODO: Find a way to also print chat log?
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, mCurrentInput);
 }
 
 
 void LobbyScene::networkSend(const a3_DemoState* demoState)
 {
-	////TODO: send them packets!!!
-	//if (Client::isHost())
-	//{
-	//	Host::spInstance->networkSend(demoState);
-	//}
-	//
-	//Client::spInstance->networkSend(demoState);
+	
 }

@@ -66,7 +66,15 @@ void TextFormatter::drawText(const a3_DemoState* demoState, const std::string& s
 		position = calculatePosition(string, alignOverride, viewportPosition);
 	}
 
-	a3textDraw(demoState->text, position.x, position.y, position.z, color.r, color.g, color.b, 1.0f, string.c_str());
+	if (string.compare("\n") == 0)
+	{
+		newLine();
+	}
+	else
+	{
+		a3textDraw(demoState->text, position.x, position.y, position.z, color.r, color.g, color.b, 1.0f, string.c_str());
+	}
+
 }
 
 void TextFormatter::newLine()

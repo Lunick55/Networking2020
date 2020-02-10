@@ -137,12 +137,13 @@ void SelectRoleScene::input(a3_DemoState* demoState)
 			{
 				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
 			}
-			else if (demoState->currentKey == 190)
+			else if (demoState->currentKey == a3key_period)
 			{
 				mCurrentInput += ".";
 			}
 			else
 			{
+				//This doesn't work for all keys since they're not completely mapped to ascii.
 				mCurrentInput += (char)(demoState->currentKey);
 			}
 		}

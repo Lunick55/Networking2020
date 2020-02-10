@@ -2,6 +2,7 @@
 #define ANDRICK_SCENE_H_
 
 #include <string>
+#include <vector>
 #include <GL/glew.h>
 
 #include "A3_DEMO/_andrick_Utils/_andrick_text_formatter.h"
@@ -9,6 +10,19 @@
 
 struct a3_DemoState;
 enum a3_KeyboardKey;
+
+enum class MessageType : a3byte
+{
+	EITHER,
+	SPECTOR,
+	PLAYER
+};
+
+struct LogInfo
+{
+	MessageType type;
+	std::string text;
+};
 
 class Scene
 {
@@ -22,6 +36,9 @@ public:
 	Scene& operator=(const Scene& scene) = delete;
 
 	const SceneId getId() const;
+
+	void addToChatList(MessageType type, const std::string& msg, unsigned int newLineAmount = 1);
+	void addToChatList(LogInfo logInfo, unsigned int newLineAmount = 1);
 
 protected:
 	std::string mCurrentInput;
@@ -38,6 +55,8 @@ protected:
 	//if (a3keyboardGetState(demoState->keyboard, a3key_B) > 0) - Current key state
 	//if (a3keyboardIsChanged(demoState->keyboard, a3key_enter) > 0) - If key was just pressed or released
 	bool isKeyPressed(const a3_DemoState* demoState, a3_KeyboardKey key);
+
+	std::vector<LogInfo> mChatLog;
 
 private:
 	const SceneId mId;
