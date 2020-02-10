@@ -12,6 +12,8 @@ LobbyScene::LobbyScene() :
 
 void LobbyScene::enteringScene(const a3_DemoState* demoState)
 {
+	mCurrentStep = LobbyStep::CHATROOM;
+
 	if (Client::isHost())
 	{
 		Host::spInstance->startChatRoom(demoState);
@@ -154,6 +156,10 @@ void LobbyScene::input(a3_DemoState* demoState)
 			{
 				mCurrentInput += "/";
 			}
+			else if (demoState->currentKey == a3key_comma)
+			{
+				mCurrentInput += ",";
+			}
 			else
 			{
 				//This doesn't work for all keys since they're not completely mapped to ascii.
@@ -163,12 +169,12 @@ void LobbyScene::input(a3_DemoState* demoState)
 	}
 	else if (mCurrentStep == LobbyStep::LEAVE_SERVER_ARE_YOU_SURE)
 	{
-		if (isKeyPressed(demoState, a3key_escape))
+		if (isKeyPressed(demoState, a3key_Y))
 		{
 			mCurrentStep = LobbyStep::LEAVE_SERVER;
 			return;
 		}
-		else
+		else if (isKeyPressed(demoState, a3key_N))
 		{
 			mCurrentStep = LobbyStep::CHATROOM;
 			return;
@@ -188,17 +194,37 @@ void LobbyScene::networkReceive(const a3_DemoState* demoState)
 
 void LobbyScene::update(const a3_DemoState* demoState)
 {
-	if (mSelectedGame == GameType::TICTAC)
+	if (mCurrentStep == LobbyStep::LEAVE_SERVER)
 	{
-		//Go to tictactoe scene
-		demoState->mpSceneManager->switchToScene(demoState, SceneId::Tictactoe);
+		//Close server.
+		if (Client::isHost())
+		{
+			Host::spInstance->closeChatRoom();
+		}
+		//Leave server.
+		else
+		{
+			Client::spInstance->leaveServer();
+		}
+
+		//Go to select role scene
+		demoState->mpSceneManager->switchToScene(demoState, SceneId::SelectRole);
 		return;
 	}
-	else if (mSelectedGame == GameType::BATTLESHIP)
+	else if (mCurrentStep == LobbyStep::CHATROOM)
 	{
-		//Go to battleship scene
-		demoState->mpSceneManager->switchToScene(demoState, SceneId::Battleship);
-		return;
+		if (mSelectedGame == GameType::TICTAC)
+		{
+			//Go to tictactoe scene
+			demoState->mpSceneManager->switchToScene(demoState, SceneId::Tictactoe);
+			return;
+		}
+		else if (mSelectedGame == GameType::BATTLESHIP)
+		{
+			//Go to battleship scene
+			demoState->mpSceneManager->switchToScene(demoState, SceneId::Battleship);
+			return;
+		}
 	}
 }
 
@@ -216,7 +242,12 @@ void LobbyScene::render(const a3_DemoState* demoState)
 	std::vector<LogInfo>::iterator iter = mChatLog.begin();
 	for (; iter != mChatLog.end(); ++iter)
 	{
-		formatter.drawText(demoState, iter->text);
+		formatter.drawText(demoState, iter->text, iter->color);
+	}
+
+	if (mCurrentStep == LobbyStep::LEAVE_SERVER_ARE_YOU_SURE)
+	{
+		formatter.drawText(demoState, "Are you sure you want to leave the server? (Y/N)");
 	}
 
 	formatter.offsetLine(2);

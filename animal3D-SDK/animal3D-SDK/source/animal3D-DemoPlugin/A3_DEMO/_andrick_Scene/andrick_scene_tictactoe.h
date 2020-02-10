@@ -3,6 +3,7 @@
 
 #include "andrick_scene.h"
 #include "../a3_Networking/a3_Networking_gs_tictactoe.h"
+#include <map>
 
 class TictactoeScene : public Scene
 {
@@ -26,16 +27,34 @@ private:
 	{
 		EXIT = -1,
 		SELECT_PLAYERS,
-		PLAYGAME,
-		RESET,
+		YOUR_TURN,		//Currently your turn to play
+		NOT_YOUR_TURN,	//When it's the other person's turn, this player can chat
+		START_GAME,
+		RESET
+	};
 
+	enum class PlayerType : a3byte
+	{
 		PLAYER1,
 		PLAYER2,
 		SPECTATOR
 	};
 
-	TicTacStep mCurrentStep, mPlayer;
-	gs_tictactoe_space_state mSpaceState;
+	TicTacStep mCurrentStep;
+	PlayerType mPlayer;
+	gs_tictactoe_space_state mPlayerSignature;
+
+	a3vec3 mBoardPosition;
+	a3vec3 mPlayer1Position;
+	a3vec3 mPlayer2Position;
+	float mBoardStartY;
+
+	UserId mPlayer1Id;
+	UserId mPlayer2Id;
+	std::string mPlayer1Username;
+	std::string mPlayer2Username;
+
+	char getXOSpace(int i, int j);
 };
 
 #endif

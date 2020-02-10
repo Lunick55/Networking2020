@@ -25,7 +25,7 @@ public:
 	void update(const a3_DemoState* demoState);
 
 	bool connectToServer();
-	void leaveServer(const a3_DemoState* demoState);
+	void leaveServer();
 
 private:
 	static std::shared_ptr<Client> spInstance;

@@ -146,7 +146,7 @@ bool Client::connectToServer()
 	return result == RakNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED;
 }
 
-void Client::leaveServer(const a3_DemoState* demoState)
+void Client::leaveServer()
 {
 	//Send a leaving packet.
 	UserLeftServerPacket userLeavingPacket = UserLeftServerPacket(
@@ -160,7 +160,6 @@ void Client::leaveServer(const a3_DemoState* demoState)
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 	spInstance = nullptr;
-	demoState->mpSceneManager->switchToScene(demoState, SceneId::SelectRole);
 }
 
 void Client::requestToJoinServer(const a3_DemoState* demoState)

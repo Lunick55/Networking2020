@@ -10,6 +10,8 @@
 
 typedef unsigned char UserId;
 
+static const int INVALID_USER_ID = -1;
+
 static const unsigned char DELIMITER = '*';
 static const int sMAX_USERNAME_LENGTH = 20;
 static const int sMAX_USERS = 64;
@@ -21,6 +23,8 @@ static const int MAX_INPUT_LENGTH = 512;
 
 static const std::string WHISPER_COMMAND = "WHISPER";
 static const std::string START_GAME_COMMAND = "GAME";
+static const std::string PLAY_TURN_COMMAND = "PLAY";
+static const std::string SELECT_PLAYERS_COMMAND = "players";
 static const std::string LIST_USERS = "LIST";
 
 const enum class SceneId
@@ -59,7 +63,8 @@ enum PacketEventId : unsigned char
 	MUTE_USER,
 	UNMUTE_USER,
 
-	UPDATE_TICTAC_STATE
+	UPDATE_TICTAC_STATE,
+	SETUP_TICTAC_GAME
 };
 
 //Client sends to server to join.
@@ -247,6 +252,26 @@ struct UpdateTicTacState
 		fromUserId(fromUser)
 	{
 		memcpy(tictactoeboard, ticBoard, sizeof(char) * 9);
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct SetupTictacGame
+{
+	PacketEventId packetId;
+	UserId player1Id;
+	char player1Username[sMAX_MESSAGE_LENGTH];
+	UserId player2Id;
+	char player2Username[sMAX_MESSAGE_LENGTH];
+
+	SetupTictacGame(UserId player1, const std::string& player1Name, UserId player2, const std::string& player2Name) :
+		packetId(PacketEventId::UPDATE_TICTAC_STATE),
+		player1Id(player1),
+		player2Id(player2)
+	{
+		strcpy(player1Username, player1Name.c_str());
+		strcpy(player2Username, player2Name.c_str());
 	}
 };
 #pragma pack(pop)

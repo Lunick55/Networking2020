@@ -22,6 +22,7 @@ struct LogInfo
 {
 	MessageType type;
 	std::string text;
+	a3vec4 color;
 };
 
 class Scene
@@ -37,7 +38,7 @@ public:
 
 	const SceneId getId() const;
 
-	void addToChatList(MessageType type, const std::string& msg, unsigned int newLineAmount = 1);
+	void addToChatList(MessageType type, const std::string& msg, unsigned int newLineAmount = 1, a3vec4 color = TextFormatter::WHITE);
 	void addToChatList(LogInfo logInfo, unsigned int newLineAmount = 1);
 
 protected:

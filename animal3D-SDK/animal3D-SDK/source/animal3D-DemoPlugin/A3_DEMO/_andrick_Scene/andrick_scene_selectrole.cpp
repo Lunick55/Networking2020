@@ -13,7 +13,7 @@ SelectRoleScene::SelectRoleScene() :
 
 void SelectRoleScene::enteringScene(const a3_DemoState* demoState) 
 {
-
+	mCurrentStep = SelectRoleStep::IS_CLIENT_OR_HOST;
 }
 
 void SelectRoleScene::input(a3_DemoState* demoState)

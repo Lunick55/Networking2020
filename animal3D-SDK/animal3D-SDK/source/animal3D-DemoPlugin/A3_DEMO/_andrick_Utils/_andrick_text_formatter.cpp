@@ -10,6 +10,8 @@ const float TextFormatter::LINE_HEIGHT = 0.08f;
 const float TextFormatter::LETTER_SIZE = 0.022f;
 
 a3vec4 TextFormatter::WHITE = createColor(1.0f, 1.0f, 1.0f, 1.0f);
+a3vec4 TextFormatter::BLACK = createColor(0.0f, 0.0f, 0.0f, 1.0f);
+a3vec4 TextFormatter::RED = createColor(1.0f, 0.0f, 0.0f, 1.0f);
 
 a3vec4 TextFormatter::createColor(float r, float g, float b, float a)
 {
@@ -18,8 +20,16 @@ a3vec4 TextFormatter::createColor(float r, float g, float b, float a)
 	color.g = g;
 	color.b = b;
 	color.a = a;
-
 	return color;
+}
+
+a3vec3 TextFormatter::createVec3(float x, float y, float z)
+{
+	a3vec3 vec;
+	vec.x = x;
+	vec.y = y;
+	vec.z = z;
+	return vec;
 }
 
 TextFormatter::TextFormatter() :

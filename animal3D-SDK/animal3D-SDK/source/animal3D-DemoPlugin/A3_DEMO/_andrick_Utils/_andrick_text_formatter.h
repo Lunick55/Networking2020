@@ -29,6 +29,8 @@ public:
 	static const float LINE_HEIGHT;
 	static const float LETTER_SIZE;
 	static a3vec4 WHITE;
+	static a3vec4 BLACK;
+	static a3vec4 RED;
 
 	static TextFormatter& get()
 	{
@@ -49,6 +51,7 @@ public:
 
 	//Because a3vec4s structs don't have constructors to initalize the vars...
 	static a3vec4 createColor(float x, float y, float z, float a);
+	static a3vec3 createVec3(float x, float y, float z);
 
 private:
 	a3vec3 mCursorPosition;

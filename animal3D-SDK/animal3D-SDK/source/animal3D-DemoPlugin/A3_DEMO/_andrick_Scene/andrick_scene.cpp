@@ -12,11 +12,12 @@ const SceneId Scene::getId() const
 	return mId; 
 }
 
-void Scene::addToChatList(MessageType type, const std::string& msg, unsigned int newLineAmount)
+void Scene::addToChatList(MessageType type, const std::string& msg, unsigned int newLineAmount, a3vec4 color)
 {
 	LogInfo info;
 	info.type = type;
 	info.text = msg;
+	info.color = color;
 	addToChatList(info, newLineAmount);
 }
 
