@@ -214,15 +214,17 @@ bool Client::connectToServer()
 
 void Client::leaveServer()
 {
-	//Send a leaving packet.
-	UserLeftServerPacket userLeavingPacket = UserLeftServerPacket(
-		mpClient->getUserId()
-	);
+	if (mpClient)
+	{
+		//Send a leaving packet.
+		UserLeftServerPacket userLeavingPacket = UserLeftServerPacket(
+			mpClient->getUserId()
+		);
 
-	mpPeer->Send((const char*)(&userLeavingPacket), sizeof(UserLeftServerPacket),
-		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-		0, mHostAddress, false);
-
+		mpPeer->Send((const char*)(&userLeavingPacket), sizeof(UserLeftServerPacket),
+			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+			0, mHostAddress, false);
+	}
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 	spInstance = nullptr;
