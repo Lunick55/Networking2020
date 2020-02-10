@@ -139,7 +139,7 @@ void BattleShipScene::input(a3_DemoState* demoState)
 								if (gs_checkers_getSpaceState(mGame, 1, boardLetter, boardNum) == gs_battleship_space_state::gs_battleship_space_open)
 								{
 									//Asks opponent if we hit them or not
-									char game[2] = {boardLetter, boardNum};
+									char game[2] = {(char)boardLetter, (char)boardNum};
 									AskIfBattleHit askPacket = AskIfBattleHit(Client::spInstance->mpClient->getUserId(), game);
 									
 									if (Client::isHost())
