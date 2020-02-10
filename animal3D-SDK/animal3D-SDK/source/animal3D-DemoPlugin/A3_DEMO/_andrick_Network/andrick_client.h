@@ -14,6 +14,7 @@ class Client
 {
 	friend class LobbyScene;
 	friend class TictactoeScene;
+	friend class BattleShipScene;
 
 public:
 	static bool isInitialized();

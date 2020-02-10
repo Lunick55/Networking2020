@@ -26,61 +26,27 @@
 	********************************************
 */
 
-#include <stdio.h>
-
+#include "a3_Networking_gs_battleship.h"
 
 //-----------------------------------------------------------------------------
 // DECLARATIONS
 
-#define GS_BATTLESHIP_PLAYERS				2
-#define GS_BATTLESHIP_BOARD_WIDTH			10
-#define GS_BATTLESHIP_BOARD_HEIGHT			10
 
-enum gs_battleship_space_state
-{
-	// invalid space state
-	gs_battleship_space_invalid = -1,
-
-	// states visible to both players
-	gs_battleship_space_open,			// space is open and unguessed
-	gs_battleship_space_miss,			// space was guessed and missed
-	gs_battleship_space_hit,			// space was guessed and hit
-
-	// states hidden from opponent player
-	gs_battleship_space_patrol2,		// 2-unit patrol boat
-	gs_battleship_space_submarine3,		// 3-unit submarine
-	gs_battleship_space_destroyer3,		// 3-unit destroyer
-	gs_battleship_space_battleship4,	// 4-unit battleship
-	gs_battleship_space_carrier5,		// 5-unit carrier
-};
-#ifndef __cplusplus
-typedef		enum gs_battleship_space_state	gs_battleship_space_state;
-#endif	// !__cplusplus
-
-// battleship game state
-typedef		unsigned char					gs_battleship_index;
-typedef		gs_battleship_space_state		gs_battleship[GS_BATTLESHIP_PLAYERS][GS_BATTLESHIP_BOARD_WIDTH][GS_BATTLESHIP_BOARD_HEIGHT];
-
-
-#define	GS_VALIDATE_COORDINATE(x,y,z,w,h,d)		(x < w && y < h && z < d)
-#define GS_BATTLESHIP_VALID(p,x,y)				GS_VALIDATE_COORDINATE(x,y,p,GS_BATTLESHIP_BOARD_WIDTH,GS_BATTLESHIP_BOARD_HEIGHT,GS_BATTLESHIP_PLAYERS)
-
-
-inline gs_battleship_space_state gs_checkers_getSpaceState(gs_battleship const game, gs_battleship_index const player, gs_battleship_index const xpos, gs_battleship_index const ypos)
+gs_battleship_space_state gs_checkers_getSpaceState(gs_battleship const game, gs_battleship_index const player, gs_battleship_index const xpos, gs_battleship_index const ypos)
 {
 	if (GS_BATTLESHIP_VALID(player, xpos, ypos))
 		return (game[player][xpos][ypos]);
 	return gs_battleship_space_invalid;
 }
 
-inline gs_battleship_space_state gs_checkers_setSpaceState(gs_battleship game, gs_battleship_space_state const state, gs_battleship_index const player, gs_battleship_index const xpos, gs_battleship_index const ypos)
+gs_battleship_space_state gs_checkers_setSpaceState(gs_battleship game, gs_battleship_space_state const state, gs_battleship_index const player, gs_battleship_index const xpos, gs_battleship_index const ypos)
 {
 	if (GS_BATTLESHIP_VALID(player, xpos, ypos))
 		return (game[player][xpos][ypos] = state);
 	return gs_battleship_space_invalid;
 }
 
-inline gs_battleship_index gs_battleship_reset(gs_battleship game)
+gs_battleship_index gs_battleship_reset(gs_battleship game)
 {
 	gs_battleship_index player, xpos, ypos, total;
 	for (player = 0; player < GS_BATTLESHIP_PLAYERS; ++player)
