@@ -34,7 +34,7 @@ void TictactoeScene::input(a3_DemoState* demoState)
 	if(mCurrentStep == TicTacStep::SELECT_PLAYERS)
 	{
 		//pick player names - /players, Andy608, Lunick55
-		if (Client::isHost())
+		if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
 		{
 			if (demoState->currentKey == a3key_enter)
 			{
@@ -48,7 +48,7 @@ void TictactoeScene::input(a3_DemoState* demoState)
 
 						//	/players Andy608, Lunick55
 
-						if (currCommand == SELECT_PLAYERS_COMMAND)
+						if (currCommand == SELECT_PLAYERS_COMMAND && Client::isHost())
 						{
 							std::string player1, player2;
 
@@ -70,7 +70,6 @@ void TictactoeScene::input(a3_DemoState* demoState)
 								player2 = mCurrentInput.substr(delimiterIndex + 1);
 
 								//Start game
-								mCurrentStep = TicTacStep::START_GAME;
 								setupPlayers(player1, player2);
 							}
 							else
@@ -79,11 +78,48 @@ void TictactoeScene::input(a3_DemoState* demoState)
 							}
 						}
 					}
+					else
+					{
+						//Send chat message
+						if (Client::isHost())
+						{
+							Host::spInstance->deliverPublicMessage(demoState, Host::spInstance->mpHost, mCurrentInput);
+							mCurrentInput.clear();
+						}
+						else
+						{
+							Client::spInstance->sendPublicMessage(mCurrentInput);
+							mCurrentInput.clear();
+						}
+					}
+
+					mCurrentInput.clear();
 				}
+			}
+			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
+			{
+				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
+			}
+			else if (demoState->currentKey == a3key_period)
+			{
+				mCurrentInput += ".";
+			}
+			else if (demoState->currentKey == a3key_slash)
+			{
+				mCurrentInput += "/";
+			}
+			else if (demoState->currentKey == a3key_comma)
+			{
+				mCurrentInput += ",";
+			}
+			else
+			{
+				//This doesn't work for all keys since they're not completely mapped to ascii.
+				mCurrentInput += (char)(demoState->currentKey);
 			}
 		}
 	}
-	else if (mCurrentStep == TicTacStep::YOUR_TURN || mCurrentStep == TicTacStep::NOT_YOUR_TURN)
+	else if (mCurrentStep == TicTacStep::YOUR_TURN || mCurrentStep == TicTacStep::NOT_YOUR_TURN || mCurrentStep == TicTacStep::SPECTATING)
 	{
 		/*if (isKeyPressed(demoState, a3key_escape))
 		{
@@ -230,16 +266,7 @@ void TictactoeScene::input(a3_DemoState* demoState)
 					else
 					{
 						//Send chat message
-						if (Client::isHost())
-						{
-							Host::spInstance->deliverPublicMessage(demoState, Host::spInstance->mpHost, mCurrentInput);
-							mCurrentInput.clear();
-						}
-						else
-						{
-							Client::spInstance->sendPublicMessage(mCurrentInput);
-							mCurrentInput.clear();
-						}
+						//broadcastMessage(demoState, mCurrentInput);
 					}
 
 					mCurrentInput.clear();
@@ -316,6 +343,17 @@ void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 				{
 					Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
 				}
+
+				if (updatedPacket->fromUserId == mPlayer1Id && mPlayer == PlayerType::PLAYER2)
+				{
+					addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::RED);
+					mCurrentStep = TicTacStep::YOUR_TURN;
+				}
+				else if (updatedPacket->fromUserId == mPlayer2Id && mPlayer == PlayerType::PLAYER1)
+				{
+					addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::RED);
+					mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+				}
 			}
 			case PacketEventId::SETUP_TICTAC_GAME:
 			{
@@ -332,17 +370,20 @@ void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 					//You are player 1!
 					addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::RED);
 					addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
+					mCurrentStep = TicTacStep::YOUR_TURN;
 				}
 				else if (Client::spInstance->mpClient->getUserId() == mPlayer2Id)
 				{
 					mPlayer = PlayerType::PLAYER2;
 					addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::RED);
 					addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
+					mCurrentStep = TicTacStep::NOT_YOUR_TURN;
 				}
 				else
 				{
 					mPlayer = PlayerType::SPECTATOR;
 					addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::RED);
+					mCurrentStep = TicTacStep::SPECTATING;
 				}
 			}
 			default:
@@ -475,6 +516,15 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 		//Tell everyone who the players are and start the game
 		if (player1Id != INVALID_USER_ID && player2Id != INVALID_USER_ID)
 		{
+			if (player1Id == Host::spInstance->mpHost->getUserId())
+			{
+				mCurrentStep = TicTacStep::YOUR_TURN;
+			}
+			else if (player2Id == Host::spInstance->mpHost->getUserId())
+			{
+				mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+			}
+
 			SetupTictacGame setupTictacPacket = SetupTictacGame(
 				player1Id, Host::spInstance->mpConnectedUsers.at(player1Id)->getUsername(),
 				player2Id, Host::spInstance->mpConnectedUsers.at(player2Id)->getUsername());
@@ -486,31 +536,31 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 		mPlayer1Id = player1Id;
 		mPlayer2Id = player2Id;
 	}
-
-	/*
-	//maybe make sure player1 and 2 arent the same?
-
-	if(player1 == me)
-	{
-		mPlayer = PLAYER1;
-		mPlayerSignature = x;
-	}
-	else
-	{
-		SendMessageToTheRealPlayer1(theDude, PLAYER1);
-	}
-	if(player2 == me)
-	{
-		mPlayer = PLAYER2;
-		mPlayerSignature = o;
-	}
-	else
-	{
-		SendMessageToTheRealPlayer2(theDude, PLAYER2);
-	}
-
-	BroadCastToAll(you are spectators!);
-	
-	*/
 	return false;
+}
+
+void TictactoeScene::broadcastMessage(const a3_DemoState* demoState, std::string message)
+{
+	MessageType type = MessageType::EITHER;
+
+	switch (mPlayer)
+	{
+	case PlayerType::PLAYER1:
+	case PlayerType::PLAYER2:
+		type = MessageType::PLAYER;
+		break;
+	case PlayerType::SPECTATOR:
+		type = MessageType::SPECTOR;
+		break;
+	}
+
+	if (Client::isHost())
+	{
+		DeliverPublicMessagePacket deliverPacket = DeliverPublicMessagePacket(Host::spInstance->mpHost->getUserId(), message, type);
+		Host::spInstance->broadcastPacket((const char*)(&deliverPacket), sizeof(DeliverPublicMessagePacket));
+	}
+	else
+	{
+		Client::spInstance->sendPublicMessage(message, type);
+	}
 }

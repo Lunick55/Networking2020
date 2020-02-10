@@ -7,7 +7,7 @@ const float TextFormatter::SCREEN_TOP = 0.98f;
 const float TextFormatter::SCREEN_BOTTOM = -0.98f;
 const float TextFormatter::SCREEN_CENTER = 0.0f;
 const float TextFormatter::LINE_HEIGHT = 0.08f;
-const float TextFormatter::LETTER_SIZE = 0.022f;
+const float TextFormatter::LETTER_SIZE = 0.023f;
 
 a3vec4 TextFormatter::WHITE = createColor(1.0f, 1.0f, 1.0f, 1.0f);
 a3vec4 TextFormatter::BLACK = createColor(0.0f, 0.0f, 0.0f, 1.0f);

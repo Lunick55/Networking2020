@@ -27,7 +27,14 @@ static const std::string PLAY_TURN_COMMAND = "PLAY";
 static const std::string SELECT_PLAYERS_COMMAND = "players";
 static const std::string LIST_USERS = "LIST";
 
-const enum class SceneId
+const enum class MessageType : unsigned char
+{
+	EITHER,
+	SPECTOR,
+	PLAYER
+};
+
+const enum class SceneId : unsigned char
 {
 	SelectRole,
 	Lobby,
@@ -178,10 +185,12 @@ struct SendPublicMessageRequestPacket
 	PacketEventId packetId;
 	UserId userId;
 	char message[sMAX_MESSAGE_LENGTH];
+	char msgType;
 
-	SendPublicMessageRequestPacket(UserId user, const std::string& newMessage) :
+	SendPublicMessageRequestPacket(UserId user, const std::string& newMessage, MessageType type = MessageType::EITHER) :
 		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
-		userId(user)
+		userId(user),
+		msgType((char)type)
 	{ 
 		strcpy(message, newMessage.c_str()); 
 	}
@@ -213,11 +222,13 @@ struct DeliverPublicMessagePacket
 	PacketEventId packetId;
 	UserId userId;
 	char message[sMAX_MESSAGE_LENGTH];
+	char msgType;
 
 	//TODO: init user id also at some point
-	DeliverPublicMessagePacket(UserId user, const std::string& newMessage) :
+	DeliverPublicMessagePacket(UserId user, const std::string& newMessage, MessageType type = MessageType::EITHER) :
 		packetId(PacketEventId::DELIVER_PUBLIC_MESSAGE),
-		userId(user)
+		userId(user),
+		msgType((char)type)
 	{
 		strcpy(message, newMessage.c_str());
 	}

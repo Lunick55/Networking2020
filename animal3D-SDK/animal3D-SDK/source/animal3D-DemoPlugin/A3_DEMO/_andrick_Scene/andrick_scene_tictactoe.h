@@ -21,6 +21,7 @@ protected:
 
 private:
 	bool setupPlayers(std::string player1, std::string player2);
+	void broadcastMessage(const a3_DemoState* demoState, std::string message);
 
 	gs_tictactoe mGame;
 	enum class TicTacStep : a3byte
@@ -29,7 +30,7 @@ private:
 		SELECT_PLAYERS,
 		YOUR_TURN,		//Currently your turn to play
 		NOT_YOUR_TURN,	//When it's the other person's turn, this player can chat
-		START_GAME,
+		SPECTATING,
 		RESET
 	};
 

@@ -201,15 +201,15 @@ void Host::receivePacket(const a3_DemoState* demoState)
 	}
 }
 
-void Host::deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<User> user, std::string message)
+void Host::deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<User> user, std::string message, MessageType type)
 {
 	std::string decoratedMessage = User::formatMessage(user->getUsername(), message, user->getAuthority());
 
-	DeliverPublicMessagePacket messagePacket = DeliverPublicMessagePacket(user->getUserId(), decoratedMessage);
+	DeliverPublicMessagePacket messagePacket = DeliverPublicMessagePacket(user->getUserId(), decoratedMessage, type);
 
 	broadcastPacket((const char*)(&messagePacket), sizeof(DeliverPublicMessagePacket));
 
-	demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, decoratedMessage);
+	demoState->mpSceneManager->mpCurrentScene->addToChatList(type, decoratedMessage);
 }
 
 //Used for host only

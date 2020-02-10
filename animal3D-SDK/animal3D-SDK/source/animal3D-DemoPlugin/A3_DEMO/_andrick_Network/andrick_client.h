@@ -12,10 +12,10 @@ struct a3_DemoState;
 */
 class Client
 {
+	friend class Scene;
 	friend class LobbyScene;
 	friend class TictactoeScene;
 	friend class BattleShipScene;
-	friend class Scene;
 
 public:
 	static bool isInitialized();
@@ -50,7 +50,7 @@ private:
 
 	void receivePacket(const a3_DemoState* demoState);
 
-	void sendPublicMessage(const std::string& message);
+	void sendPublicMessage(const std::string& message, enum MessageType type = MessageType::EITHER);
 	void sendPrivateMessageRequest(const std::string& message, const std::string& toUsername);
 
 	void addUserIdToMap(UserId userId, char name[sMAX_USERNAME_LENGTH]);

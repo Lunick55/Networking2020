@@ -61,7 +61,7 @@ void Client::receivePacket(const a3_DemoState* demoState)
 
 			//TODO: Call message to print to console.
 			//std::cout << data->message << std::endl;
-			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, std::string(data->message));
+			demoState->mpSceneManager->mpCurrentScene->addToChatList((MessageType)data->msgType, std::string(data->message));
 			break;
 		}
 		case PacketEventId::DELIVER_PRIVATE_MESSAGE:
@@ -121,9 +121,9 @@ void Client::receivePacket(const a3_DemoState* demoState)
 	}
 }
 
-void Client::sendPublicMessage(const std::string& message)
+void Client::sendPublicMessage(const std::string& message, MessageType type)
 {
-	SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(mpClient->getUserId(), message);
+	SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(mpClient->getUserId(), message, type);
 
 	mpPeer->Send((const char*)(&messagePacket), sizeof(SendPublicMessageRequestPacket),
 		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,

@@ -15,10 +15,10 @@ struct a3_DemoState;
 */
 class Host
 {
+	friend class Scene;
 	friend class LobbyScene;
 	friend class TictactoeScene;
 	friend class BattleShipScene;
-	friend class Scene;
 
 public:
 	static bool isInitialized();
@@ -60,7 +60,7 @@ private:
 
 	void deliverPersonalMessage(const a3_DemoState* demoState, const std::string& userName, const std::string& message);
 
-	void deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<User> user, std::string message);
+	void deliverPublicMessage(const a3_DemoState* demoState, std::shared_ptr<User> user, std::string message, MessageType type = MessageType::EITHER);
 	void deliverPrivateMessage(const a3_DemoState* demoState, UserId fromUserId, UserId toUserId, const std::string& message);
 
 	void updateServerUserInfo();

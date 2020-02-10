@@ -11,13 +11,6 @@
 struct a3_DemoState;
 enum a3_KeyboardKey;
 
-enum class MessageType : a3byte
-{
-	EITHER,
-	SPECTOR,
-	PLAYER
-};
-
 struct LogInfo
 {
 	MessageType type;
@@ -28,7 +21,6 @@ struct LogInfo
 class Scene
 {
 	friend class SceneManager;
-
 public:
 	explicit Scene(const SceneId id);
 	virtual ~Scene() = default;
