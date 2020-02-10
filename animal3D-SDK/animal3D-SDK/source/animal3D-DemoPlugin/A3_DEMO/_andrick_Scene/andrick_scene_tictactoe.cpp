@@ -20,6 +20,8 @@ void TictactoeScene::input(a3_DemoState* demoState)
 	if(mCurrentStep == TicTacStep::SELECT_PLAYERS)
 	{
 		//Input Players names
+
+
 	}
 	else if(mCurrentStep == TicTacStep::RESET)
 	{
@@ -95,14 +97,28 @@ void TictactoeScene::input(a3_DemoState* demoState)
 		if (mPlayer == TicTacStep::PLAYER1)
 		{
 			mCurrentStep = TicTacStep::PLAYER2;
-			//TODO: send the packet to everyone containing gameState, and whoseTurn or whatever
 		}
 		else if (mPlayer == TicTacStep::PLAYER2)
 		{
 			mCurrentStep = TicTacStep::PLAYER1;
-			//TODO: send the packet to everyone containing gameState, and whoseTurn or whatever
 		}
-	
+
+		//TODO: send the packet to everyone containing gameState, and whoseTurn or whatever
+		char game[3][3];
+		memcpy(game, mGame, sizeof(char) * 9);
+		UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
+
+		if (Client::isHost())
+		{
+			//broadcast
+			Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateTicTacState));
+		}
+		else
+		{
+			Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateTicTacState),
+				PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+				0, Client::spInstance->mHostAddress, false);
+		}
 	}
 }
 
@@ -115,7 +131,20 @@ void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 		{
 			case PacketEventId::UPDATE_TICTAC_STATE :
 			{
-				
+				UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
+
+				for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
+				{
+					for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
+					{
+						gs_tictactoe_setSpaceState(mGame, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
+					}
+				}
+
+				if (Client::isHost())
+				{
+					Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
+				}
 			}
 		}
 	}
