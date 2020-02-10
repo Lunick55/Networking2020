@@ -95,7 +95,6 @@ void Host::receivePacket(const a3_DemoState* demoState)
 		{
 		case PacketEventId::SET_AUTHORITY:
 			break;
-
 		case PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST:
 		{
 			SendPublicMessageRequestPacket* data = (SendPublicMessageRequestPacket*)(mpPacket->data);

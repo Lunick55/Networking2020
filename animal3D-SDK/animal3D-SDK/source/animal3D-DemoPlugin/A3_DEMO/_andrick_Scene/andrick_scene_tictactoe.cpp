@@ -320,109 +320,103 @@ void TictactoeScene::input(a3_DemoState* demoState)
 
 void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 {
-	//Scene::networkReceive(demoState);
+	Scene::networkReceive(demoState);
 
 	//Incoming packets to server from client.
-	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
-	{
-		switch (Client::spInstance->mpPacket->data[0])
-		{
-			case PacketEventId::SERVER_TRAVEL:
-			{
-				ServerTravel* serverTravelPacket = (ServerTravel*)(Client::spInstance->mpPacket->data);
-				demoState->mpSceneManager->switchToScene(demoState, serverTravelPacket->sceneId);
-				break;
-			}
-			case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-			{
-				DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(Client::spInstance->mpPacket->data);
-
-				//TODO: Call message to print to console.
-				//std::cout << data->message << std::endl;
-				addToChatList((MessageType)data->msgType, std::string(data->message));
-				break;
-			}
-			case PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST:
-			{
-				SendPublicMessageRequestPacket* data = (SendPublicMessageRequestPacket*)(Client::spInstance->mpPacket->data);
-
-				SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(data->userId, data->message);
-
-				std::shared_ptr<User> user = Host::spInstance->getUserFromId(data->userId);
-				if (user != nullptr)
-				{
-					Host::spInstance->deliverPublicMessage(demoState, user, data->message);
-				}
-				else
-				{
-					//Couldn't find user!!!
-				}
-
-				break;
-			}
-			case PacketEventId::UPDATE_TICTAC_STATE:
-			{
-				UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
-
-				for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
-				{
-					for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
-					{
-						gs_tictactoe_setSpaceState(mGame, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
-					}
-				}
-
-				if (Client::isHost())
-				{
-					Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
-				}
-
-				if (updatedPacket->fromUserId == mPlayer1Id && mPlayer == PlayerType::PLAYER2)
-				{
-					addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::RED);
-					mCurrentStep = TicTacStep::YOUR_TURN;
-				}
-				else if (updatedPacket->fromUserId == mPlayer2Id && mPlayer == PlayerType::PLAYER1)
-				{
-					addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::RED);
-					mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-				}
-			}
-			case PacketEventId::SETUP_TICTAC_GAME:
-			{
-				SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
-
-				mPlayer1Id = setupTictacPacket->player1Id;
-				mPlayer2Id = setupTictacPacket->player2Id;
-				mPlayer1Username = setupTictacPacket->player1Username;
-				mPlayer2Username = setupTictacPacket->player2Username;
-
-				if (Client::spInstance->mpClient->getUserId() == mPlayer1Id)
-				{
-					mPlayer = PlayerType::PLAYER1;
-					//You are player 1!
-					addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::RED);
-					addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
-					mCurrentStep = TicTacStep::YOUR_TURN;
-				}
-				else if (Client::spInstance->mpClient->getUserId() == mPlayer2Id)
-				{
-					mPlayer = PlayerType::PLAYER2;
-					addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::RED);
-					addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
-					mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-				}
-				else
-				{
-					mPlayer = PlayerType::SPECTATOR;
-					addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::RED);
-					mCurrentStep = TicTacStep::SPECTATING;
-				}
-			}
-			default:
-				break;
-		}
-	}
+	//for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
+	//{
+	//	switch (Client::spInstance->mpPacket->data[0])
+	//	{
+	//		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
+	//		{
+	//			DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(Client::spInstance->mpPacket->data);
+	//
+	//			//TODO: Call message to print to console.
+	//			//std::cout << data->message << std::endl;
+	//			addToChatList((MessageType)data->msgType, std::string(data->message));
+	//			break;
+	//		}
+	//		case PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST:
+	//		{
+	//			SendPublicMessageRequestPacket* data = (SendPublicMessageRequestPacket*)(Client::spInstance->mpPacket->data);
+	//
+	//			SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(data->userId, data->message);
+	//
+	//			std::shared_ptr<User> user = Host::spInstance->getUserFromId(data->userId);
+	//			if (user != nullptr)
+	//			{
+	//				Host::spInstance->deliverPublicMessage(demoState, user, data->message);
+	//			}
+	//			else
+	//			{
+	//				//Couldn't find user!!!
+	//			}
+	//
+	//			break;
+	//		}
+	//		//case PacketEventId::UPDATE_TICTAC_STATE:
+	//		//{
+	//		//	UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
+	//
+	//		//	for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
+	//		//	{
+	//		//		for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
+	//		//		{
+	//		//			gs_tictactoe_setSpaceState(mGame, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
+	//		//		}
+	//		//	}
+	//
+	//		//	if (Client::isHost())
+	//		//	{
+	//		//		Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
+	//		//	}
+	//
+	//		//	if (updatedPacket->fromUserId == mPlayer1Id && mPlayer == PlayerType::PLAYER2)
+	//		//	{
+	//		//		addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::RED);
+	//		//		mCurrentStep = TicTacStep::YOUR_TURN;
+	//		//	}
+	//		//	else if (updatedPacket->fromUserId == mPlayer2Id && mPlayer == PlayerType::PLAYER1)
+	//		//	{
+	//		//		addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::RED);
+	//		//		mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+	//		//	}
+	//		//}
+	//		//case PacketEventId::SETUP_TICTAC_GAME:
+	//		//{
+	//		//	SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
+	//
+	//		//	mPlayer1Id = setupTictacPacket->player1Id;
+	//		//	mPlayer2Id = setupTictacPacket->player2Id;
+	//		//	mPlayer1Username = setupTictacPacket->player1Username;
+	//		//	mPlayer2Username = setupTictacPacket->player2Username;
+	//
+	//		//	if (Client::spInstance->mpClient->getUserId() == mPlayer1Id)
+	//		//	{
+	//		//		mPlayer = PlayerType::PLAYER1;
+	//		//		//You are player 1!
+	//		//		addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::RED);
+	//		//		addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
+	//		//		mCurrentStep = TicTacStep::YOUR_TURN;
+	//		//	}
+	//		//	else if (Client::spInstance->mpClient->getUserId() == mPlayer2Id)
+	//		//	{
+	//		//		mPlayer = PlayerType::PLAYER2;
+	//		//		addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::RED);
+	//		//		addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
+	//		//		mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+	//		//	}
+	//		//	else
+	//		//	{
+	//		//		mPlayer = PlayerType::SPECTATOR;
+	//		//		addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::RED);
+	//		//		mCurrentStep = TicTacStep::SPECTATING;
+	//		//	}
+	//		//}
+	//		default:
+	//			break;
+	//	}
+	//}
 }
 
 void TictactoeScene::update(const a3_DemoState* demoState)

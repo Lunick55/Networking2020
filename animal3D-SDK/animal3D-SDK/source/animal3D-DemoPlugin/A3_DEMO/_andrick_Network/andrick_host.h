@@ -15,6 +15,7 @@ struct a3_DemoState;
 */
 class Host
 {
+	friend class Client;
 	friend class Scene;
 	friend class LobbyScene;
 	friend class TictactoeScene;

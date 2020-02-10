@@ -7,6 +7,9 @@
 
 class TictactoeScene : public Scene
 {
+	friend class Client;
+	friend class Host;
+
 public:
 	TictactoeScene();
 	virtual ~TictactoeScene() = default;
