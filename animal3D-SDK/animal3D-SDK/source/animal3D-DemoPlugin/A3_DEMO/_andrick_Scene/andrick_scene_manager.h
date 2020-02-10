@@ -6,6 +6,7 @@
 class SelectRoleScene;
 class LobbyScene; 
 class TictactoeScene;
+class BattleShipScene;
 
 class SceneManager
 {
@@ -29,6 +30,7 @@ private:
 	SelectRoleScene* mpSelectRole;
 	LobbyScene* mpLobby;
 	TictactoeScene* mpTictactoe;
+	BattleShipScene* mpBattleShip;
 };
 
 #endif

@@ -3,11 +3,13 @@
 #include "andrick_scene_selectrole.h"
 #include "andrick_scene_lobby.h"
 #include "andrick_scene_tictactoe.h"
+#include "andrick_scene_battleship.h"
 
 SceneManager::SceneManager() :
 	mpSelectRole(new SelectRoleScene()),
 	mpLobby(new LobbyScene()),
-	mpTictactoe(new TictactoeScene())
+	mpTictactoe(new TictactoeScene()),
+	mpBattleShip(new BattleShipScene())
 {
 	mpCurrentScene = mpSelectRole;
 }
@@ -23,11 +25,16 @@ SceneManager::~SceneManager()
 	delete mpTictactoe;
 	mpTictactoe = nullptr;
 
+	delete mpBattleShip;
+	mpBattleShip = nullptr;
+
 	mpCurrentScene = nullptr;
 }
 
 void SceneManager::switchToScene(const a3_DemoState* demoState, enum class SceneId id)
 {
+	bool success = true;
+
 	switch (id)
 	{
 	case SceneId::SelectRole:
@@ -38,11 +45,23 @@ void SceneManager::switchToScene(const a3_DemoState* demoState, enum class Scene
 		break;
 	case SceneId::Lobby:
 		mpCurrentScene = mpLobby;
+		break;
+	case SceneId::Battleship:
+		mpCurrentScene = mpBattleShip;
+		break;
 	default:
+		success = false;
 		break;
 	}
 
-	mpCurrentScene->enteringScene(demoState);
+	if (success)
+	{
+		mpCurrentScene->enteringScene(demoState);
+	}
+	else
+	{
+		mpCurrentScene->addToChatList(MessageType::EITHER, "Unknown scene!");
+	}
 }
 
 void SceneManager::input(a3_DemoState* demoState)
