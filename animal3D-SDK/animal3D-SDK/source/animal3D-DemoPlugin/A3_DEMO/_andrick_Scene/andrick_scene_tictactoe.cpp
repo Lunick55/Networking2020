@@ -65,9 +65,9 @@ void TictactoeScene::input(a3_DemoState* demoState)
 								}
 							}
 
-							if (delimiterIndex + 1 < mCurrentInput.length())
+							if (delimiterIndex + 2 < mCurrentInput.length())
 							{
-								player2 = mCurrentInput.substr(delimiterIndex + 1);
+								player2 = mCurrentInput.substr(delimiterIndex + 2);
 
 								//Start game
 								setupPlayers(player1, player2);
@@ -560,8 +560,33 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 		}
 
 		//Setup game for host
-		mPlayer1Id = player1Id;
-		mPlayer2Id = player2Id;
+		SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
+		mPlayer1Id = setupTictacPacket->player1Id;
+		mPlayer2Id = setupTictacPacket->player2Id;
+		mPlayer1Username = setupTictacPacket->player1Username;
+		mPlayer2Username = setupTictacPacket->player2Username;
+		
+		if (Client::spInstance->mpClient->getUserId() == mPlayer1Id)
+		{
+			mPlayer = PlayerType::PLAYER1;
+			//You are player 1!
+			addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::BLACK);
+			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
+			mCurrentStep = TicTacStep::YOUR_TURN;
+		}
+		else if (Client::spInstance->mpClient->getUserId() == mPlayer2Id)
+		{
+			mPlayer = PlayerType::PLAYER2;
+			addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
+			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
+			mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+		}
+		else
+		{
+			mPlayer = PlayerType::SPECTATOR;
+			addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::BLACK);
+			mCurrentStep = TicTacStep::SPECTATING;
+		}
 	}
 	return false;
 }

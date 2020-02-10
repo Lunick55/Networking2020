@@ -24,7 +24,7 @@ static const int MAX_INPUT_LENGTH = 512;
 static const std::string WHISPER_COMMAND = "WHISPER";
 static const std::string START_GAME_COMMAND = "GAME";
 static const std::string PLAY_TURN_COMMAND = "PLAY";
-static const std::string SELECT_PLAYERS_COMMAND = "players";
+static const std::string SELECT_PLAYERS_COMMAND = "PLAYERS";
 static const std::string LIST_USERS = "LIST";
 
 const enum class MessageType : unsigned char
