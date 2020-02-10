@@ -1,13 +1,13 @@
-#ifndef ANDRICK_SCENE_TICTACTOE_H_
-#define ANDRICK_SCENE_TICTACTOE_H_
+#ifndef ANDRICK_SCENE_LOBBY_H_
+#define ANDRICK_SCENE_LOBBY_H_
 
 #include "andrick_scene.h"
 
-class TictactoeScene : public Scene
+class LobbyScene : public Scene
 {
 public:
-	TictactoeScene();
-	virtual ~TictactoeScene() = default;
+	LobbyScene();
+	virtual ~LobbyScene() = default;
 
 protected:
 	virtual void input(a3_DemoState* demoState) override;
@@ -17,7 +17,14 @@ protected:
 	virtual void render(const a3_DemoState* demoState) override;
 
 private:
+	enum class GameType : a3byte
+	{
+		NONE,
+		TICTAC,
+		BATTLESHIP
+	};
 
+	GameType mSelectedGame;
 };
 
 #endif

@@ -4,9 +4,8 @@
 #include "andrick_scene.h"
 
 class SelectRoleScene;
+class LobbyScene; 
 class TictactoeScene;
-
-struct a3_DemoState;
 
 class SceneManager
 {
@@ -16,7 +15,7 @@ public:
 
 	void switchToScene(enum class SceneId id);
 
-	void input(const a3_DemoState* demoState);
+	void input(a3_DemoState* demoState);
 	void networkReceive(const a3_DemoState* demoState);
 	void update(const a3_DemoState* demoState);
 	void networkSend(const a3_DemoState* demoState);
@@ -25,6 +24,7 @@ public:
 private:
 	Scene* mpCurrentScene;
 	SelectRoleScene* mpSelectRole;
+	LobbyScene* mpLobby;
 	TictactoeScene* mpTictactoe;
 };
 

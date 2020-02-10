@@ -10,7 +10,7 @@ public:
 	virtual ~SelectRoleScene() = default;
 
 protected:
-	virtual void input(const a3_DemoState* demoState) override;
+	virtual void input(a3_DemoState* demoState) override;
 	virtual void networkReceive(const a3_DemoState* demoState) override;
 	virtual void update(const a3_DemoState* demoState) override;
 	virtual void networkSend(const a3_DemoState* demoState) override;
@@ -24,6 +24,7 @@ private:
 
 		CLIENT_ENTER_USERNAME,
 		CLIENT_ENTER_IP,
+		CLIENT_VALIDATE_IP,
 
 		HOST_ENTER_USERNAME,
 		HOST_MAX_CLIENTS,
@@ -31,6 +32,8 @@ private:
 	};
 
 	SelectRoleStep mCurrentStep;
+	std::string mUsername;
+	std::string mIP;
 	bool mIsHost;
 };
 

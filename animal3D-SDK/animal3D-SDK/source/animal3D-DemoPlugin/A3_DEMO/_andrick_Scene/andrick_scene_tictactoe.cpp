@@ -7,7 +7,7 @@ TictactoeScene::TictactoeScene() :
 
 }
 
-void TictactoeScene::input(const a3_DemoState* demoState)
+void TictactoeScene::input(a3_DemoState* demoState)
 {
 	if (a3keyboardIsChanged(demoState->keyboard, a3key_enter) > 0)
 	{

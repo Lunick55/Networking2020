@@ -1,10 +1,12 @@
 #include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
 #include "andrick_scene_manager.h"
 #include "andrick_scene_selectrole.h"
+#include "andrick_scene_lobby.h"
 #include "andrick_scene_tictactoe.h"
 
 SceneManager::SceneManager() :
 	mpSelectRole(new SelectRoleScene()),
+	mpLobby(new LobbyScene()),
 	mpTictactoe(new TictactoeScene())
 {
 	mpCurrentScene = mpSelectRole;
@@ -14,6 +16,9 @@ SceneManager::~SceneManager()
 {
 	delete mpSelectRole;
 	mpSelectRole = nullptr;
+
+	delete mpLobby;
+	mpLobby = nullptr;
 
 	delete mpTictactoe;
 	mpTictactoe = nullptr;
@@ -31,18 +36,15 @@ void SceneManager::switchToScene(enum class SceneId id)
 	case SceneId::Tictactoe:
 		mpCurrentScene = mpTictactoe;
 		break;
+	case SceneId::Lobby:
+		mpCurrentScene = mpLobby;
 	default:
 		break;
 	}
 }
 
-void SceneManager::input(const a3_DemoState* demoState)
+void SceneManager::input(a3_DemoState* demoState)
 {
-	//Key was pressed
-	//if (demoState->keyboard->key.key['b']) - Current key state
-	//if (a3keyboardGetState(demoState->keyboard, a3key_B) > 0) - Current key state
-	//if (a3keyboardIsChanged(demoState->keyboard, a3key_enter) > 0) - If key was just pressed or released
-
 	mpCurrentScene->input(demoState);
 }
 

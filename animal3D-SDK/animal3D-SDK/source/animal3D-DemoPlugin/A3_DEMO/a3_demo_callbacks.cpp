@@ -429,11 +429,11 @@ A3DYLIBSYMBOL void a3demoCB_keyCharPress(a3_DemoState *demoState, a3i32 asciiKey
 	// persistent state update
 	a3keyboardSetStateASCII(demoState->keyboard, (a3byte)asciiKey);
 
-	if (a3keyboardIsChanged(demoState->keyboard, a3key_escape) > 0)
-	{
-		demoState->exitFlag = 1;
-		return;
-	}
+	//if (a3keyboardIsChanged(demoState->keyboard, a3key_escape) > 0)
+	//{
+	//	demoState->exitFlag = 1;
+	//	return;
+	//}
 
 	/*
 	// handle special cases immediately

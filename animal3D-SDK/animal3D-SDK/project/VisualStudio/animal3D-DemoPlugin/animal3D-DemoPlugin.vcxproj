@@ -211,6 +211,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene.cpp" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_lobby.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_manager.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_selectrole.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.cpp" />
@@ -232,6 +233,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene.h" />
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_lobby.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_manager.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_selectrole.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.h" />
