@@ -180,7 +180,7 @@ void SelectRoleScene::update(const a3_DemoState* demoState)
 		}
 
 		//INIT CHAT ROOM AND GO TO LOBBY SCENE
-		if (Host::initChatRoom(sPORT, maxUsers, mUsername))
+		if (Client::initChatRoom(true, "127.0.0.1", mUsername) && Host::initChatRoom(sPORT, maxUsers, mUsername))
 		{
 			demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
 		}
