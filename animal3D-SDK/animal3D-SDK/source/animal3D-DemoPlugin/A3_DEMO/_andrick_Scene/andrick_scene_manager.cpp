@@ -26,7 +26,7 @@ SceneManager::~SceneManager()
 	mpCurrentScene = nullptr;
 }
 
-void SceneManager::switchToScene(enum class SceneId id)
+void SceneManager::switchToScene(const a3_DemoState* demoState, enum class SceneId id)
 {
 	switch (id)
 	{
@@ -41,6 +41,8 @@ void SceneManager::switchToScene(enum class SceneId id)
 	default:
 		break;
 	}
+
+	mpCurrentScene->enteringScene(demoState);
 }
 
 void SceneManager::input(a3_DemoState* demoState)

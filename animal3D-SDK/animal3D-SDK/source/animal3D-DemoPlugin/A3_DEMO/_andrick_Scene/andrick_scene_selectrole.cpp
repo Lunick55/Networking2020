@@ -11,6 +11,11 @@ SelectRoleScene::SelectRoleScene() :
 
 }
 
+void SelectRoleScene::enteringScene(const a3_DemoState* demoState) 
+{
+
+}
+
 void SelectRoleScene::input(a3_DemoState* demoState)
 {
 	if (mCurrentStep == SelectRoleStep::IS_CLIENT_OR_HOST)
@@ -125,6 +130,7 @@ void SelectRoleScene::input(a3_DemoState* demoState)
 				{
 					mIP = mCurrentInput;
 					mCurrentInput.clear();
+					mCurrentStep = SelectRoleStep::CLIENT_VALIDATE_IP;
 				}
 			}
 			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
@@ -176,15 +182,15 @@ void SelectRoleScene::update(const a3_DemoState* demoState)
 		//INIT CHAT ROOM AND GO TO LOBBY SCENE
 		if (Host::initChatRoom(sPORT, maxUsers, mUsername))
 		{
-			demoState->mpSceneManager->switchToScene(SceneId::Lobby);
+			demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
 		}
 	}
 	else if (mCurrentStep == SelectRoleStep::CLIENT_VALIDATE_IP)
 	{
 		//INIT CHAT ROOM AND GO TO LOBBY SCENE
-		if (Client::initChatRoom(sPORT, mIP, mUsername))
+		if (Client::initChatRoom(false, mIP, mUsername))
 		{
-			demoState->mpSceneManager->switchToScene(SceneId::Lobby);
+			demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
 		}
 	}
 }

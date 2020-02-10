@@ -10,6 +10,7 @@ public:
 	virtual ~LobbyScene() = default;
 
 protected:
+	virtual void enteringScene(const a3_DemoState* demoState) override;
 	virtual void input(a3_DemoState* demoState) override;
 	virtual void networkReceive(const a3_DemoState* demoState) override;
 	virtual void update(const a3_DemoState* demoState) override;
@@ -24,6 +25,16 @@ private:
 		BATTLESHIP
 	};
 
+	enum class LobbyStep : a3byte
+	{
+		LEAVE_SERVER = -1,
+		ATTEMPTING_TO_CONNECT,
+		CONNECTION_FAILED,
+		UNKNOWN_ERROR,
+		CHOOSE_GAME
+	};
+
+	LobbyStep mCurrentStep;
 	GameType mSelectedGame;
 };
 

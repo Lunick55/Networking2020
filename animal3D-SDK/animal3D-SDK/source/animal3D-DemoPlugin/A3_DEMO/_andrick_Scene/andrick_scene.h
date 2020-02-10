@@ -26,6 +26,7 @@ public:
 protected:
 	std::string mCurrentInput;
 
+	virtual void enteringScene(const a3_DemoState* demoState) = 0;
 	virtual void input(a3_DemoState* demoState) = 0;
 	virtual void networkReceive(const a3_DemoState* demoState) = 0;
 	virtual void update(const a3_DemoState* demoState) = 0;

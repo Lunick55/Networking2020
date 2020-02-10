@@ -10,6 +10,7 @@ public:
 	virtual ~SelectRoleScene() = default;
 
 protected:
+	virtual void enteringScene(const a3_DemoState* demoState) override;
 	virtual void input(a3_DemoState* demoState) override;
 	virtual void networkReceive(const a3_DemoState* demoState) override;
 	virtual void update(const a3_DemoState* demoState) override;

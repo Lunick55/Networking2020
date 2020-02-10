@@ -7,11 +7,17 @@ TictactoeScene::TictactoeScene() :
 
 }
 
+void TictactoeScene::enteringScene(const a3_DemoState* demoState)
+{
+
+}
+
+
 void TictactoeScene::input(a3_DemoState* demoState)
 {
 	if (a3keyboardIsChanged(demoState->keyboard, a3key_enter) > 0)
 	{
-		demoState->mpSceneManager->switchToScene(SceneId::SelectRole);
+		demoState->mpSceneManager->switchToScene(demoState, SceneId::SelectRole);
 	}
 }
 

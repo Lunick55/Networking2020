@@ -15,6 +15,8 @@ struct a3_DemoState;
 */
 class Host
 {
+	friend class LobbyScene;
+
 public:
 	static bool isInitialized();
 	static bool initChatRoom(const int port, const int maxUsers, const std::string& hostUsername);

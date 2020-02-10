@@ -28,7 +28,7 @@ Client::Client(bool isHost, const std::string& serverIP, const std::string& user
 	mUsernameMap(std::map<UserId, std::string>()),
 	mpPeer(RakNet::RakPeerInterface::GetInstance()),
 	mpPacket(nullptr),
-	mMaxUsers(sMAX_USERS)
+	mMaxUsers()
 {
 	mpPeer->Startup(1, &mSocketDescriptor, 1);
 }
@@ -166,7 +166,7 @@ void Client::leaveServer(const a3_DemoState* demoState)
 
 	RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 	spInstance = nullptr;
-	demoState->mpSceneManager->switchToScene(SceneId::SelectRole);
+	demoState->mpSceneManager->switchToScene(demoState, SceneId::SelectRole);
 }
 
 void Client::requestToJoinServer(const a3_DemoState* demoState)

@@ -13,7 +13,7 @@ public:
 	SceneManager();
 	~SceneManager();
 
-	void switchToScene(enum class SceneId id);
+	void switchToScene(const a3_DemoState* demoState, enum class SceneId id);
 
 	void input(a3_DemoState* demoState);
 	void networkReceive(const a3_DemoState* demoState);

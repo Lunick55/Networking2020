@@ -3,9 +3,37 @@
 #include "../_andrick_Network/andrick_host.h"
 
 LobbyScene::LobbyScene() :
-	Scene(SceneId::Lobby)
+	Scene(SceneId::Lobby),
+	mCurrentStep(LobbyStep::ATTEMPTING_TO_CONNECT),
+	mSelectedGame(GameType::NONE)
 {
 
+}
+
+void LobbyScene::enteringScene(const a3_DemoState* demoState)
+{
+	if (Client::isHost())
+	{
+		Host::spInstance->startChatRoom(demoState);
+	}
+	else if (Client::isInitialized())
+	{
+		if (Client::spInstance->connectToServer())
+		{
+			mCurrentStep = LobbyStep::ATTEMPTING_TO_CONNECT;
+			mCurrentInput = "Trying to connect...";
+		}
+		else
+		{
+			mCurrentStep = LobbyStep::CONNECTION_FAILED;
+			mCurrentInput = "Failed to connect to server.";
+		}
+	}
+	else
+	{
+		//Uh oh, Something went wrong!
+		mCurrentStep = LobbyStep::UNKNOWN_ERROR;
+	}
 }
 
 void LobbyScene::input(a3_DemoState* demoState)
@@ -31,6 +59,12 @@ void LobbyScene::input(a3_DemoState* demoState)
 void LobbyScene::networkReceive(const a3_DemoState* demoState)
 {
 	//TODO: uhhh. unsure
+	if (Client::isHost())
+	{
+		Host::spInstance->update(demoState);
+	}
+
+	Client::spInstance->update(demoState);
 }
 
 void LobbyScene::update(const a3_DemoState* demoState)
@@ -58,7 +92,13 @@ void LobbyScene::render(const a3_DemoState* demoState)
 	TextFormatter::get().drawText(demoState, "Lobby Scene", TextFormatter::WHITE, TextFormatter::TextAlign::CENTER_X);
 	TextFormatter::get().offsetLine(2);
 
-	if (mSelectedGame == GameType::NONE)
+	if (mCurrentStep == LobbyStep::ATTEMPTING_TO_CONNECT ||
+		mCurrentStep == LobbyStep::CONNECTION_FAILED ||
+		mCurrentStep == LobbyStep::UNKNOWN_ERROR)
+	{
+		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
+	}
+	else if (mCurrentStep == LobbyStep::CHOOSE_GAME)
 	{
 		TextFormatter::get().drawText(demoState, "TIC(T) or Boat(B)?? ;P", TextFormatter::WHITE);
 		TextFormatter::get().offsetLine(2);
@@ -70,5 +110,11 @@ void LobbyScene::render(const a3_DemoState* demoState)
 
 void LobbyScene::networkSend(const a3_DemoState* demoState)
 {
-	//TODO: send them packets!!!
+	////TODO: send them packets!!!
+	//if (Client::isHost())
+	//{
+	//	Host::spInstance->networkSend(demoState);
+	//}
+	//
+	//Client::spInstance->networkSend(demoState);
 }
