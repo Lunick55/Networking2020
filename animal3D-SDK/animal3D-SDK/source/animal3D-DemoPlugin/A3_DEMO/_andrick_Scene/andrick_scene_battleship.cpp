@@ -128,63 +128,60 @@ void BattleShipScene::input(a3_DemoState* demoState)
 						}
 						else if (currCommand == PLAY_TURN_COMMAND && mCurrentStep == BattleStep::YOUR_TURN)
 						{
-							//    /PLAY B8 - extracting the B & 8 from the command
-							std::string boardSpace = mCurrentInput.substr(spaceIndex + 1, 1);
-
+							//		/PLAY B8 - extracting the B & 8 from the command
+							std::string boardSpace = mCurrentInput.substr(spaceIndex + 1, 2);
+							// A-J = 65-74	 |	 1-10
 							try
 							{
-								int boardIndex = std::stoi(boardSpace);
+								unsigned char boardLetter = boardSpace[0];
+								unsigned char boardNum = boardSpace[1];
 
-								//if (boardIndex > 0 && boardIndex <= 9)
-								//{
-								//	//We have the space.
-								//	if (isKeyPressed(demoState, a3key_numpad1))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 0);
-								//	else if (isKeyPressed(demoState, a3key_numpad2))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 0);
-								//	else if (isKeyPressed(demoState, a3key_numpad3))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 0);
-								//	else if (isKeyPressed(demoState, a3key_numpad4))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 1);
-								//	else if (isKeyPressed(demoState, a3key_numpad5))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 1);
-								//	else if (isKeyPressed(demoState, a3key_numpad6))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 1);
-								//	else if (isKeyPressed(demoState, a3key_numpad7))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 2);
-								//	else if (isKeyPressed(demoState, a3key_numpad8))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 2);
-								//	else if (isKeyPressed(demoState, a3key_numpad8))
-								//		gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 2);
-								//
-								//	mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-								//}
-								//else
-								//{
-								//	throw std::invalid_argument("Invalid space!");
-								//}
+								if (gs_checkers_getSpaceState(mGame, 1, boardLetter, boardNum) == gs_battleship_space_state::gs_battleship_space_open)
+								{
+									//Asks opponent if we hit them or not
+									char game[2] = {boardLetter, boardNum};
+									AskIfBattleHit askPacket = AskIfBattleHit(Client::spInstance->mpClient->getUserId(), game);
+									
+									if (Client::isHost())
+									{
+										//broadcast. PLAYERS ARE ONLY ONES WHO CARE
+										Host::spInstance->broadcastPacket((const char*)(&askPacket), sizeof(UpdateBattleState));
+									}
+									else
+									{
+										//broadcast. PLAYERS ARE ONLY ONES WHO CARE
+										Client::spInstance->mpPeer->Send((const char*)(&askPacket), sizeof(UpdateBattleState),
+											PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+											0, Client::spInstance->mHostAddress, false);
+									}
+
+									mCurrentStep = BattleStep::NOT_YOUR_TURN;
+								}
+								else
+								{
+									throw std::invalid_argument("Invalid space!");
+								}
 							}
 							catch (...)
 							{
 								//The user did not type in a valid number.
 							}
 
-							//TODO: send the packet to everyone containing gameState, and whoseTurn or whatever
+							//send the packet to everyone containing gameState, and whoseTurn or whatever. PLAYERS SHOULD NOT RECIEVE
 							char game[GS_BATTLESHIP_PLAYERS][GS_BATTLESHIP_BOARD_WIDTH][GS_BATTLESHIP_BOARD_HEIGHT];
-							memcpy(game, mMyGame, sizeof(char) * (GS_BATTLESHIP_PLAYERS * GS_BATTLESHIP_BOARD_WIDTH * GS_BATTLESHIP_BOARD_HEIGHT));
-							//UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
-							//UpdateBattleState updatePacket = UpdateBattleState(Client::spInstance->mpClient->getUserId(), game);
+							memcpy(game, mGame, sizeof(char) * (GS_BATTLESHIP_PLAYERS * GS_BATTLESHIP_BOARD_WIDTH * GS_BATTLESHIP_BOARD_HEIGHT));
+							UpdateBattleState updatePacket = UpdateBattleState(Client::spInstance->mpClient->getUserId(), game);
 
 							if (Client::isHost())
 							{
 								//broadcast
-								//Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateBattleState));
+								Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateBattleState));
 							}
 							else
 							{
-								//Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateBattleState),
-								//	PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-								//	0, Client::spInstance->mHostAddress, false);
+								Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateBattleState),
+									PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+									0, Client::spInstance->mHostAddress, false);
 							}
 
 							return;
@@ -252,6 +249,75 @@ void BattleShipScene::input(a3_DemoState* demoState)
 void BattleShipScene::networkReceive(const a3_DemoState* demoState)
 {
 	Scene::networkReceive(demoState);
+	//Incoming packets to server from client.
+	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
+	{
+		switch (Client::spInstance->mpPacket->data[0])
+		{
+		case PacketEventId::UPDATE_BATTLE_STATE:
+		{
+			if (Client::isHost())
+			{
+				Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateBattleState));
+			}
+
+			if (mPlayer != PlayerType::SPECTATOR)
+			{
+				//Not for player eyes
+				return;
+			}
+
+			UpdateBattleState* updatedPacket = (UpdateBattleState*)(Client::spInstance->mpPacket->data);
+
+			for (int i = 0; i < GS_BATTLESHIP_BOARD_HEIGHT; i++)
+			{
+				for (int j = 0; i < GS_BATTLESHIP_BOARD_WIDTH; i++)
+				{
+					//if player 1
+					gs_checkers_setSpaceState(mGame, (gs_battleship_space_state)0, (gs_battleship_space_state)updatedPacket->battleBoard[0][i][j], i, j);
+
+					//if player 2
+					gs_checkers_setSpaceState(mGame, (gs_battleship_space_state)1, (gs_battleship_space_state)updatedPacket->battleBoard[1][i][j], i, j);
+				}
+			}
+		}
+		case PacketEventId::SETUP_BATTLE_GAME:
+		{
+
+		}
+		case PacketEventId::ASK_IF_BATTLE_HIT:
+		{
+			if (Client::isHost())
+			{
+				Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(AskIfBattleHit));
+			}
+
+			if (mPlayer == PlayerType::SPECTATOR)
+			{
+				//Not for Spector eyes
+				return;
+			}
+
+
+		}
+		case PacketEventId::REPLY_IF_BATTLE_HIT:
+		{
+			if (Client::isHost())
+			{
+				Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(ReplyIfBattleHit));
+			}
+
+			if (mPlayer == PlayerType::SPECTATOR)
+			{
+				//Not for Spector eyes
+				return;
+			}
+
+		}
+		default:
+			break;
+		}
+	}
 }
 
 void BattleShipScene::update(const a3_DemoState* demoState)

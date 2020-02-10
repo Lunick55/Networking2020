@@ -22,7 +22,7 @@ protected:
 private:
 	bool setupPlayers(std::string player1, std::string player2);
 
-	gs_battleship mMyGame, mEnemyGame;
+	gs_battleship mGame;
 
 	enum class BattleStep : a3byte
 	{

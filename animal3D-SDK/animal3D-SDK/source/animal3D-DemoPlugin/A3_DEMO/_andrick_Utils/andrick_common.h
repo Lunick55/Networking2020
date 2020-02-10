@@ -71,9 +71,13 @@ enum PacketEventId : unsigned char
 	UNMUTE_USER,
 
 	UPDATE_TICTAC_STATE,
-	SETUP_TICTAC_GAME,
 
 	SERVER_TRAVEL
+	SETUP_TICTAC_GAME,
+	UPDATE_BATTLE_STATE,
+	SETUP_BATTLE_GAME,
+	ASK_IF_BATTLE_HIT,
+	REPLY_IF_BATTLE_HIT
 };
 
 //Client sends to server to join.
@@ -285,6 +289,76 @@ struct SetupTictacGame
 	{
 		strcpy(player1Username, player1Name.c_str());
 		strcpy(player2Username, player2Name.c_str());
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct UpdateBattleState
+{
+	PacketEventId packetId;
+	char battleBoard[2][10][10];
+	UserId fromUserId;
+
+	UpdateBattleState(UserId fromUser, char batBoard[2][10][10]) :
+		packetId(PacketEventId::UPDATE_BATTLE_STATE),
+		fromUserId(fromUser)
+	{
+		memcpy(battleBoard, batBoard, sizeof(char) * (2 * 10 * 10));
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct SetupBattleGame
+{
+	PacketEventId packetId;
+	UserId player1Id;
+	char player1Username[sMAX_MESSAGE_LENGTH];
+	UserId player2Id;
+	char player2Username[sMAX_MESSAGE_LENGTH];
+
+	SetupBattleGame(UserId player1, const std::string& player1Name, UserId player2, const std::string& player2Name) :
+		packetId(PacketEventId::SETUP_BATTLE_GAME),
+		player1Id(player1),
+		player2Id(player2)
+	{
+		strcpy(player1Username, player1Name.c_str());
+		strcpy(player2Username, player2Name.c_str());
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct AskIfBattleHit
+{
+	PacketEventId packetId;
+	char location[2];
+	UserId fromUserId;
+
+	AskIfBattleHit(UserId fromUser, char loc[2]) :
+		packetId(PacketEventId::ASK_IF_BATTLE_HIT),
+		fromUserId(fromUser)
+	{
+		memcpy(location, loc, sizeof(char) * (2));
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct ReplyIfBattleHit
+{
+	PacketEventId packetId;
+	char location[2];
+	char hitInfo;
+	UserId fromUserId;
+
+	ReplyIfBattleHit(UserId fromUser, char loc[2], char hitInf) :
+		packetId(PacketEventId::REPLY_IF_BATTLE_HIT),
+		fromUserId(fromUser),
+		hitInfo(hitInf)
+	{
+		memcpy(location, loc, sizeof(char) * (2));
 	}
 };
 #pragma pack(pop)
