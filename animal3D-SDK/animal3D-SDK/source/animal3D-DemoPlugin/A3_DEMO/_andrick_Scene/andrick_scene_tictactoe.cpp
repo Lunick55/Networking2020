@@ -13,8 +13,8 @@ TictactoeScene::TictactoeScene() :
 	mPlayer2Id(INVALID_USER_ID),
 	mPlayer1Username(),
 	mPlayer2Username(),
-	mPlayer1Position(TextFormatter::createVec3(-0.8f, 0.5f + TextFormatter::LINE_HEIGHT * 3.0f, -1.0f)),
-	mPlayer2Position(TextFormatter::createVec3(-0.8f, 0.5f - TextFormatter::LINE_HEIGHT * 3.0f, -1.0f))
+	mPlayer1Position(TextFormatter::createVec3(-0.8f, 0.5f + TextFormatter::LINE_HEIGHT * 4.0f, -1.0f)),
+	mPlayer2Position(TextFormatter::createVec3(-0.8f, 0.5f - TextFormatter::LINE_HEIGHT * 4.0f, -1.0f))
 {
 	gs_tictactoe_reset(mGame);
 }
@@ -293,6 +293,8 @@ void TictactoeScene::input(a3_DemoState* demoState)
 
 void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 {
+	Scene::networkReceive(demoState);
+
 	//Incoming packets to server from client.
 	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
 	{

@@ -46,7 +46,7 @@ protected:
 
 	virtual void enteringScene(const a3_DemoState* demoState) = 0;
 	virtual void input(a3_DemoState* demoState) = 0;
-	virtual void networkReceive(const a3_DemoState* demoState) = 0;
+	virtual void networkReceive(const a3_DemoState* demoState);
 	virtual void update(const a3_DemoState* demoState) = 0;
 	virtual void networkSend(const a3_DemoState* demoState) = 0;
 	virtual void render(const a3_DemoState* demoState) = 0;

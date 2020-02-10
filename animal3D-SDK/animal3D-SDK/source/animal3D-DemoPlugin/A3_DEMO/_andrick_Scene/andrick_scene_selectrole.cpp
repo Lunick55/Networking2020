@@ -152,7 +152,7 @@ void SelectRoleScene::input(a3_DemoState* demoState)
 
 void SelectRoleScene::networkReceive(const a3_DemoState* demoState)
 {
-	
+	//Scene::networkReceive(demoState);
 }
 
 void SelectRoleScene::update(const a3_DemoState* demoState)

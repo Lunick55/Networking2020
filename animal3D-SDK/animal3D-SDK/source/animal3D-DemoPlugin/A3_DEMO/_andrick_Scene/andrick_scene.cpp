@@ -1,5 +1,7 @@
 #include "andrick_scene.h"
 #include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
+#include "A3_DEMO/_andrick_Network/andrick_client.h"
+#include "A3_DEMO/_andrick_Network/andrick_host.h"
 
 Scene::Scene(const SceneId id) :
 	mId(id)
@@ -40,4 +42,14 @@ void Scene::addToChatList(LogInfo logInfo, unsigned int newLineAmount)
 bool Scene::isKeyPressed(const a3_DemoState* demoState, a3_KeyboardKey key)
 {
 	return a3keyboardIsChanged(demoState->keyboard, key) > 0;
+}
+
+void Scene::networkReceive(const a3_DemoState* demoState)
+{
+	if (Client::isHost())
+	{
+		Host::spInstance->update(demoState);
+	}
+
+	Client::spInstance->update(demoState);
 }

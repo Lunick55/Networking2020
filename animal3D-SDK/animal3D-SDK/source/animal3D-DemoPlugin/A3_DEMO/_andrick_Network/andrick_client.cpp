@@ -42,7 +42,7 @@ void Client::update(const a3_DemoState* demoState)
 void Client::receivePacket(const a3_DemoState* demoState)
 {
 	//Incoming packets to client from server.
-	for (mpPacket = mpPeer->Receive(); mpPacket; mpPeer->DeallocatePacket(mpPacket), mpPacket = mpPeer->Receive())
+	for (mpPacket = mpPeer->Receive(); mpPacket; /*mpPeer->DeallocatePacket(mpPacket),*/ mpPacket = mpPeer->Receive())
 	{
 		switch (mpPacket->data[0])
 		{

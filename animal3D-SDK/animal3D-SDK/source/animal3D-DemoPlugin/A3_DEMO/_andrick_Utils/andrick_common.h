@@ -64,7 +64,9 @@ enum PacketEventId : unsigned char
 	UNMUTE_USER,
 
 	UPDATE_TICTAC_STATE,
-	SETUP_TICTAC_GAME
+	SETUP_TICTAC_GAME,
+
+	SERVER_TRAVEL
 };
 
 //Client sends to server to join.
@@ -272,6 +274,21 @@ struct SetupTictacGame
 	{
 		strcpy(player1Username, player1Name.c_str());
 		strcpy(player2Username, player2Name.c_str());
+	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct ServerTravel
+{
+	PacketEventId packetId;
+	SceneId sceneId;
+
+	ServerTravel(SceneId scene) :
+		packetId(PacketEventId::SERVER_TRAVEL),
+		sceneId(scene)
+	{
+
 	}
 };
 #pragma pack(pop)

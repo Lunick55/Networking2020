@@ -90,7 +90,7 @@ void LobbyScene::input(a3_DemoState* demoState)
 								}
 							}
 						}
-						else if (currCommand == START_GAME_COMMAND)
+						else if (currCommand == START_GAME_COMMAND && Client::isHost())
 						{
 							std::string input;
 							for (std::string::size_type i = 0; i < mCurrentInput.length(); ++i)
@@ -184,12 +184,22 @@ void LobbyScene::input(a3_DemoState* demoState)
 
 void LobbyScene::networkReceive(const a3_DemoState* demoState)
 {
-	if (Client::isHost())
-	{
-		Host::spInstance->update(demoState);
-	}
+	Scene::networkReceive(demoState);
 
-	Client::spInstance->update(demoState);
+	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
+	{
+		switch (Client::spInstance->mpPacket->data[0])
+		{
+		case PacketEventId::SERVER_TRAVEL:
+		{
+			ServerTravel* serverTravelPacket = (ServerTravel*)(Client::spInstance->mpPacket->data);
+			demoState->mpSceneManager->switchToScene(demoState, serverTravelPacket->sceneId);
+			return;
+		}
+		default:
+			break;
+		}
+	}
 }
 
 void LobbyScene::update(const a3_DemoState* demoState)
@@ -210,21 +220,6 @@ void LobbyScene::update(const a3_DemoState* demoState)
 		//Go to select role scene
 		demoState->mpSceneManager->switchToScene(demoState, SceneId::SelectRole);
 		return;
-	}
-	else if (mCurrentStep == LobbyStep::CHATROOM)
-	{
-		if (mSelectedGame == GameType::TICTAC)
-		{
-			//Go to tictactoe scene
-			demoState->mpSceneManager->switchToScene(demoState, SceneId::Tictactoe);
-			return;
-		}
-		else if (mSelectedGame == GameType::BATTLESHIP)
-		{
-			//Go to battleship scene
-			demoState->mpSceneManager->switchToScene(demoState, SceneId::Battleship);
-			return;
-		}
 	}
 }
 
@@ -257,5 +252,27 @@ void LobbyScene::render(const a3_DemoState* demoState)
 
 void LobbyScene::networkSend(const a3_DemoState* demoState)
 {
-	
+
+
+	if (mCurrentStep == LobbyStep::CHATROOM && Client::isHost())
+	{
+		if (mSelectedGame == GameType::TICTAC)
+		{
+			ServerTravel serverTravelPacket = ServerTravel(SceneId::Tictactoe);
+			Host::spInstance->broadcastPacket((const char*)(&serverTravelPacket), sizeof(ServerTravel));
+
+			//Go to tictactoe scene
+			demoState->mpSceneManager->switchToScene(demoState, SceneId::Tictactoe);
+			return;
+		}
+		else if (mSelectedGame == GameType::BATTLESHIP)
+		{
+			ServerTravel serverTravelPacket = ServerTravel(SceneId::Battleship);
+			Host::spInstance->broadcastPacket((const char*)(&serverTravelPacket), sizeof(ServerTravel));
+
+			//Go to battleship scene
+			demoState->mpSceneManager->switchToScene(demoState, SceneId::Battleship);
+			return;
+		}
+	}
 }

@@ -89,7 +89,7 @@ std::shared_ptr<User> Host::getUserFromId(UserId userId)
 void Host::receivePacket(const a3_DemoState* demoState)
 {
 	//Incoming packets to server from client.
-	for (mpPacket = mpPeer->Receive(); mpPacket; mpPeer->DeallocatePacket(mpPacket), mpPacket = mpPeer->Receive())
+	for (mpPacket = mpPeer->Receive(); mpPacket; /*mpPeer->DeallocatePacket(mpPacket),*/ mpPacket = mpPeer->Receive())
 	{
 		switch (mpPacket->data[0])
 		{

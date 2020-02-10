@@ -251,7 +251,7 @@ void BattleShipScene::input(a3_DemoState* demoState)
 
 void BattleShipScene::networkReceive(const a3_DemoState* demoState)
 {
-
+	Scene::networkReceive(demoState);
 }
 
 void BattleShipScene::update(const a3_DemoState* demoState)
