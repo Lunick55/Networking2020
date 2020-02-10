@@ -115,7 +115,7 @@ void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 		{
 			case PacketEventId::UPDATE_TICTAC_STATE :
 			{
-
+				
 			}
 		}
 	}
