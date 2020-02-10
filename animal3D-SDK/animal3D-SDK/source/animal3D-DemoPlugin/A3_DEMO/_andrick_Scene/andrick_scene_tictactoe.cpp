@@ -216,30 +216,43 @@ void TictactoeScene::input(a3_DemoState* demoState)
 								{
 									gs_tictactoe_space_state result = gs_tictactoe_space_invalid;
 
-									//We have the space.
-									if (isKeyPressed(demoState, a3key_numpad1))
+									switch (boardIndex)
+									{
+									case 1:
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 0);
-									else if (isKeyPressed(demoState, a3key_numpad2))
+										break;
+									case 2:
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 0);
-									else if (isKeyPressed(demoState, a3key_numpad3))
+										break;
+									case 3:	 
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 0);
-									else if (isKeyPressed(demoState, a3key_numpad4))
+										break;
+									case 4:	  
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 1);
-									else if (isKeyPressed(demoState, a3key_numpad5))
+										break;
+									case 5:	  
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 1);
-									else if (isKeyPressed(demoState, a3key_numpad6))
+										break;
+									case 6:	  
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 1);
-									else if (isKeyPressed(demoState, a3key_numpad7))
+										break;
+									case 7:	  
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 2);
-									else if (isKeyPressed(demoState, a3key_numpad8))
+										break;
+									case 8:	  
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 2);
-									else if (isKeyPressed(demoState, a3key_numpad8))
+										break;
+									case 9:	 
 										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 2);
+										break;
+									default: 
+										break;
+									}
 
 									if (result == gs_tictactoe_space_invalid)
 									{
 										//Invalid move! Go again.
-										throw std::invalid_argument("That space is already taken! Go again.");
+										throw std::invalid_argument("That space is already taken or invalid! Go again.");
 									}
 									else
 									{
@@ -308,17 +321,29 @@ void TictactoeScene::input(a3_DemoState* demoState)
 				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
 			}
 			else if (demoState->currentKey == a3key_period)
-			{
 				mCurrentInput += ".";
-			}
 			else if (demoState->currentKey == a3key_slash)
-			{
 				mCurrentInput += "/";
-			}
 			else if (demoState->currentKey == a3key_comma)
-			{
 				mCurrentInput += ",";
-			}
+			else if (demoState->currentKey == a3key_numpad1)
+				mCurrentInput += std::stoi("1");
+			else if (demoState->currentKey == a3key_numpad2)
+				mCurrentInput += std::stoi("2");
+			else if (demoState->currentKey == a3key_numpad3)
+				mCurrentInput += std::stoi("3");
+			else if (demoState->currentKey == a3key_numpad4)
+				mCurrentInput += std::stoi("4");
+			else if (demoState->currentKey == a3key_numpad5)
+				mCurrentInput += std::stoi("5");
+			else if (demoState->currentKey == a3key_numpad6)
+				mCurrentInput += std::stoi("6");
+			else if (demoState->currentKey == a3key_numpad7)
+				mCurrentInput += std::stoi("7");
+			else if (demoState->currentKey == a3key_numpad8)
+				mCurrentInput += std::stoi("8");
+			else if (demoState->currentKey == a3key_numpad9)
+				mCurrentInput += std::stoi("9");
 			else
 			{
 				//This doesn't work for all keys since they're not completely mapped to ascii.
@@ -591,13 +616,12 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 		}
 
 		//Setup game for host
-		SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
-		mPlayer1Id = setupTictacPacket->player1Id;
-		mPlayer2Id = setupTictacPacket->player2Id;
-		mPlayer1Username = setupTictacPacket->player1Username;
-		mPlayer2Username = setupTictacPacket->player2Username;
+		mPlayer1Id = player1Id;
+		mPlayer2Id = player2Id;
+		mPlayer1Username = player1;
+		mPlayer2Username = player2;
 		
-		if (Client::spInstance->mpClient->getUserId() == mPlayer1Id)
+		if (Host::spInstance->mpHost->getUserId() == mPlayer1Id)
 		{
 			mPlayer = PlayerType::PLAYER1;
 			//You are player 1!
@@ -605,7 +629,7 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
 			mCurrentStep = TicTacStep::YOUR_TURN;
 		}
-		else if (Client::spInstance->mpClient->getUserId() == mPlayer2Id)
+		else if (Host::spInstance->mpHost->getUserId() == mPlayer2Id)
 		{
 			mPlayer = PlayerType::PLAYER2;
 			addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
