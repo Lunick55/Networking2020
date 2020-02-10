@@ -59,8 +59,8 @@ typedef		unsigned char					gs_battleship_index;
 typedef		gs_battleship_space_state		gs_battleship[GS_BATTLESHIP_PLAYERS][GS_BATTLESHIP_BOARD_WIDTH][GS_BATTLESHIP_BOARD_HEIGHT];
 
 
-#define	GS_VALIDATE_COORDINATE(x,y,z,w,h,d)		(x < w && y < h && z < d)
-#define GS_BATTLESHIP_VALID(p,x,y)				GS_VALIDATE_COORDINATE(x,y,p,GS_BATTLESHIP_BOARD_WIDTH,GS_BATTLESHIP_BOARD_HEIGHT,GS_BATTLESHIP_PLAYERS)
+#define	GS_VALIDATE_BATTLE_COORDINATE(x,y,z,w,h,d)		(x < w && y < h && z < d)
+#define GS_BATTLESHIP_VALID(p,x,y)				GS_VALIDATE_BATTLE_COORDINATE(x,y,p,GS_BATTLESHIP_BOARD_WIDTH,GS_BATTLESHIP_BOARD_HEIGHT,GS_BATTLESHIP_PLAYERS)
 
 #ifdef __cplusplus
 extern "C"
