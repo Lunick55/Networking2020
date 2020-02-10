@@ -248,7 +248,7 @@ void BattleShipScene::input(a3_DemoState* demoState)
 
 void BattleShipScene::networkReceive(const a3_DemoState* demoState)
 {
-	Scene::networkReceive(demoState);
+	//Scene::networkReceive(demoState);
 	//Incoming packets to server from client.
 	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
 	{

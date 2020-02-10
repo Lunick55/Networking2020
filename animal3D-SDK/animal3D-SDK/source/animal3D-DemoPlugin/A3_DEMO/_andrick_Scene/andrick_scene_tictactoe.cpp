@@ -320,13 +320,40 @@ void TictactoeScene::input(a3_DemoState* demoState)
 
 void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 {
-	Scene::networkReceive(demoState);
+	//Scene::networkReceive(demoState);
 
 	//Incoming packets to server from client.
 	for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
 	{
 		switch (Client::spInstance->mpPacket->data[0])
 		{
+			case PacketEventId::DELIVER_PUBLIC_MESSAGE:
+			{
+				DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(Client::spInstance->mpPacket->data);
+
+				//TODO: Call message to print to console.
+				//std::cout << data->message << std::endl;
+				addToChatList((MessageType)data->msgType, std::string(data->message));
+				break;
+			}
+			case PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST:
+			{
+				SendPublicMessageRequestPacket* data = (SendPublicMessageRequestPacket*)(Client::spInstance->mpPacket->data);
+
+				SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(data->userId, data->message);
+
+				std::shared_ptr<User> user = Host::spInstance->getUserFromId(data->userId);
+				if (user != nullptr)
+				{
+					Host::spInstance->deliverPublicMessage(demoState, user, data->message);
+				}
+				else
+				{
+					//Couldn't find user!!!
+				}
+
+				break;
+			}
 			case PacketEventId::UPDATE_TICTAC_STATE:
 			{
 				UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
