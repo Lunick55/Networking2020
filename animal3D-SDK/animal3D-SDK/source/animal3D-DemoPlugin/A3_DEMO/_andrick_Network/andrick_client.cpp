@@ -165,6 +165,7 @@ void Client::receivePacket(const a3_DemoState* demoState)
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::BLACK);
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
+				demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
 			}
 			else if (Client::spInstance->mpClient->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer2Id)
 			{
@@ -172,6 +173,7 @@ void Client::receivePacket(const a3_DemoState* demoState)
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::NOT_YOUR_TURN;
+				demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
 			}
 			else
 			{

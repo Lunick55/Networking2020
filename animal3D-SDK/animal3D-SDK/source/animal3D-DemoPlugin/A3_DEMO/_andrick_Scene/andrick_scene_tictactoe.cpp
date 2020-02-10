@@ -327,23 +327,23 @@ void TictactoeScene::input(a3_DemoState* demoState)
 			else if (demoState->currentKey == a3key_comma)
 				mCurrentInput += ",";
 			else if (demoState->currentKey == a3key_numpad1)
-				mCurrentInput += std::stoi("1");
+				mCurrentInput += "1";
 			else if (demoState->currentKey == a3key_numpad2)
-				mCurrentInput += std::stoi("2");
+				mCurrentInput += "2";
 			else if (demoState->currentKey == a3key_numpad3)
-				mCurrentInput += std::stoi("3");
+				mCurrentInput += "3";
 			else if (demoState->currentKey == a3key_numpad4)
-				mCurrentInput += std::stoi("4");
+				mCurrentInput += "4";
 			else if (demoState->currentKey == a3key_numpad5)
-				mCurrentInput += std::stoi("5");
+				mCurrentInput += "5";
 			else if (demoState->currentKey == a3key_numpad6)
-				mCurrentInput += std::stoi("6");
+				mCurrentInput += "6";
 			else if (demoState->currentKey == a3key_numpad7)
-				mCurrentInput += std::stoi("7");
+				mCurrentInput += "7";
 			else if (demoState->currentKey == a3key_numpad8)
-				mCurrentInput += std::stoi("8");
+				mCurrentInput += "8";
 			else if (demoState->currentKey == a3key_numpad9)
-				mCurrentInput += std::stoi("9");
+				mCurrentInput += "9";
 			else
 			{
 				//This doesn't work for all keys since they're not completely mapped to ascii.
@@ -628,6 +628,7 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 			addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::BLACK);
 			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
 			mCurrentStep = TicTacStep::YOUR_TURN;
+			mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
 		}
 		else if (Host::spInstance->mpHost->getUserId() == mPlayer2Id)
 		{
@@ -635,6 +636,7 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 			addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
 			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
 			mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+			mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
 		}
 		else
 		{
