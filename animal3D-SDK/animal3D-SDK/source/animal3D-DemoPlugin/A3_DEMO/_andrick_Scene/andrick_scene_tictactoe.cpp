@@ -376,13 +376,14 @@ void TictactoeScene::render(const a3_DemoState* demoState)
 		// X | X | X
 		//---|---|---
 
-		row = std::string(std::string(" | ") + getXOSpace(i, 0) + std::string(" | ") + getXOSpace(i, 1) + std::string(" | ") + getXOSpace(i, 2));
+		row = std::string(std::string(" ") + getXOSpace(i, 0) + std::string(" | ") + getXOSpace(i, 1) + std::string(" | ") + getXOSpace(i, 2));
 		formatter.drawText(demoState, row, TextFormatter::WHITE, TextFormatter::TextAlign::UNALIGN, mBoardPosition);
 		mBoardPosition.y -= TextFormatter::LINE_HEIGHT;
 		formatter.drawText(demoState, "---|---|---", TextFormatter::WHITE, TextFormatter::TextAlign::UNALIGN, mBoardPosition);
+		mBoardPosition.y -= TextFormatter::LINE_HEIGHT;
 	}
 
-	row = std::string(std::string(" | ") + getXOSpace(2, 0) + std::string(" | ") + getXOSpace(2, 1) + std::string(" | ") + getXOSpace(2, 2));
+	row = std::string(std::string(" ") + getXOSpace(0, 0) + std::string(" | ") + getXOSpace(1, 1) + std::string(" | ") + getXOSpace(2, 2));
 	formatter.drawText(demoState, row, TextFormatter::WHITE, TextFormatter::TextAlign::UNALIGN, mBoardPosition);
 
 	mBoardPosition.y = mBoardStartY;
