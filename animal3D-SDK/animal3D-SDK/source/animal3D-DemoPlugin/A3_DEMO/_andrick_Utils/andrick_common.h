@@ -62,7 +62,6 @@ enum PacketEventId : unsigned char
 	UPDATE_TICTAC_STATE
 };
 
-
 //Client sends to server to join.
 #pragma pack(push, 1)
 struct RequestJoinServerPacket
@@ -240,12 +239,14 @@ struct DeliverPrivateMessagePacket
 struct UpdateTicTacState
 {
 	PacketEventId packetId;
-	char username[sMAX_USERNAME_LENGTH];
+	char tictactoeboard[3][3];
+	UserId fromUserId;
 
-	UpdateTicTacState(const std::string& name) :
-		packetId(PacketEventId::UPDATE_TICTAC_STATE)
+	UpdateTicTacState(UserId fromUser, char ticBoard[3][3]) :
+		packetId(PacketEventId::UPDATE_TICTAC_STATE),
+		fromUserId(fromUser)
 	{
-		strcpy(username, name.c_str());
+		memcpy(tictactoeboard, ticBoard, sizeof(char) * 9);
 	}
 };
 #pragma pack(pop)

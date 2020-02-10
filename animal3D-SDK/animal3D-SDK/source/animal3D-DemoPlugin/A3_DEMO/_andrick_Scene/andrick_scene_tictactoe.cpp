@@ -113,7 +113,7 @@ void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 	{
 		switch (Client::spInstance->mpPacket->data[0])
 		{
-			case PacketEventId::SET_AUTHORITY:
+			case PacketEventId::UPDATE_TICTAC_STATE :
 			{
 
 			}
