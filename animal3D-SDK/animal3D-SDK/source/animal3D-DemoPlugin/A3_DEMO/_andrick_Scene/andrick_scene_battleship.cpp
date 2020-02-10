@@ -140,15 +140,16 @@ void BattleShipScene::input(a3_DemoState* demoState)
 								{
 									//Asks opponent if we hit them or not
 									char game[2] = {(char)boardLetter, (char)boardNum};
-									AskIfBattleHit askPacket = AskIfBattleHit(Client::spInstance->mpClient->getUserId(), game);
 									
 									if (Client::isHost())
 									{
+										AskIfBattleHit askPacket = AskIfBattleHit(Host::spInstance->mpHost->getUserId(), game);
 										//broadcast. PLAYERS ARE ONLY ONES WHO CARE
 										Host::spInstance->broadcastPacket((const char*)(&askPacket), sizeof(UpdateBattleState));
 									}
 									else
 									{
+										AskIfBattleHit askPacket = AskIfBattleHit(Client::spInstance->mpClient->getUserId(), game);
 										//broadcast. PLAYERS ARE ONLY ONES WHO CARE
 										Client::spInstance->mpPeer->Send((const char*)(&askPacket), sizeof(UpdateBattleState),
 											PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
@@ -170,15 +171,16 @@ void BattleShipScene::input(a3_DemoState* demoState)
 							//send the packet to everyone containing gameState, and whoseTurn or whatever. PLAYERS SHOULD NOT RECIEVE
 							char game[GS_BATTLESHIP_PLAYERS][GS_BATTLESHIP_BOARD_WIDTH][GS_BATTLESHIP_BOARD_HEIGHT];
 							memcpy(game, mGame, sizeof(char) * (GS_BATTLESHIP_PLAYERS * GS_BATTLESHIP_BOARD_WIDTH * GS_BATTLESHIP_BOARD_HEIGHT));
-							UpdateBattleState updatePacket = UpdateBattleState(Client::spInstance->mpClient->getUserId(), game);
 
 							if (Client::isHost())
 							{
 								//broadcast
+								UpdateBattleState updatePacket = UpdateBattleState(Host::spInstance->mpHost->getUserId(), game);
 								Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateBattleState));
 							}
 							else
 							{
+								UpdateBattleState updatePacket = UpdateBattleState(Client::spInstance->mpClient->getUserId(), game);
 								Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateBattleState),
 									PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 									0, Client::spInstance->mHostAddress, false);

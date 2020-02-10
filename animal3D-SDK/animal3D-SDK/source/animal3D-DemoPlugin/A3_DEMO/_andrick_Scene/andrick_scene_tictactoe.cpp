@@ -274,15 +274,16 @@ void TictactoeScene::input(a3_DemoState* demoState)
 							//TODO: send the packet to everyone containing gameState, and whoseTurn or whatever
 							char game[3][3];
 							memcpy(game, mGame, sizeof(char) * 9);
-							UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
 
 							if (Client::isHost())
 							{
 								//broadcast
+								UpdateTicTacState updatePacket = UpdateTicTacState(Host::spInstance->mpHost->getUserId(), game);
 								Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateTicTacState));
 							}
 							else
 							{
+								UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
 								Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateTicTacState),
 									PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 									0, Client::spInstance->mHostAddress, false);
