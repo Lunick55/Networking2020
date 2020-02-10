@@ -58,6 +58,8 @@ enum PacketEventId : unsigned char
 
 	MUTE_USER,
 	UNMUTE_USER,
+
+	UPDATE_TICTAC_STATE
 };
 
 
@@ -232,6 +234,20 @@ struct DeliverPrivateMessagePacket
 		strcpy(message, newMessage.c_str()); 
 	}
 }; 
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct UpdateTicTacState
+{
+	PacketEventId packetId;
+	char username[sMAX_USERNAME_LENGTH];
+
+	UpdateTicTacState(const std::string& name) :
+		packetId(PacketEventId::UPDATE_TICTAC_STATE)
+	{
+		strcpy(username, name.c_str());
+	}
+};
 #pragma pack(pop)
 
 #endif

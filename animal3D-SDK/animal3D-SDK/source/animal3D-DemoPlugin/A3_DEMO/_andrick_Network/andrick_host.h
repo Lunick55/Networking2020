@@ -16,6 +16,7 @@ struct a3_DemoState;
 class Host
 {
 	friend class LobbyScene;
+	friend class TictactoeScene;
 
 public:
 	static bool isInitialized();
