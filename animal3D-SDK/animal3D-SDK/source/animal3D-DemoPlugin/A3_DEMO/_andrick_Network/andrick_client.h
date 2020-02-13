@@ -12,6 +12,7 @@ struct a3_DemoState;
 */
 class Client
 {
+	friend class Host;
 	friend class Scene;
 	friend class LobbyScene;
 	friend class TictactoeScene;
@@ -19,6 +20,7 @@ class Client
 
 public:
 	static bool isInitialized();
+	static void cleanup();
 	static bool initChatRoom(bool isHost, const std::string& serverIP, const std::string& clientUsername);
 	static bool isHost() { return spInstance->mIsHost; };
 
@@ -27,7 +29,6 @@ public:
 	void update(const a3_DemoState* demoState);
 
 	bool connectToServer();
-	void leaveServer();
 
 private:
 	static std::shared_ptr<Client> spInstance;
@@ -58,6 +59,8 @@ private:
 	void initUsernameMap(char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1], int connectedUsers);
 
 	void requestToJoinServer(const a3_DemoState* demoState);
+
+	void leaveServer();
 };
 
 #endif

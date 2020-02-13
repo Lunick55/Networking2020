@@ -12,6 +12,7 @@ const float TextFormatter::LETTER_SIZE = 0.023f;
 a3vec4 TextFormatter::WHITE = createColor(1.0f, 1.0f, 1.0f, 1.0f);
 a3vec4 TextFormatter::BLACK = createColor(0.0f, 0.0f, 0.0f, 1.0f);
 a3vec4 TextFormatter::RED = createColor(1.0f, 0.0f, 0.0f, 1.0f);
+a3vec4 TextFormatter::GREEN = createColor(0.0f, 1.0f, 0.0f, 1.0f);
 
 a3vec4 TextFormatter::createColor(float r, float g, float b, float a)
 {

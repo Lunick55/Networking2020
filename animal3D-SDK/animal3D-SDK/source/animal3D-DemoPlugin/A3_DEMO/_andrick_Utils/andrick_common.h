@@ -21,11 +21,21 @@ static const int sPORT = 5555;
 
 static const int MAX_INPUT_LENGTH = 512;
 
-static const std::string WHISPER_COMMAND = "WHISPER";
-static const std::string START_GAME_COMMAND = "GAME";
-static const std::string PLAY_TURN_COMMAND = "PLAY";
-static const std::string SELECT_PLAYERS_COMMAND = "PLAYERS";
-static const std::string LIST_USERS = "LIST";
+static const std::string WHISPER_COMMAND = "whisper";
+static const std::string START_GAME_COMMAND = "game";
+static const std::string PLAY_TURN_COMMAND = "play";
+static const std::string SELECT_PLAYERS_COMMAND = "players";
+static const std::string LIST_USERS_COMMAND = "list";
+
+static const std::string PLAY_TICTACTOE = "tic";
+static const std::string PLAY_BATTLE = "battle";
+
+enum class GameType : unsigned char
+{
+	NONE,
+	TICTAC,
+	BATTLESHIP
+};
 
 const enum class MessageType : unsigned char
 {

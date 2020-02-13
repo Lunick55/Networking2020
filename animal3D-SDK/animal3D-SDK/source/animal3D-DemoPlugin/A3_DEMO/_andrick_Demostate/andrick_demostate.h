@@ -9,6 +9,9 @@
 #include "A3_DEMO/_andrick_Scene/andrick_scene_manager.h"
 
 #include <memory>
+#include <sstream>
+#include <iostream>
+#include <string>
 
 // persistent demo state data structure
 struct a3_DemoState
@@ -32,9 +35,6 @@ struct a3_DemoState
 	a3real frameWidthInv, frameHeightInv, frameAspect;
 	a3i32 frameBorder;
 
-	bool isKeyHeld;
-	a3i32 currentKey;
-
 	//---------------------------------------------------------------------
 	// objects that have known or fixed instance count in the whole demo
 
@@ -46,6 +46,9 @@ struct a3_DemoState
 	a3_MouseInput mouse[1];
 	a3_KeyboardInput keyboard[1];
 	a3_XboxControllerInput xcontrol[4];
+
+	//New input in order this frame.
+	std::string newInput;
 
 	// pointer to fast trig table
 	a3f32 trigTable[4096 * 4];

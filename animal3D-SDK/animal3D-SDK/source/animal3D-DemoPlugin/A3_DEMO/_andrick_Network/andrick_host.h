@@ -23,6 +23,7 @@ class Host
 
 public:
 	static bool isInitialized();
+	static void cleanup();
 	static bool initChatRoom(const int port, const int maxUsers, const std::string& hostUsername);
 
 	explicit Host(const int port, const int maxUsers, const std::string& hostUsername);
@@ -37,7 +38,6 @@ public:
 
 	//Start the server
 	bool startChatRoom(const a3_DemoState* demoState);
-	void closeChatRoom();
 
 private:
 	static std::shared_ptr<Host> spInstance;
@@ -72,6 +72,10 @@ private:
 
 	void broadcastPacket(const char* packetData, std::size_t packetSize);
 	void sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress);
+
+	void serverTravel(const a3_DemoState* demoState, SceneId id);
+
+	void closeServer();
 };
 
 #endif

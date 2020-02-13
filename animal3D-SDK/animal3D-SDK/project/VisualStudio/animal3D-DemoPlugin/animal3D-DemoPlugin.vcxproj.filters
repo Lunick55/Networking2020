@@ -188,9 +188,6 @@
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Demostate\andrick_demostate.h">
       <Filter>Header Files\A3_DEMO\_andrick_demostate</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.h">
-      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_user.h">
       <Filter>Header Files\A3_DEMO\_andrick_network</Filter>
     </ClInclude>
@@ -220,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_Networking\a3_Networking_gs_tictactoe.h">
       <Filter>Header Files\A3_DEMO\a3_Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_tictactoe.h">
+      <Filter>Header Files\A3_DEMO\_andrick_util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

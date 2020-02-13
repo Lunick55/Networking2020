@@ -18,22 +18,23 @@ protected:
 	virtual void render(const a3_DemoState* demoState) override;
 
 private:
-	enum class GameType : a3byte
-	{
-		NONE,
-		TICTAC,
-		BATTLESHIP
-	};
-
 	enum class LobbyStep : a3byte
 	{
 		LEAVE_SERVER = -1,
-		LEAVE_SERVER_ARE_YOU_SURE,
+		LEAVE_SERVER_CONFIRM,
 		CHATROOM
 	};
 
 	LobbyStep mCurrentStep;
 	GameType mSelectedGame;
+	bool mInitSuccessful;
+
+	void handleInputChatRoom(a3_DemoState* demoState);
+	void handleInputLeaveServerConfirm(const a3_DemoState* demoState);
+
+	void handleUpdateLeaveServer(const a3_DemoState* demoState);
+
+	void handleNetworkSendChatRoomStep(const a3_DemoState* demoState);
 };
 
 #endif

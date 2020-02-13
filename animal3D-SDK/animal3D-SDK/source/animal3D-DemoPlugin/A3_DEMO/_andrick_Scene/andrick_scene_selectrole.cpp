@@ -11,270 +11,291 @@ SelectRoleScene::SelectRoleScene() :
 
 }
 
+//Initializing scene on entry
 void SelectRoleScene::enteringScene(const a3_DemoState* demoState) 
 {
+	Scene::enteringScene(demoState);
+
 	mCurrentStep = SelectRoleStep::IS_CLIENT_OR_HOST;
+	mIsHost = false;
 }
 
+//Input handling
 void SelectRoleScene::input(a3_DemoState* demoState)
 {
-	if (mCurrentStep == SelectRoleStep::IS_CLIENT_OR_HOST)
+	switch (mCurrentStep)
 	{
-		if (isKeyPressed(demoState, a3key_escape))
+	case SelectRoleStep::IS_CLIENT_OR_HOST:
+		handleInputIsHostOrClient(demoState);
+		break;
+	case SelectRoleStep::CLIENT_ENTER_USERNAME:
+		handleInputClientEnterUsername(demoState);
+		break;
+	case SelectRoleStep::CLIENT_ENTER_IP:
+		handleInputClientEnterIP(demoState);
+		break;
+	case SelectRoleStep::CLIENT_CONNECT_TO_SERVER:
+		handleInputClientConnectToServer(demoState);
+		break;
+	case SelectRoleStep::HOST_ENTER_USERNAME:
+		handleInputHostEnterUsername(demoState);
+		break;
+	case SelectRoleStep::HOST_MAX_CLIENTS:
+		handleInputHostMaxClients(demoState);
+		break;
+	case SelectRoleStep::HOST_INVALID_MAX_CLIENTS:
+		handleInputHostInvalidMaxClients(demoState);
+		break;
+	case SelectRoleStep::INVALID_USERNAME:
+		handleInputInvalidUsername(demoState);
+		break;
+	default:
+		return;
+	}
+}
+bool SelectRoleScene::handleInputEscape(a3_DemoState* demoState, SelectRoleStep targetStep)
+{
+	if (isKeyPressed(demoState, a3key_escape))
+	{
+		switch (targetStep)
 		{
+		case SelectRoleStep::CLOSE_PROGRAM:
 			demoState->exitFlag = 1;
-			return;
+		default:
+			mCurrentStep = targetStep;
 		}
-		else if (isKeyPressed(demoState, a3key_H))							//Host
-		{
-			mIsHost = true;
-			mCurrentStep = SelectRoleStep::HOST_ENTER_USERNAME;
-		}
-		else if (isKeyPressed(demoState, a3key_C))						//Client
-		{
-			mIsHost = false;
-			mCurrentStep = SelectRoleStep::CLIENT_ENTER_USERNAME;
-		}
+
+		return true;
 	}
-	else if (mCurrentStep == SelectRoleStep::HOST_ENTER_USERNAME)
+
+	return false;
+}
+void SelectRoleScene::handleInputIsHostOrClient(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, SelectRoleStep::CLOSE_PROGRAM)) return;
+
+	if (isKeyPressed(demoState, a3key_1))
 	{
-		if (isKeyPressed(demoState, a3key_escape))
-		{
-			mCurrentStep = SelectRoleStep::IS_CLIENT_OR_HOST;
-			return;
-		}
-		else if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
-		{
-			if (demoState->currentKey == a3key_enter)
-			{
-				if (!mCurrentInput.empty())
-				{
-					mCurrentStep = SelectRoleStep::HOST_MAX_CLIENTS;
-					mUsername = mCurrentInput;
-					mCurrentInput.clear();
-				}
-			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else
-			{
-				mCurrentInput += (char)(demoState->currentKey);
-			}
-		}
+		mIsHost = true;
+		mCurrentStep = SelectRoleStep::HOST_ENTER_USERNAME;
 	}
-	else if (mCurrentStep == SelectRoleStep::HOST_MAX_CLIENTS)
+	else if (isKeyPressed(demoState, a3key_2))
 	{
-		if (isKeyPressed(demoState, a3key_escape))
-		{
-			mCurrentStep = SelectRoleStep::HOST_ENTER_USERNAME;
-			return;
-		}
-		else if (a3keyboardIsChanged(demoState->keyboard, (a3_KeyboardKey)demoState->currentKey) > 0)
-		{
-			if (demoState->currentKey == a3key_enter)
-			{
-				mCurrentStep = SelectRoleStep::HOST_VALIDATE_MAX_CLIENTS;
-			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else
-			{
-				mCurrentInput += (char)(demoState->currentKey);
-			}
-		}
-	}
-	else if (mCurrentStep == SelectRoleStep::CLIENT_ENTER_USERNAME)
-	{
-		if (isKeyPressed(demoState, a3key_escape))
-		{
-			mCurrentStep = SelectRoleStep::IS_CLIENT_OR_HOST;
-			return;
-		}
-		else if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
-		{
-			if (demoState->currentKey == a3key_enter)
-			{
-				if (!mCurrentInput.empty())
-				{
-					mCurrentStep = SelectRoleStep::CLIENT_ENTER_IP;
-					mUsername = mCurrentInput;
-					mCurrentInput.clear();
-				}
-			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else
-			{
-				mCurrentInput += (char)(demoState->currentKey);
-			}
-		}
-	}
-	else if (mCurrentStep == SelectRoleStep::CLIENT_ENTER_IP)
-	{
-		if (isKeyPressed(demoState, a3key_escape))
-		{
-			mCurrentStep = SelectRoleStep::CLIENT_ENTER_USERNAME;
-			return;
-		}
-		else if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
-		{
-			if (demoState->currentKey == a3key_enter)
-			{
-				if (!mCurrentInput.empty())
-				{
-					mIP = mCurrentInput;
-					mCurrentInput.clear();
-					mCurrentStep = SelectRoleStep::CLIENT_VALIDATE_IP;
-				}
-			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else if (demoState->currentKey == a3key_period)
-			{
-				mCurrentInput += ".";
-			}
-			else
-			{
-				//This doesn't work for all keys since they're not completely mapped to ascii.
-				mCurrentInput += (char)(demoState->currentKey);
-			}
-		}
+		mIsHost = false;
+		mCurrentStep = SelectRoleStep::CLIENT_ENTER_USERNAME;
 	}
 }
-
-void SelectRoleScene::networkReceive(const a3_DemoState* demoState)
+void SelectRoleScene::handleInputClientEnterUsername(a3_DemoState* demoState)
 {
-	//Scene::networkReceive(demoState);
+	handleInputUsername(demoState);
 }
-
-void SelectRoleScene::update(const a3_DemoState* demoState)
+void SelectRoleScene::handleInputClientEnterIP(a3_DemoState* demoState)
 {
-	if (mCurrentStep == SelectRoleStep::HOST_ENTER_USERNAME)
+	if (handleInputEscape(demoState, SelectRoleStep::CLIENT_ENTER_USERNAME)) return;
+
+	if (isKeyPressed(demoState, a3key_enter))
 	{
-		if (mCurrentInput.size() > sMAX_USERNAME_LENGTH)
+		if (!mCurrentInput.empty())
 		{
-			mCurrentInput = mCurrentInput.substr(0, sMAX_USERNAME_LENGTH);
+			mIP = mCurrentInput;
+			mCurrentInput.clear();
+			mCurrentStep = SelectRoleStep::CLIENT_CONNECT_TO_SERVER;
 		}
 	}
-	else if (mCurrentStep == SelectRoleStep::HOST_VALIDATE_MAX_CLIENTS)
+	else
+	{
+		Scene::handleTyping(demoState, mCurrentInput);
+	}
+}
+void SelectRoleScene::handleInputClientConnectToServer(a3_DemoState* demoState)
+{
+	if (Client::initChatRoom(false, mIP, mUsername))
+	{
+		demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
+	}
+	else
+	{
+		if (handleInputEscape(demoState, SelectRoleStep::CLIENT_ENTER_USERNAME)) return;
+	}
+}
+void SelectRoleScene::handleInputHostEnterUsername(a3_DemoState* demoState)
+{
+	handleInputUsername(demoState);
+}
+void SelectRoleScene::handleInputHostMaxClients(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, SelectRoleStep::HOST_ENTER_USERNAME)) return;
+
+	if (isKeyPressed(demoState, a3key_enter))
 	{
 		int maxUsers;
-		try
+		if (!validateNumber(mCurrentInput, maxUsers))
 		{
-			maxUsers = std::stoi(mCurrentInput);
+			mCurrentStep = SelectRoleStep::HOST_INVALID_MAX_CLIENTS;
 		}
-		catch (...)
+		else
 		{
-			//Please enter a valid number!
-			mCurrentInput.clear();
-			maxUsers = sDEFAULT_MAX_USERS;
-			//mCurrentStep = HOST_MAX_CLIENTS;
-			return;
-		}
-
-		//INIT CHAT ROOM AND GO TO LOBBY SCENE
-		if (Client::initChatRoom(true, "127.0.0.1", mUsername) && Host::initChatRoom(sPORT, maxUsers, mUsername))
-		{
-			demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
+			if (Client::initChatRoom(true, "127.0.0.1", mUsername) && Host::initChatRoom(sPORT, maxUsers, mUsername))
+			{
+				demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
+			}
 		}
 	}
-	else if (mCurrentStep == SelectRoleStep::CLIENT_VALIDATE_IP)
+	else
 	{
-		//INIT CHAT ROOM AND GO TO LOBBY SCENE
-		if (Client::initChatRoom(false, mIP, mUsername))
-		{
-			demoState->mpSceneManager->switchToScene(demoState, SceneId::Lobby);
-		}
+		Scene::handleTyping(demoState, mCurrentInput);
 	}
 }
+void SelectRoleScene::handleInputHostInvalidMaxClients(a3_DemoState* demoState)
+{
+	handleInputHostMaxClients(demoState);
+}
+void SelectRoleScene::handleInputInvalidUsername(a3_DemoState* demoState)
+{
+	handleInputUsername(demoState);
+}
+void SelectRoleScene::handleInputUsername(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, SelectRoleStep::IS_CLIENT_OR_HOST)) return;
 
+	if (isKeyPressed(demoState, a3key_enter))
+	{
+		if (!validateUsername(mCurrentInput))
+		{
+			mCurrentStep = SelectRoleStep::INVALID_USERNAME;
+		}
+		else
+		{
+			mUsername = mCurrentInput;
+			mCurrentInput.clear();
+			mCurrentStep = SelectRoleStep::HOST_MAX_CLIENTS;
+		}
+	}
+	else
+	{
+		Scene::input(demoState);
+		std::cout << mCurrentInput << std::endl;
+	}
+}
+//void SelectRoleScene::handleInvalidInput(a3_DemoState* demoState)
+//{
+//	if (handleInputEscape(demoState, SelectRoleStep::IS_CLIENT_OR_HOST)) return;
+//
+//	Scene::handleTyping(demoState, mCurrentInput);
+//}
+
+//Incoming packet handling. Empty because we are not connected to a server in this scene
+void SelectRoleScene::networkReceive(const a3_DemoState* demoState)
+{
+}
+
+//Update handling. Empty because everything is input based in this scene
+void SelectRoleScene::update(const a3_DemoState* demoState)
+{
+}
+
+//Render handling
 void SelectRoleScene::render(const a3_DemoState* demoState)
 {
 	glClearColor(0.0f, 0.5f, 2.0f, 1.0f);
+
+	TextFormatter& textFormatter = TextFormatter::get();
+	textFormatter.setAlignment(TextFormatter::TextAlign::CENTER_X);
 
 	TextFormatter::get().setLine(0);
 	TextFormatter::get().drawText(demoState, "Select Role Scene", TextFormatter::WHITE, TextFormatter::TextAlign::CENTER_X);
 	TextFormatter::get().offsetLine(2);
 
-	if (mCurrentStep == SelectRoleStep::IS_CLIENT_OR_HOST)
+	switch (mCurrentStep)
 	{
-		TextFormatter::get().drawText(demoState, "Host(H) or Client(C)?", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
+	case SelectRoleStep::IS_CLIENT_OR_HOST:
+		renderIsHostOrClient(demoState, textFormatter);
+		break;
+	case SelectRoleStep::CLIENT_ENTER_USERNAME:
+		renderClientEnterUsername(demoState, textFormatter);
+		break;
+	case SelectRoleStep::CLIENT_ENTER_IP:
+		renderClientEnterIP(demoState, textFormatter);
+		break;
+	case SelectRoleStep::CLIENT_CONNECT_TO_SERVER:
+		renderClientConnectToServer(demoState, textFormatter);
+		break;
+	case SelectRoleStep::HOST_ENTER_USERNAME:
+		renderHostEnterUsername(demoState, textFormatter);
+		break;
+	case SelectRoleStep::HOST_MAX_CLIENTS:
+		renderHostMaxClients(demoState, textFormatter);
+		break;
+	case SelectRoleStep::HOST_INVALID_MAX_CLIENTS:
+		renderHostInvalidMaxClients(demoState, textFormatter);
+		break;
+	case SelectRoleStep::INVALID_USERNAME:
+		renderInvalidUsername(demoState, textFormatter);
+		break;
+	default:
+		return;
 	}
-	else if (mCurrentStep == SelectRoleStep::HOST_ENTER_USERNAME)
-	{
-		TextFormatter::get().drawText(demoState, "What do you want your username to be?", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
-		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
-	}
-	else if (mCurrentStep == SelectRoleStep::HOST_MAX_CLIENTS)
-	{
-		TextFormatter::get().drawText(demoState, "Max Clients?", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
-		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
-	}
-	else if (mCurrentStep == SelectRoleStep::HOST_VALIDATE_MAX_CLIENTS)
-	{
-		TextFormatter::get().drawText(demoState, "Please enter a valid number!", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
-		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
-	}
-	else if (mCurrentStep == SelectRoleStep::CLIENT_ENTER_USERNAME)
-	{
-		TextFormatter::get().drawText(demoState, "What do you want your username to be?", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
-		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
-	}
-	else if (mCurrentStep == SelectRoleStep::CLIENT_ENTER_IP)
-	{
-		TextFormatter::get().drawText(demoState, "What is the server ip?", TextFormatter::WHITE);
-		TextFormatter::get().offsetLine(2);
-		TextFormatter::get().drawText(demoState, mCurrentInput, TextFormatter::WHITE);
-	}
-
-	//TextFormatter::get().setLine(0);
-	//
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	TextFormatter::get().drawText(demoState, "Hello, world!", TextFormatter::WHITE);
-	//	TextFormatter::get().newLine();
-	//}
-	//
-	//TextFormatter::get().setLine(0);
-	//
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	TextFormatter::get().drawText(demoState, "Hello, world!", TextFormatter::WHITE, TextFormatter::TextAlign::RIGHT);
-	//	TextFormatter::get().newLine();
-	//}
-	//
-	//TextFormatter::get().setLine(0);
-	//
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	TextFormatter::get().drawText(demoState, "Hello, world!", TextFormatter::WHITE, TextFormatter::TextAlign::CENTER_X);
-	//	TextFormatter::get().newLine();
-	//}
-	//
-	//for (int i = 0; i < 10; ++i)
-	//{
-	//	a3vec3 randPos;
-	//	randPos.x = ((rand() % 100) / 50.0f) - 1.0f;
-	//	randPos.y = ((rand() % 100) / 50.0f) - 1.0f;
-	//	randPos.z = -1.0f;
-	//	TextFormatter::get().drawText(demoState, "Hello, world!", TextFormatter::createColor(1.0f, 0.0, 0.0, 1.0f), TextFormatter::TextAlign::UNALIGN, randPos);
-	//}
 }
 
+void SelectRoleScene::renderIsHostOrClient(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "Welcome! Select an option from the menu", TextFormatter::WHITE);
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, "(1) Host a server", TextFormatter::WHITE);
+	formatter.newLine();
+	formatter.drawText(demoState, "(2) Join a server", TextFormatter::WHITE);
+	formatter.offsetLine(2);
+}
+void SelectRoleScene::renderClientEnterUsername(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "You are a client!", TextFormatter::WHITE);
+	formatter.newLine();
+	renderUsername(demoState, formatter);
+}
+void SelectRoleScene::renderClientEnterIP(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "What is the server ip?", TextFormatter::WHITE);
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, mCurrentInput, TextFormatter::WHITE);
+}
+void SelectRoleScene::renderClientConnectToServer(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "Initializing client...", TextFormatter::WHITE);
+}
+void SelectRoleScene::renderHostEnterUsername(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "You are the host!", TextFormatter::WHITE);
+	formatter.newLine();
+	renderUsername(demoState, formatter);
+}
+void SelectRoleScene::renderHostMaxClients(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "How many clients can the server hold?", TextFormatter::WHITE);
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, mCurrentInput, TextFormatter::WHITE);
+}
+void SelectRoleScene::renderHostInvalidMaxClients(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "Please enter a valid number!", TextFormatter::WHITE);
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, mCurrentInput, TextFormatter::WHITE);
+}
+void SelectRoleScene::renderInvalidUsername(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "That username is invalid!", TextFormatter::RED);
+	formatter.newLine();
+	formatter.drawText(demoState, "Must be less than " + std::to_string(sMAX_USERNAME_LENGTH) + " chars and no spaces or commas.", TextFormatter::RED);
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, mCurrentInput, TextFormatter::WHITE);
+}
+void SelectRoleScene::renderUsername(const a3_DemoState* demoState, TextFormatter& formatter)
+{
+	formatter.drawText(demoState, "What do you want your username to be?", TextFormatter::WHITE);
+	formatter.offsetLine(2);
+	formatter.drawText(demoState, mCurrentInput, TextFormatter::WHITE);
+}
 
+//Outgoing packet handling. Empty because we are not connected to a server in this scene
 void SelectRoleScene::networkSend(const a3_DemoState* demoState)
 {
 

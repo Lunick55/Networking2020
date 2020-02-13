@@ -81,6 +81,13 @@ A3_INLINE a3ret a3keyboardIsHeldASCII(const a3_KeyboardInput *keyboard, const a3
 	return a3input_invalid;
 }
 
+A3_INLINE a3ret a3keyboardIsReleasedASCII(const a3_KeyboardInput* keyboard, const a3_KeyboardKey key)
+{
+	if (keyboard)
+		return (!keyboard->keyASCII.key[key] && keyboard->keyASCII0.key[key]);
+	return a3input_invalid;
+}
+
 A3_INLINE a3ret a3keyboardIsChangedASCII(const a3_KeyboardInput *keyboard, const a3byte key)
 {
 	if (keyboard)

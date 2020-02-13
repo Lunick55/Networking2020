@@ -5,7 +5,7 @@
 TictactoeScene::TictactoeScene() :
 	Scene(SceneId::Tictactoe),
 	mCurrentStep(TicTacStep::SELECT_PLAYERS),
-	mPlayer(PlayerType::SPECTATOR),
+	mPlayerType(PlayerType::SPECTATOR),
 	mPlayerSignature(gs_tictactoe_space_invalid),
 	mBoardPosition(TextFormatter::createVec3(-0.8f, 0.5f + TextFormatter::LINE_HEIGHT * 2.0f, -1.0f)),
 	mBoardStartY(0.5f + TextFormatter::LINE_HEIGHT * 2.0f),
@@ -16,464 +16,267 @@ TictactoeScene::TictactoeScene() :
 	mPlayer1Position(TextFormatter::createVec3(-0.8f, 0.5f + TextFormatter::LINE_HEIGHT * 4.0f, -1.0f)),
 	mPlayer2Position(TextFormatter::createVec3(-0.8f, 0.5f - TextFormatter::LINE_HEIGHT * 4.0f, -1.0f))
 {
-	gs_tictactoe_reset(mGame);
+	gs_tictactoe_reset(mTictacBoard);
+
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad1, {0, 0} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad2, {1, 0} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad3, {2, 0} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad4, {0, 1} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad5, {1, 1} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad6, {2, 1} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad7, {0, 2} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad8, {1, 2} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad9, {2, 2} });
+
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_1, {0, 0} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_2, {1, 0} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_3, {2, 0} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_4, {0, 1} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_5, {1, 1} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_6, {2, 1} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_7, {0, 2} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_8, {1, 2} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_9, {2, 2} });
 }
 
 void TictactoeScene::enteringScene(const a3_DemoState* demoState)
 {
+	Scene::enteringScene(demoState);
+
 	mCurrentStep = TicTacStep::SELECT_PLAYERS;
-	mPlayer = PlayerType::SPECTATOR; //for now
+	mPlayerType = PlayerType::SPECTATOR;
 	mPlayer1Id = INVALID_USER_ID;
 	mPlayer2Id = INVALID_USER_ID;
-	mPlayer1Username = "";
-	mPlayer2Username = "";
+	mPlayer1Username.clear();
+	mPlayer2Username.clear();
 }
 
 void TictactoeScene::input(a3_DemoState* demoState)
 {
-	if(mCurrentStep == TicTacStep::SELECT_PLAYERS)
+	switch (mCurrentStep)
 	{
-		//pick player names - /players, Andy608, Lunick55
-		if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
-		{
-			if (demoState->currentKey == a3key_enter)
-			{
-				if (!mCurrentInput.empty())
-				{
-					//commands
-					if (mCurrentInput[0] == '/')
-					{
-						std::size_t delimiterIndex = mCurrentInput.find_first_of(' ');
-						std::string currCommand = mCurrentInput.substr(1, delimiterIndex - 1);
-
-						//	/players Andy608, Lunick55
-
-						if (currCommand == SELECT_PLAYERS_COMMAND && Client::isHost())
-						{
-							std::string player1, player2;
-
-							for (std::size_t i = delimiterIndex + 1; i < mCurrentInput.length(); ++i)
-							{
-								if (mCurrentInput[i] != ',')
-								{
-									player1 += mCurrentInput[i];
-								}
-								else
-								{
-									delimiterIndex = i + 2;
-									break;
-								}
-							}
-
-							//  /PLAYERS Andy608, Hi
-
-							if (delimiterIndex < mCurrentInput.length())
-							{
-								player2 = mCurrentInput.substr(delimiterIndex);
-								int count = 0;
-								bool success = false;
-
-								auto iter = Host::spInstance->mpConnectedUsers.begin();
-								for (; iter != Host::spInstance->mpConnectedUsers.end(); ++iter)
-								{
-									if (iter->second->getUsername().compare(player1) == 0)
-									{
-										++count;
-									}
-								}
-
-								iter = Host::spInstance->mpConnectedUsers.begin();
-								for (; iter != Host::spInstance->mpConnectedUsers.end(); ++iter)
-								{
-									if (iter->second->getUsername().compare(player2) == 0)
-									{
-										++count;
-									}
-								}
-
-								if (count == 2)
-								{
-									//Start game
-									setupPlayers(player1, player2);
-								}
-								else
-								{
-									//invalid players
-									addToChatList(MessageType::PLAYER, "Invalid players. Try again.", 1, TextFormatter::BLACK);
-								}
-							}
-							else
-							{
-								//invalid player 2
-								addToChatList(MessageType::PLAYER, "Invalid players. Try again.", 1, TextFormatter::BLACK);
-							}
-						}
-					}
-					else
-					{
-						//Send chat message
-						if (Client::isHost())
-						{
-							Host::spInstance->deliverPublicMessage(demoState, Host::spInstance->mpHost, mCurrentInput);
-							mCurrentInput.clear();
-						}
-						else
-						{
-							Client::spInstance->sendPublicMessage(mCurrentInput);
-							mCurrentInput.clear();
-						}
-					}
-
-					mCurrentInput.clear();
-				}
-			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else if (demoState->currentKey == a3key_period)
-			{
-				mCurrentInput += ".";
-			}
-			else if (demoState->currentKey == a3key_slash)
-			{
-				mCurrentInput += "/";
-			}
-			else if (demoState->currentKey == a3key_comma)
-			{
-				mCurrentInput += ",";
-			}
-			else
-			{
-				//This doesn't work for all keys since they're not completely mapped to ascii.
-				mCurrentInput += (char)(demoState->currentKey);
-			}
-		}
+	case TicTacStep::SPECTATOR_LEAVE_SERVER_CONFIRM:
+		handleInputSpectatorLeaveServerConfirm(demoState);
+		break;
+	case TicTacStep::OPPONENT_LEAVE_SERVER_CONFIRM:
+		handleInputOpponentLeaveServerConfirm(demoState);
+		break;
+	case TicTacStep::SELECT_PLAYERS:
+		handleInputSelectPlayers(demoState);
+		break;
+	case TicTacStep::YOUR_TURN:
+		handleInputYourTurn(demoState);
+		break;
+	case TicTacStep::OPPONENTS_TURN:
+		handleInputOpponentsTurn(demoState);
+		break;
+	case TicTacStep::SPECTATOR:
+		handleInputSpectator(demoState);
+		break;
+	default:
+		break;
 	}
-	else if (mCurrentStep == TicTacStep::YOUR_TURN || mCurrentStep == TicTacStep::NOT_YOUR_TURN || mCurrentStep == TicTacStep::SPECTATING)
-	{
-		/*if (isKeyPressed(demoState, a3key_escape))
-		{
-			mCurrentStep = TictactoeScene::LEAVE_SERVER_ARE_YOU_SURE;
-			return;
-		}*/
-		if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
-		{
-			if (demoState->currentKey == a3key_enter)
-			{
-				if (!mCurrentInput.empty())
-				{
-					//commands
-					if (mCurrentInput[0] == '/')
-					{
-						std::size_t spaceIndex = mCurrentInput.find_first_of(' ');
-						std::string currCommand = mCurrentInput.substr(1, spaceIndex - 1);
-
-						if (currCommand == WHISPER_COMMAND)
-						{
-							std::string toUser;
-
-							for (std::size_t i = spaceIndex + 1; i < mCurrentInput.length() - 1; ++i)
-							{
-								if (mCurrentInput[i] != ',')
-								{
-									toUser += mCurrentInput[i];
-								}
-								else
-								{
-									std::size_t startIndex = (i + 2);
-									if (startIndex < mCurrentInput.length())
-									{
-										std::string secret = mCurrentInput.substr(startIndex);
-
-										//send a private message
-										if (Client::isHost())
-										{
-											Host::spInstance->deliverPersonalMessage(demoState, toUser, secret);
-											mCurrentInput.clear();
-										}
-										else
-										{
-											Client::spInstance->sendPrivateMessageRequest(secret, toUser);
-											mCurrentInput.clear();
-										}
-
-										return;
-									}
-								}
-							}
-						}
-						else if (currCommand == PLAY_TURN_COMMAND && mCurrentStep == TicTacStep::YOUR_TURN)
-						{
-							//    /PLAY 8 - extracting the 8 from the command
-							std::string boardSpace = mCurrentInput.substr(spaceIndex + 1, 1);
-
-							try
-							{
-								int boardIndex = std::stoi(boardSpace);
-
-								if (boardIndex > 0 && boardIndex <= 9)
-								{
-									gs_tictactoe_space_state result = gs_tictactoe_space_invalid;
-
-									switch (boardIndex)
-									{
-									case 1:
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 0);
-										break;
-									case 2:
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 0);
-										break;
-									case 3:	 
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 0);
-										break;
-									case 4:	  
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 1);
-										break;
-									case 5:	  
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 1);
-										break;
-									case 6:	  
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 1);
-										break;
-									case 7:	  
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 0, 2);
-										break;
-									case 8:	  
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 1, 2);
-										break;
-									case 9:	 
-										result = gs_tictactoe_setSpaceState(mGame, mPlayerSignature, 2, 2);
-										break;
-									default: 
-										break;
-									}
-
-									if (result == gs_tictactoe_space_invalid)
-									{
-										//Invalid move! Go again.
-										throw std::invalid_argument("That space is already taken or invalid! Go again.");
-									}
-									else
-									{
-										mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-									}
-								}
-								else
-								{
-									throw std::invalid_argument("Invalid move! Go again.");
-								}
-							}
-							catch (const std::invalid_argument& e)
-							{
-								//The user did not type in a valid number.
-								addToChatList(MessageType::PLAYER, e.what(), 1, TextFormatter::RED);
-								return;
-							}
-
-							//TODO: send the packet to everyone containing gameState, and whoseTurn or whatever
-							char game[3][3];
-							memcpy(game, mGame, sizeof(char) * 9);
-
-							if (Client::isHost())
-							{
-								//broadcast
-								UpdateTicTacState updatePacket = UpdateTicTacState(Host::spInstance->mpHost->getUserId(), game);
-								Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateTicTacState));
-							}
-							else
-							{
-								UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
-								Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateTicTacState),
-									PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-									0, Client::spInstance->mHostAddress, false);
-							}
-
-							return;
-						}
-						else if (currCommand == LIST_USERS)
-						{
-							mCurrentInput.clear();
-
-							//List users
-							if (Client::isHost())
-							{
-								Host::listUserInfoRequest(demoState);
-								return;
-							}
-							else
-							{
-								addToChatList(MessageType::EITHER, "You don't have permission for this command!");
-								return;
-							}
-						}
-					}
-					else
-					{
-						//Send chat message
-						//broadcastMessage(demoState, mCurrentInput);
-					}
-
-					mCurrentInput.clear();
-				}
-			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else if (demoState->currentKey == a3key_period)
-				mCurrentInput += ".";
-			else if (demoState->currentKey == a3key_slash)
-				mCurrentInput += "/";
-			else if (demoState->currentKey == a3key_comma)
-				mCurrentInput += ",";
-			else if (demoState->currentKey == a3key_numpad1)
-				mCurrentInput += "1";
-			else if (demoState->currentKey == a3key_numpad2)
-				mCurrentInput += "2";
-			else if (demoState->currentKey == a3key_numpad3)
-				mCurrentInput += "3";
-			else if (demoState->currentKey == a3key_numpad4)
-				mCurrentInput += "4";
-			else if (demoState->currentKey == a3key_numpad5)
-				mCurrentInput += "5";
-			else if (demoState->currentKey == a3key_numpad6)
-				mCurrentInput += "6";
-			else if (demoState->currentKey == a3key_numpad7)
-				mCurrentInput += "7";
-			else if (demoState->currentKey == a3key_numpad8)
-				mCurrentInput += "8";
-			else if (demoState->currentKey == a3key_numpad9)
-				mCurrentInput += "9";
-			else
-			{
-				//This doesn't work for all keys since they're not completely mapped to ascii.
-				mCurrentInput += (char)(demoState->currentKey);
-			}
-		}
-	}
-	//else if (mCurrentStep == TicTacStep::LEAVE_SERVER_ARE_YOU_SURE)
-	//{
-	//	if (isKeyPressed(demoState, a3key_Y))
-	//	{
-	//		mCurrentStep = TicTacStep::LEAVE_SERVER;
-	//		return;
-	//	}
-	//	else if (isKeyPressed(demoState, a3key_N))
-	//	{
-	//		mCurrentStep = TicTacStep::CHATROOM;
-	//		return;
-	//	}
-	//}
-	//else if (mCurrentStep == TicTacStep::RESET)
-	//{
-	//
-	//}
-	//else if (mCurrentStep == TicTacStep::EXIT)
-	//{
-	//
-	//}
 }
 
+const std::pair<int, int> TictactoeScene::getIndexOnBoard(a3_KeyboardKey key)
+{
+	auto iter = mKeypadToBoardMap.begin();
+	for (auto&& iter : mKeypadToBoardMap)
+	{
+		if (iter.first == key)
+		{
+			return iter.second;
+		}
+	}
+
+	iter = mNumbersToBoardMap.begin();
+	for (auto&& iter : mNumbersToBoardMap)
+	{
+		if (iter.first == key)
+		{
+			return iter.second;
+		}
+	}
+
+	return std::pair<int, int>(-1, -1);
+}
+
+void TictactoeScene::finishTurn(const a3_DemoState* demoState)
+{
+	char game[3][3];
+	memcpy(game, mTictacBoard, sizeof(char) * 9);
+
+	if (Client::isHost())
+	{
+		UpdateTicTacState updatePacket = UpdateTicTacState(Host::spInstance->mpHost->getUserId(), game);
+		Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateTicTacState));
+	}
+	else
+	{
+		UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
+		Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateTicTacState),
+			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+			0, Client::spInstance->mHostAddress, false);
+	}
+
+	mCurrentStep = TicTacStep::OPPONENTS_TURN;
+}
+
+bool TictactoeScene::handleInputEscape(const a3_DemoState* demoState, TicTacStep targetStep)
+{
+	if (isKeyPressed(demoState, a3key_escape))
+	{
+		mCurrentStep = targetStep;
+		return true;
+	}
+
+	return false;
+}
+void TictactoeScene::handleInputSpectatorLeaveServerConfirm(a3_DemoState* demoState)
+{
+	//if (isKeyPressed(demoState, a3key_Y))
+	//{
+	//	mCurrentStep = TicTacStep::LEAVE_SERVER;
+	//}
+	//else if (isKeyPressed(demoState, a3key_N))
+	//{
+	//	mCurrentStep = TicTacStep::SPECTATOR;
+	//}
+}
+void TictactoeScene::handleInputOpponentLeaveServerConfirm(a3_DemoState* demoState)
+{
+	//if (isKeyPressed(demoState, a3key_Y))
+	//{
+	//	mCurrentStep = TicTacStep::LEAVE_SERVER;
+	//}
+	//else if (isKeyPressed(demoState, a3key_N))
+	//{
+	//	mCurrentStep = TicTacStep::;
+	//}
+}
+void TictactoeScene::handleInputSelectPlayers(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, TicTacStep::SPECTATOR_LEAVE_SERVER_CONFIRM)) return;
+
+	if (isKeyPressed(demoState, a3key_enter))
+	{
+		if (!mCurrentInput.empty())
+		{
+			std::string command, commandResult;
+			if (processCommand(demoState, mCurrentInput, command, commandResult))
+			{
+				if (command.compare(SELECT_PLAYERS_COMMAND) == 0)
+				{
+					std::string player1, player2;
+					player1 = commandResult.substr(0, commandResult.find_first_of(',') - 1);
+					player2 = commandResult.substr(commandResult.find_first_of(',') + 1);
+
+					if (!setupPlayers(player1, player2))
+					{
+						addToChatList(MessageType::EITHER, "Something went wrong!", 1, TextFormatter::RED);
+						addToChatList(MessageType::EITHER, "Cannot create a game with those players.", 1, TextFormatter::RED);
+					}
+				}
+			}
+			else
+			{
+				sendPublicMessage(demoState, mCurrentInput, MessageType::EITHER);
+			}
+
+			mCurrentInput.clear();
+		}
+	}
+	else
+	{
+		Scene::input(demoState);
+	}
+}
+void TictactoeScene::handleInputYourTurn(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, TicTacStep::OPPONENT_LEAVE_SERVER_CONFIRM)) return;
+
+	if (isKeyPressed(demoState, a3key_enter))
+	{
+		if (!mCurrentInput.empty())
+		{
+			std::string command, commandOutput;
+			if (processCommand(demoState, mCurrentInput, command, commandOutput))
+			{
+				if (command.compare(PLAY_TURN_COMMAND) == 0)
+				{
+					const std::pair<int, int> boardLocation = getIndexOnBoard((a3_KeyboardKey)commandOutput[0]);
+					gs_tictactoe_space_state result = gs_tictactoe_setSpaceState(mTictacBoard, mPlayerSignature, boardLocation.first, boardLocation.second);
+
+					if (result == gs_tictactoe_space_invalid)
+					{
+						addToChatList(MessageType::PLAYER, "Invalid move! Go again.", 1, TextFormatter::RED);
+					}
+					else
+					{
+						finishTurn(demoState);
+					}
+				}
+			}
+			else
+			{
+				sendPublicMessage(demoState, mCurrentInput, MessageType::PLAYER);
+			}
+
+			mCurrentInput.clear();
+		}
+		else
+		{
+			Scene::input(demoState);
+		}
+	}
+}
+void TictactoeScene::handleInputOpponentsTurn(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, TicTacStep::OPPONENT_LEAVE_SERVER_CONFIRM)) return;
+
+	if (isKeyPressed(demoState, a3key_enter))
+	{
+		if (!mCurrentInput.empty())
+		{
+			std::string command, commandOutput;
+			if (!processCommand(demoState, mCurrentInput, command, commandOutput))
+			{
+				sendPublicMessage(demoState, mCurrentInput, MessageType::PLAYER);
+			}
+
+			mCurrentInput.clear();
+		}
+		else
+		{
+			Scene::input(demoState);
+		}
+	}
+}
+void TictactoeScene::handleInputSpectator(a3_DemoState* demoState)
+{
+	if (handleInputEscape(demoState, TicTacStep::SPECTATOR_LEAVE_SERVER_CONFIRM)) return;
+
+	if (isKeyPressed(demoState, a3key_enter))
+	{
+		if (!mCurrentInput.empty())
+		{
+			std::string command, commandResult;
+			if (!processCommand(demoState, mCurrentInput, command, commandResult))
+			{
+				sendPublicMessage(demoState, mCurrentInput, MessageType::SPECTOR);
+			}
+
+			mCurrentInput.clear();
+		}
+	}
+	else
+	{
+		Scene::input(demoState);
+	}
+}
 void TictactoeScene::networkReceive(const a3_DemoState* demoState)
 {
 	Scene::networkReceive(demoState);
-
-	//Incoming packets to server from client.
-	//for (Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive(); Client::spInstance->mpPacket; Client::spInstance->mpPeer->DeallocatePacket(Client::spInstance->mpPacket), Client::spInstance->mpPacket = Client::spInstance->mpPeer->Receive())
-	//{
-	//	switch (Client::spInstance->mpPacket->data[0])
-	//	{
-	//		case PacketEventId::DELIVER_PUBLIC_MESSAGE:
-	//		{
-	//			DeliverPublicMessagePacket* data = (DeliverPublicMessagePacket*)(Client::spInstance->mpPacket->data);
-	//
-	//			//TODO: Call message to print to console.
-	//			//std::cout << data->message << std::endl;
-	//			addToChatList((MessageType)data->msgType, std::string(data->message));
-	//			break;
-	//		}
-	//		case PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST:
-	//		{
-	//			SendPublicMessageRequestPacket* data = (SendPublicMessageRequestPacket*)(Client::spInstance->mpPacket->data);
-	//
-	//			SendPublicMessageRequestPacket messagePacket = SendPublicMessageRequestPacket(data->userId, data->message);
-	//
-	//			std::shared_ptr<User> user = Host::spInstance->getUserFromId(data->userId);
-	//			if (user != nullptr)
-	//			{
-	//				Host::spInstance->deliverPublicMessage(demoState, user, data->message);
-	//			}
-	//			else
-	//			{
-	//				//Couldn't find user!!!
-	//			}
-	//
-	//			break;
-	//		}
-	//		//case PacketEventId::UPDATE_TICTAC_STATE:
-	//		//{
-	//		//	UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
-	//
-	//		//	for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
-	//		//	{
-	//		//		for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
-	//		//		{
-	//		//			gs_tictactoe_setSpaceState(mGame, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
-	//		//		}
-	//		//	}
-	//
-	//		//	if (Client::isHost())
-	//		//	{
-	//		//		Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
-	//		//	}
-	//
-	//		//	if (updatedPacket->fromUserId == mPlayer1Id && mPlayer == PlayerType::PLAYER2)
-	//		//	{
-	//		//		addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::RED);
-	//		//		mCurrentStep = TicTacStep::YOUR_TURN;
-	//		//	}
-	//		//	else if (updatedPacket->fromUserId == mPlayer2Id && mPlayer == PlayerType::PLAYER1)
-	//		//	{
-	//		//		addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::RED);
-	//		//		mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-	//		//	}
-	//		//}
-	//		//case PacketEventId::SETUP_TICTAC_GAME:
-	//		//{
-	//		//	SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
-	//
-	//		//	mPlayer1Id = setupTictacPacket->player1Id;
-	//		//	mPlayer2Id = setupTictacPacket->player2Id;
-	//		//	mPlayer1Username = setupTictacPacket->player1Username;
-	//		//	mPlayer2Username = setupTictacPacket->player2Username;
-	//
-	//		//	if (Client::spInstance->mpClient->getUserId() == mPlayer1Id)
-	//		//	{
-	//		//		mPlayer = PlayerType::PLAYER1;
-	//		//		//You are player 1!
-	//		//		addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::RED);
-	//		//		addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
-	//		//		mCurrentStep = TicTacStep::YOUR_TURN;
-	//		//	}
-	//		//	else if (Client::spInstance->mpClient->getUserId() == mPlayer2Id)
-	//		//	{
-	//		//		mPlayer = PlayerType::PLAYER2;
-	//		//		addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::RED);
-	//		//		addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::RED);
-	//		//		mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-	//		//	}
-	//		//	else
-	//		//	{
-	//		//		mPlayer = PlayerType::SPECTATOR;
-	//		//		addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::RED);
-	//		//		mCurrentStep = TicTacStep::SPECTATING;
-	//		//	}
-	//		//}
-	//		default:
-	//			break;
-	//	}
-	//}
 }
 
 void TictactoeScene::update(const a3_DemoState* demoState)
@@ -483,7 +286,7 @@ void TictactoeScene::update(const a3_DemoState* demoState)
 
 void TictactoeScene::render(const a3_DemoState* demoState)
 {
-	glClearColor(1.0f, 0.5f, 0.2f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	TextFormatter& formatter = TextFormatter::get();
 	formatter.setAlignment(TextFormatter::TextAlign::LEFT);
@@ -527,11 +330,11 @@ void TictactoeScene::render(const a3_DemoState* demoState)
 		{
 			formatter.drawText(demoState, iter->text, iter->color);
 		}
-		else if (iter->type == MessageType::PLAYER && mPlayer == PlayerType::PLAYER1 || mPlayer == PlayerType::PLAYER2)
+		else if (iter->type == MessageType::PLAYER && mPlayerType == PlayerType::PLAYER1 || mPlayerType == PlayerType::PLAYER2)
 		{
 			formatter.drawText(demoState, iter->text, iter->color);
 		}
-		else if (iter->type == MessageType::SPECTOR && mPlayer == PlayerType::SPECTATOR)
+		else if (iter->type == MessageType::SPECTOR && mPlayerType == PlayerType::SPECTATOR)
 		{
 			formatter.drawText(demoState, iter->text, iter->color);
 		}
@@ -548,11 +351,11 @@ void TictactoeScene::render(const a3_DemoState* demoState)
 
 char TictactoeScene::getXOSpace(int i, int j)
 {
-	if (mGame[i][j] == gs_tictactoe_space_o)
+	if (mTictacBoard[i][j] == gs_tictactoe_space_o)
 		return 'O';
-	else if (mGame[i][j] == gs_tictactoe_space_x)
+	else if (mTictacBoard[i][j] == gs_tictactoe_space_x)
 		return 'X';
-	else if (mGame[i][j] == gs_tictactoe_space_open)
+	else if (mTictacBoard[i][j] == gs_tictactoe_space_open)
 		return ' ';
 
 	return ' ';
@@ -606,7 +409,7 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 			}
 			else if (player2Id == Host::spInstance->mpHost->getUserId())
 			{
-				mCurrentStep = TicTacStep::NOT_YOUR_TURN;
+				mCurrentStep = TicTacStep::OPPONENTS_TURN;
 			}
 
 			SetupTictacGame setupTictacPacket = SetupTictacGame(
@@ -614,63 +417,66 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 				player2Id, Host::spInstance->mpConnectedUsers.at(player2Id)->getUsername());
 
 			Host::spInstance->broadcastPacket((const char*)(&setupTictacPacket), sizeof(SetupTictacGame));
-		}
 
-		//Setup game for host
-		mPlayer1Id = player1Id;
-		mPlayer2Id = player2Id;
-		mPlayer1Username = player1;
-		mPlayer2Username = player2;
-		
-		if (Host::spInstance->mpHost->getUserId() == mPlayer1Id)
-		{
-			mPlayer = PlayerType::PLAYER1;
-			//You are player 1!
-			addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::BLACK);
-			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
-			mCurrentStep = TicTacStep::YOUR_TURN;
-			mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
-		}
-		else if (Host::spInstance->mpHost->getUserId() == mPlayer2Id)
-		{
-			mPlayer = PlayerType::PLAYER2;
-			addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
-			addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
-			mCurrentStep = TicTacStep::NOT_YOUR_TURN;
-			mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
-		}
-		else
-		{
-			mPlayer = PlayerType::SPECTATOR;
-			addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::BLACK);
-			mCurrentStep = TicTacStep::SPECTATING;
+			//Setup game for host
+			mPlayer1Id = player1Id;
+			mPlayer2Id = player2Id;
+			mPlayer1Username = player1;
+			mPlayer2Username = player2;
+
+			if (Host::spInstance->mpHost->getUserId() == mPlayer1Id)
+			{
+				mPlayerType = PlayerType::PLAYER1;
+				//You are player 1!
+				addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::BLACK);
+				addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
+				mCurrentStep = TicTacStep::YOUR_TURN;
+				mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
+			}
+			else if (Host::spInstance->mpHost->getUserId() == mPlayer2Id)
+			{
+				mPlayerType = PlayerType::PLAYER2;
+				addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
+				addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
+				mCurrentStep = TicTacStep::OPPONENTS_TURN;
+				mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
+			}
+			else
+			{
+				mPlayerType = PlayerType::SPECTATOR;
+				addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::BLACK);
+				mCurrentStep = TicTacStep::SPECTATOR;
+			}
+
+			return true;
 		}
 	}
+
 	return false;
 }
 
-void TictactoeScene::broadcastMessage(const a3_DemoState* demoState, std::string message)
-{
-	MessageType type = MessageType::EITHER;
-
-	switch (mPlayer)
-	{
-	case PlayerType::PLAYER1:
-	case PlayerType::PLAYER2:
-		type = MessageType::PLAYER;
-		break;
-	case PlayerType::SPECTATOR:
-		type = MessageType::SPECTOR;
-		break;
-	}
-
-	if (Client::isHost())
-	{
-		DeliverPublicMessagePacket deliverPacket = DeliverPublicMessagePacket(Host::spInstance->mpHost->getUserId(), message, type);
-		Host::spInstance->broadcastPacket((const char*)(&deliverPacket), sizeof(DeliverPublicMessagePacket));
-	}
-	else
-	{
-		Client::spInstance->sendPublicMessage(message, type);
-	}
-}
+//void TictactoeScene::broadcastMessage(const a3_DemoState* demoState, std::string message)
+//{
+//	MessageType type = MessageType::EITHER;
+//
+//	switch (mPlayer)
+//	{
+//	case PlayerType::PLAYER1:
+//	case PlayerType::PLAYER2:
+//		type = MessageType::PLAYER;
+//		break;
+//	case PlayerType::SPECTATOR:
+//		type = MessageType::SPECTOR;
+//		break;
+//	}
+//
+//	if (Client::isHost())
+//	{
+//		DeliverPublicMessagePacket deliverPacket = DeliverPublicMessagePacket(Host::spInstance->mpHost->getUserId(), message, type);
+//		Host::spInstance->broadcastPacket((const char*)(&deliverPacket), sizeof(DeliverPublicMessagePacket));
+//	}
+//	else
+//	{
+//		Client::spInstance->sendPublicMessage(message, type);
+//	}
+//}

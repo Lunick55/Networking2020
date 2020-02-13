@@ -394,8 +394,6 @@ A3DYLIBSYMBOL void a3demoCB_keyPress(a3_DemoState *demoState, a3i32 virtualKey)
 {
 	// persistent state update
 	a3keyboardSetState(demoState->keyboard, (a3_KeyboardKey)virtualKey, a3input_down);
-	demoState->currentKey = virtualKey;
-	demoState->isKeyHeld = false;
 }
 
 // any key is held
@@ -403,8 +401,6 @@ A3DYLIBSYMBOL void a3demoCB_keyHold(a3_DemoState *demoState, a3i32 virtualKey)
 {
 	// persistent state update
 	a3keyboardSetState(demoState->keyboard, (a3_KeyboardKey)virtualKey, a3input_down);
-	demoState->currentKey = virtualKey;
-	demoState->isKeyHeld = true;
 }
 
 // any key is released
@@ -412,19 +408,20 @@ A3DYLIBSYMBOL void a3demoCB_keyRelease(a3_DemoState *demoState, a3i32 virtualKey
 {
 	// persistent state update
 	a3keyboardSetState(demoState->keyboard, (a3_KeyboardKey)virtualKey, a3input_up);
-	demoState->currentKey = virtualKey;
-	demoState->isKeyHeld = false;
 }
 
 // ASCII key is pressed (immediately preceded by "any key" pressed call above)
 // NOTE: there is no release counterpart
 A3DYLIBSYMBOL void a3demoCB_keyCharPress(a3_DemoState *demoState, a3i32 asciiKey)
 {
-	
 	//a3ui32 demoSubMode = demoState->demoSubMode[demoState->demoMode];
 	//const a3ui32 demoSubModeCount = demoState->demoSubModeCount[demoState->demoMode];
 	//const a3ui32 demoOutput = demoState->demoOutputMode[demoState->demoMode][demoSubMode];
 	//const a3ui32 demoOutputCount = demoState->demoOutputCount[demoState->demoMode][demoSubMode];
+
+	std::stringstream s;
+	s << (a3byte)asciiKey;
+	demoState->newInput += s.str();
 
 	// persistent state update
 	a3keyboardSetStateASCII(demoState->keyboard, (a3byte)asciiKey);

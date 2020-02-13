@@ -67,6 +67,7 @@ void SceneManager::switchToScene(const a3_DemoState* demoState, enum class Scene
 void SceneManager::input(a3_DemoState* demoState)
 {
 	mpCurrentScene->input(demoState);
+	demoState->newInput.clear();
 }
 
 void SceneManager::networkReceive(const a3_DemoState* demoState)

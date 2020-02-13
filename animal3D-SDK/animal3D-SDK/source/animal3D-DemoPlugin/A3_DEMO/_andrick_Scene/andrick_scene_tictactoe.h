@@ -24,17 +24,17 @@ protected:
 
 private:
 	bool setupPlayers(std::string player1, std::string player2);
-	void broadcastMessage(const a3_DemoState* demoState, std::string message);
+	//void broadcastMessage(const a3_DemoState* demoState, std::string message);
 
-	gs_tictactoe mGame;
 	enum class TicTacStep : a3byte
 	{
-		EXIT = -1,
+		LEAVE_SERVER = -1,
+		SPECTATOR_LEAVE_SERVER_CONFIRM,
+		OPPONENT_LEAVE_SERVER_CONFIRM,
 		SELECT_PLAYERS,
 		YOUR_TURN,		//Currently your turn to play
-		NOT_YOUR_TURN,	//When it's the other person's turn, this player can chat
-		SPECTATING,
-		RESET
+		OPPONENTS_TURN,	//When it's the other person's turn, this player can chat
+		SPECTATOR
 	};
 
 	enum class PlayerType : a3byte
@@ -44,8 +44,13 @@ private:
 		SPECTATOR
 	};
 
+	std::map<a3_KeyboardKey, std::pair<int, int>> mKeypadToBoardMap;
+	std::map<a3_KeyboardKey, std::pair<int, int>> mNumbersToBoardMap;
+
+	gs_tictactoe mTictacBoard;
+
 	TicTacStep mCurrentStep;
-	PlayerType mPlayer;
+	PlayerType mPlayerType;
 	gs_tictactoe_space_state mPlayerSignature;
 
 	a3vec3 mBoardPosition;
@@ -58,7 +63,20 @@ private:
 	std::string mPlayer1Username;
 	std::string mPlayer2Username;
 
+
+	void handleInputSpectatorLeaveServerConfirm(a3_DemoState* demoState);
+	void handleInputOpponentLeaveServerConfirm(a3_DemoState* demoState);
+	void handleInputSelectPlayers(a3_DemoState* demoState);
+	void handleInputYourTurn(a3_DemoState* demoState);
+	void handleInputOpponentsTurn(a3_DemoState* demoState);
+	void handleInputSpectator(a3_DemoState* demoState);
+
+	bool handleInputEscape(const a3_DemoState* demoState, TicTacStep targetStep);
+
+
 	char getXOSpace(int i, int j);
+	const std::pair<int, int> getIndexOnBoard(a3_KeyboardKey key);
+	void finishTurn(const a3_DemoState* demoState);
 };
 
 #endif

@@ -25,7 +25,7 @@ void BattleShipScene::input(a3_DemoState* demoState)
 		//pick player names - /players, Andy608, Lunick55
 		if (Client::isHost())
 		{
-			if (demoState->currentKey == a3key_enter)
+			if (isKeyPressed(demoState, a3key_enter))
 			{
 				if (!mCurrentInput.empty())
 				{
@@ -80,170 +80,100 @@ void BattleShipScene::input(a3_DemoState* demoState)
 			mCurrentStep = TictactoeScene::LEAVE_SERVER_ARE_YOU_SURE;
 			return;
 		}*/
-		if (isKeyPressed(demoState, (a3_KeyboardKey)demoState->currentKey))
+		if (isKeyPressed(demoState, a3key_enter))
 		{
-			if (demoState->currentKey == a3key_enter)
+			if (!mCurrentInput.empty())
 			{
-				if (!mCurrentInput.empty())
+				//commands
+				if (mCurrentInput[0] == '/')
 				{
-					//commands
-					if (mCurrentInput[0] == '/')
+					std::size_t spaceIndex = mCurrentInput.find_first_of(' ');
+					std::string currCommand = mCurrentInput.substr(1, spaceIndex - 1);
+
+					if (currCommand == PLAY_TURN_COMMAND && mCurrentStep == BattleStep::YOUR_TURN)
 					{
-						std::size_t spaceIndex = mCurrentInput.find_first_of(' ');
-						std::string currCommand = mCurrentInput.substr(1, spaceIndex - 1);
-
-						if (currCommand == WHISPER_COMMAND)
+						//		/PLAY B8 - extracting the B & 8 from the command
+						std::string boardSpace = mCurrentInput.substr(spaceIndex + 1, 2);
+						// A-J = 65-74	 |	 1-10
+						try
 						{
-							std::string toUser;
+							unsigned char boardLetter = boardSpace[0];
+							unsigned char boardNum = boardSpace[1];
 
-							for (std::size_t i = spaceIndex + 1; i < mCurrentInput.length() - 1; ++i)
+							if (gs_checkers_getSpaceState(mGame, 1, boardLetter, boardNum) == gs_battleship_space_state::gs_battleship_space_open)
 							{
-								if (mCurrentInput[i] != ',')
+								//Asks opponent if we hit them or not
+								char game[2] = {(char)boardLetter, (char)boardNum};
+								
+								if (Client::isHost())
 								{
-									toUser += mCurrentInput[i];
+									AskIfBattleHit askPacket = AskIfBattleHit(Host::spInstance->mpHost->getUserId(), game);
+									//broadcast. PLAYERS ARE ONLY ONES WHO CARE
+									Host::spInstance->broadcastPacket((const char*)(&askPacket), sizeof(UpdateBattleState));
 								}
 								else
 								{
-									std::size_t startIndex = (i + 2);
-									if (startIndex < mCurrentInput.length())
-									{
-										std::string secret = mCurrentInput.substr(startIndex);
-
-										//send a private message
-										if (Client::isHost())
-										{
-											Host::spInstance->deliverPersonalMessage(demoState, toUser, secret);
-											mCurrentInput.clear();
-										}
-										else
-										{
-											Client::spInstance->sendPrivateMessageRequest(secret, toUser);
-											mCurrentInput.clear();
-										}
-
-										return;
-									}
+									AskIfBattleHit askPacket = AskIfBattleHit(Client::spInstance->mpClient->getUserId(), game);
+									//broadcast. PLAYERS ARE ONLY ONES WHO CARE
+									Client::spInstance->mpPeer->Send((const char*)(&askPacket), sizeof(UpdateBattleState),
+										PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+										0, Client::spInstance->mHostAddress, false);
 								}
-							}
-						}
-						else if (currCommand == PLAY_TURN_COMMAND && mCurrentStep == BattleStep::YOUR_TURN)
-						{
-							//		/PLAY B8 - extracting the B & 8 from the command
-							std::string boardSpace = mCurrentInput.substr(spaceIndex + 1, 2);
-							// A-J = 65-74	 |	 1-10
-							try
-							{
-								unsigned char boardLetter = boardSpace[0];
-								unsigned char boardNum = boardSpace[1];
 
-								if (gs_checkers_getSpaceState(mGame, 1, boardLetter, boardNum) == gs_battleship_space_state::gs_battleship_space_open)
-								{
-									//Asks opponent if we hit them or not
-									char game[2] = {(char)boardLetter, (char)boardNum};
-									
-									if (Client::isHost())
-									{
-										AskIfBattleHit askPacket = AskIfBattleHit(Host::spInstance->mpHost->getUserId(), game);
-										//broadcast. PLAYERS ARE ONLY ONES WHO CARE
-										Host::spInstance->broadcastPacket((const char*)(&askPacket), sizeof(UpdateBattleState));
-									}
-									else
-									{
-										AskIfBattleHit askPacket = AskIfBattleHit(Client::spInstance->mpClient->getUserId(), game);
-										//broadcast. PLAYERS ARE ONLY ONES WHO CARE
-										Client::spInstance->mpPeer->Send((const char*)(&askPacket), sizeof(UpdateBattleState),
-											PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-											0, Client::spInstance->mHostAddress, false);
-									}
-
-									mCurrentStep = BattleStep::NOT_YOUR_TURN;
-								}
-								else
-								{
-									throw std::invalid_argument("Invalid space!");
-								}
-							}
-							catch (...)
-							{
-								//The user did not type in a valid number.
-							}
-
-							//send the packet to everyone containing gameState, and whoseTurn or whatever. PLAYERS SHOULD NOT RECIEVE
-							char game[GS_BATTLESHIP_PLAYERS][GS_BATTLESHIP_BOARD_WIDTH][GS_BATTLESHIP_BOARD_HEIGHT];
-							memcpy(game, mGame, sizeof(char) * (GS_BATTLESHIP_PLAYERS * GS_BATTLESHIP_BOARD_WIDTH * GS_BATTLESHIP_BOARD_HEIGHT));
-
-							if (Client::isHost())
-							{
-								//broadcast
-								UpdateBattleState updatePacket = UpdateBattleState(Host::spInstance->mpHost->getUserId(), game);
-								Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateBattleState));
+								mCurrentStep = BattleStep::NOT_YOUR_TURN;
 							}
 							else
 							{
-								UpdateBattleState updatePacket = UpdateBattleState(Client::spInstance->mpClient->getUserId(), game);
-								Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateBattleState),
-									PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
-									0, Client::spInstance->mHostAddress, false);
+								throw std::invalid_argument("Invalid space!");
 							}
-
-							return;
 						}
-						else if (currCommand == LIST_USERS)
+						catch (...)
 						{
-							mCurrentInput.clear();
-
-							//List users
-							if (Client::isHost())
-							{
-								Host::listUserInfoRequest(demoState);
-								return;
-							}
-							else
-							{
-								addToChatList(MessageType::EITHER, "You don't have permission for this command!");
-								return;
-							}
+							//The user did not type in a valid number.
 						}
-					}
-					else
-					{
-						//Send chat message
+
+						//send the packet to everyone containing gameState, and whoseTurn or whatever. PLAYERS SHOULD NOT RECIEVE
+						char game[GS_BATTLESHIP_PLAYERS][GS_BATTLESHIP_BOARD_WIDTH][GS_BATTLESHIP_BOARD_HEIGHT];
+						memcpy(game, mGame, sizeof(char) * (GS_BATTLESHIP_PLAYERS * GS_BATTLESHIP_BOARD_WIDTH * GS_BATTLESHIP_BOARD_HEIGHT));
+
 						if (Client::isHost())
 						{
-							Host::spInstance->deliverPublicMessage(demoState, Host::spInstance->mpHost, mCurrentInput);
-							mCurrentInput.clear();
+							//broadcast
+							UpdateBattleState updatePacket = UpdateBattleState(Host::spInstance->mpHost->getUserId(), game);
+							Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateBattleState));
 						}
 						else
 						{
-							Client::spInstance->sendPublicMessage(mCurrentInput);
-							mCurrentInput.clear();
+							UpdateBattleState updatePacket = UpdateBattleState(Client::spInstance->mpClient->getUserId(), game);
+							Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateBattleState),
+								PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+								0, Client::spInstance->mHostAddress, false);
 						}
-					}
 
-					mCurrentInput.clear();
+						return;
+					}
 				}
+				else
+				{
+					//Send chat message
+					if (Client::isHost())
+					{
+						Host::spInstance->deliverPublicMessage(demoState, Host::spInstance->mpHost, mCurrentInput);
+						mCurrentInput.clear();
+					}
+					else
+					{
+						Client::spInstance->sendPublicMessage(mCurrentInput);
+						mCurrentInput.clear();
+					}
+				}
+
+				mCurrentInput.clear();
 			}
-			else if (demoState->currentKey == a3key_backspace && mCurrentInput.size() > 0)
-			{
-				mCurrentInput = mCurrentInput.substr(0, mCurrentInput.size() - 1);
-			}
-			else if (demoState->currentKey == a3key_period)
-			{
-				mCurrentInput += ".";
-			}
-			else if (demoState->currentKey == a3key_slash)
-			{
-				mCurrentInput += "/";
-			}
-			else if (demoState->currentKey == a3key_comma)
-			{
-				mCurrentInput += ",";
-			}
-			else
-			{
-				//This doesn't work for all keys since they're not completely mapped to ascii.
-				mCurrentInput += (char)(demoState->currentKey);
-			}
+		}
+		else 
+		{
+			Scene::input(demoState);
 		}
 	}
 }
