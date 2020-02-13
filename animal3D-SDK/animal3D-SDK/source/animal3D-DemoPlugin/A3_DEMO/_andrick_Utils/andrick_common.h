@@ -7,6 +7,7 @@
 
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/MessageIdentifiers.h>
+#include <A3_DEMO/a3_Networking/a3_Networking_gs_tictactoe.h>
 
 typedef char UserId;
 
@@ -271,14 +272,14 @@ struct DeliverPrivateMessagePacket
 struct UpdateTicTacState
 {
 	PacketEventId packetId;
-	char tictactoeboard[3][3];
+	gs_tictactoe_space_state tictactoeboard[3][3];
 	UserId fromUserId;
 
-	UpdateTicTacState(UserId fromUser, char ticBoard[3][3]) :
+	UpdateTicTacState(UserId fromUser, gs_tictactoe_space_state ticBoard[3][3]) :
 		packetId(PacketEventId::UPDATE_TICTAC_STATE),
 		fromUserId(fromUser)
 	{
-		memcpy(tictactoeboard, ticBoard, sizeof(char) * 9);
+		memcpy(tictactoeboard, ticBoard, sizeof(gs_tictactoe_space_state) * 9);
 	}
 };
 #pragma pack(pop)

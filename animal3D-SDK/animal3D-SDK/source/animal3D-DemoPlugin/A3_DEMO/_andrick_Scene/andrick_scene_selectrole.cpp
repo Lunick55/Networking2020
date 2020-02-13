@@ -87,7 +87,7 @@ void SelectRoleScene::handleInputIsHostOrClient(a3_DemoState* demoState)
 }
 void SelectRoleScene::handleInputClientEnterUsername(a3_DemoState* demoState)
 {
-	handleInputUsername(demoState);
+	handleInputUsername(demoState, SelectRoleStep::CLIENT_ENTER_IP);
 }
 void SelectRoleScene::handleInputClientEnterIP(a3_DemoState* demoState)
 {
@@ -104,7 +104,7 @@ void SelectRoleScene::handleInputClientEnterIP(a3_DemoState* demoState)
 	}
 	else
 	{
-		Scene::handleTyping(demoState, mCurrentInput);
+		Scene::input(demoState);
 	}
 }
 void SelectRoleScene::handleInputClientConnectToServer(a3_DemoState* demoState)
@@ -120,7 +120,7 @@ void SelectRoleScene::handleInputClientConnectToServer(a3_DemoState* demoState)
 }
 void SelectRoleScene::handleInputHostEnterUsername(a3_DemoState* demoState)
 {
-	handleInputUsername(demoState);
+	handleInputUsername(demoState, SelectRoleStep::HOST_MAX_CLIENTS);
 }
 void SelectRoleScene::handleInputHostMaxClients(a3_DemoState* demoState)
 {
@@ -143,7 +143,7 @@ void SelectRoleScene::handleInputHostMaxClients(a3_DemoState* demoState)
 	}
 	else
 	{
-		Scene::handleTyping(demoState, mCurrentInput);
+		Scene::input(demoState);
 	}
 }
 void SelectRoleScene::handleInputHostInvalidMaxClients(a3_DemoState* demoState)
@@ -152,9 +152,16 @@ void SelectRoleScene::handleInputHostInvalidMaxClients(a3_DemoState* demoState)
 }
 void SelectRoleScene::handleInputInvalidUsername(a3_DemoState* demoState)
 {
-	handleInputUsername(demoState);
+	if (mIsHost)
+	{
+		handleInputUsername(demoState, SelectRoleStep::HOST_MAX_CLIENTS);
+	}
+	else
+	{
+		handleInputUsername(demoState, SelectRoleStep::CLIENT_ENTER_IP);
+	}
 }
-void SelectRoleScene::handleInputUsername(a3_DemoState* demoState)
+void SelectRoleScene::handleInputUsername(a3_DemoState* demoState, SelectRoleStep nextStep)
 {
 	if (handleInputEscape(demoState, SelectRoleStep::IS_CLIENT_OR_HOST)) return;
 
@@ -168,7 +175,7 @@ void SelectRoleScene::handleInputUsername(a3_DemoState* demoState)
 		{
 			mUsername = mCurrentInput;
 			mCurrentInput.clear();
-			mCurrentStep = SelectRoleStep::HOST_MAX_CLIENTS;
+			mCurrentStep = nextStep;
 		}
 	}
 	else
@@ -284,7 +291,7 @@ void SelectRoleScene::renderInvalidUsername(const a3_DemoState* demoState, TextF
 {
 	formatter.drawText(demoState, "That username is invalid!", TextFormatter::RED);
 	formatter.newLine();
-	formatter.drawText(demoState, "Must be less than " + std::to_string(sMAX_USERNAME_LENGTH) + " chars and no spaces or commas.", TextFormatter::RED);
+	formatter.drawText(demoState, "Must be between 1 and " + std::to_string(sMAX_USERNAME_LENGTH) + " chars and no spaces or commas.", TextFormatter::RED);
 	formatter.offsetLine(2);
 	formatter.drawText(demoState, mCurrentInput, TextFormatter::WHITE);
 }

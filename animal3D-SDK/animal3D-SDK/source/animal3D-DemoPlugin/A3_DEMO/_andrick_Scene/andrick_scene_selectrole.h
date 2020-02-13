@@ -50,7 +50,7 @@ private:
 	void handleInputHostInvalidMaxClients(a3_DemoState* demoState);
 	void handleInputInvalidUsername(a3_DemoState* demoState);
 
-	void handleInputUsername(a3_DemoState* demoState);
+	void handleInputUsername(a3_DemoState* demoState, SelectRoleStep rollBack);
 	//void handleInvalidInput(a3_DemoState* demoState);
 
 

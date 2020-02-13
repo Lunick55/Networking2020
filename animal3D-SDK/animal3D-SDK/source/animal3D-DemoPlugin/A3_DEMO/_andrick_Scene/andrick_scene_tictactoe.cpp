@@ -103,17 +103,14 @@ const std::pair<int, int> TictactoeScene::getIndexOnBoard(a3_KeyboardKey key)
 
 void TictactoeScene::finishTurn(const a3_DemoState* demoState)
 {
-	char game[3][3];
-	memcpy(game, mTictacBoard, sizeof(char) * 9);
-
 	if (Client::isHost())
 	{
-		UpdateTicTacState updatePacket = UpdateTicTacState(Host::spInstance->mpHost->getUserId(), game);
+		UpdateTicTacState updatePacket = UpdateTicTacState(Host::spInstance->mpHost->getUserId(), mTictacBoard);
 		Host::spInstance->broadcastPacket((const char*)(&updatePacket), sizeof(UpdateTicTacState));
 	}
 	else
 	{
-		UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), game);
+		UpdateTicTacState updatePacket = UpdateTicTacState(Client::spInstance->mpClient->getUserId(), mTictacBoard);
 		Client::spInstance->mpPeer->Send((const char*)(&updatePacket), sizeof(UpdateTicTacState),
 			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 			0, Client::spInstance->mHostAddress, false);
@@ -168,13 +165,12 @@ void TictactoeScene::handleInputSelectPlayers(a3_DemoState* demoState)
 				if (command.compare(SELECT_PLAYERS_COMMAND) == 0)
 				{
 					std::string player1, player2;
-					player1 = commandResult.substr(0, commandResult.find_first_of(',') - 1);
+					player1 = commandResult.substr(0, commandResult.find_first_of(','));
 					player2 = commandResult.substr(commandResult.find_first_of(',') + 1);
 
 					if (!setupPlayers(player1, player2))
 					{
-						addToChatList(MessageType::EITHER, "Something went wrong!", 1, TextFormatter::RED);
-						addToChatList(MessageType::EITHER, "Cannot create a game with those players.", 1, TextFormatter::RED);
+						addToChatList(MessageType::EITHER, "Cannot create a game.", 1, TextFormatter::RED);
 					}
 				}
 			}
@@ -224,10 +220,10 @@ void TictactoeScene::handleInputYourTurn(a3_DemoState* demoState)
 
 			mCurrentInput.clear();
 		}
-		else
-		{
-			Scene::input(demoState);
-		}
+	}
+	else
+	{
+		Scene::input(demoState);
 	}
 }
 void TictactoeScene::handleInputOpponentsTurn(a3_DemoState* demoState)
@@ -246,10 +242,10 @@ void TictactoeScene::handleInputOpponentsTurn(a3_DemoState* demoState)
 
 			mCurrentInput.clear();
 		}
-		else
-		{
-			Scene::input(demoState);
-		}
+	}
+	else
+	{
+		Scene::input(demoState);
 	}
 }
 void TictactoeScene::handleInputSpectator(a3_DemoState* demoState)
@@ -313,7 +309,7 @@ void TictactoeScene::render(const a3_DemoState* demoState)
 		mBoardPosition.y -= TextFormatter::LINE_HEIGHT;
 	}
 
-	row = std::string(std::string(" ") + getXOSpace(0, 0) + std::string(" | ") + getXOSpace(1, 1) + std::string(" | ") + getXOSpace(2, 2));
+	row = std::string(std::string(" ") + getXOSpace(2, 0) + std::string(" | ") + getXOSpace(2, 1) + std::string(" | ") + getXOSpace(2, 2));
 	formatter.drawText(demoState, row, TextFormatter::WHITE, TextFormatter::TextAlign::UNALIGN, mBoardPosition);
 
 	mBoardPosition.y = mBoardStartY;
@@ -370,13 +366,14 @@ void TictactoeScene::networkSend(const a3_DemoState* demoState)
 //Can only ever be called from the host
 bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 {
-	if (player1.compare(player2) == 0)
-	{
-		//Players cant be the same;
-		return false;
-	}
-	else
-	{
+	//if (player1.compare(player2) == 0)
+	//{
+	//	//Players cant be the same;
+	//	addToChatList(MessageType::EITHER, "That player can't play by himself!", 1, TextFormatter::RED);
+	//	return false;
+	//}
+	//else
+	//{
 		std::map<UserId, std::shared_ptr<User>>::iterator iter = Host::spInstance->mpConnectedUsers.begin();
 		UserId player1Id = -1;
 		UserId player2Id = -1;
@@ -428,30 +425,30 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 			{
 				mPlayerType = PlayerType::PLAYER1;
 				//You are player 1!
-				addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::BLACK);
-				addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
+				addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::GREEN);
+				addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::WHITE);
 				mCurrentStep = TicTacStep::YOUR_TURN;
 				mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
 			}
 			else if (Host::spInstance->mpHost->getUserId() == mPlayer2Id)
 			{
 				mPlayerType = PlayerType::PLAYER2;
-				addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::BLACK);
-				addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::BLACK);
+				addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::GREEN);
+				addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::WHITE);
 				mCurrentStep = TicTacStep::OPPONENTS_TURN;
 				mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
 			}
 			else
 			{
 				mPlayerType = PlayerType::SPECTATOR;
-				addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::BLACK);
+				addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::WHITE);
 				mCurrentStep = TicTacStep::SPECTATOR;
 			}
 
 			return true;
 		}
-	}
-
+	//}
+	//
 	return false;
 }
 

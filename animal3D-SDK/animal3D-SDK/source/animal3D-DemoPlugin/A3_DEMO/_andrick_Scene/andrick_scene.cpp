@@ -120,7 +120,7 @@ bool Scene::processCommand(const a3_DemoState* demoState, const std::string& inp
 
 	std::size_t spaceIndex = input.find_first_of(' ');
 	std::string commandWithSpace = input.substr(1, spaceIndex);
-	std::string commandArgs = input.substr(commandWithSpace.size());
+	std::string commandArgs = input.substr(commandWithSpace.size() + 1);
 
 	command = commandWithSpace.substr(0, commandWithSpace.size() - 1);
 
@@ -235,10 +235,10 @@ bool Scene::processSelectPlayersCommand(const a3_DemoState* demoState, const std
 		std::string playerNames[OPPONENT_COUNT];
 		std::size_t commaIndex = commandArgs.find_first_of(',');
 
-		if ((commaIndex + 1) < commandArgs.size())
+		if ((commaIndex + 2) < commandArgs.size())
 		{
 			playerNames[0] = commandArgs.substr(0, commaIndex);
-			playerNames[1] = commandArgs.substr(commaIndex + 1);
+			playerNames[1] = commandArgs.substr(commaIndex + 2);
 		}
 
 		int playersFound = 0;
@@ -286,7 +286,8 @@ void Scene::sendPublicMessage(const a3_DemoState* demoState, const std::string& 
 
 bool Scene::validateUsername(std::string& input)
 {
-	return (input.length() <= sMAX_USERNAME_LENGTH 
+	return (input.length() <= sMAX_USERNAME_LENGTH
+		&& (input.length() >= 1)
 		&& (input.find(' ') == std::string::npos) 
 		&& (input.find(',') == std::string::npos));
 }
