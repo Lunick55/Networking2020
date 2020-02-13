@@ -294,7 +294,7 @@ struct SetupTictacGame
 	char player2Username[sMAX_MESSAGE_LENGTH];
 
 	SetupTictacGame(UserId player1, const std::string& player1Name, UserId player2, const std::string& player2Name) :
-		packetId(PacketEventId::UPDATE_TICTAC_STATE),
+		packetId(PacketEventId::SETUP_TICTAC_GAME),
 		player1Id(player1),
 		player2Id(player2)
 	{

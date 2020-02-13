@@ -166,6 +166,8 @@ void Client::receivePacket(const a3_DemoState* demoState)
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
 			}
+
+			break;
 		}
 		case PacketEventId::SETUP_TICTAC_GAME:
 		{
@@ -199,6 +201,8 @@ void Client::receivePacket(const a3_DemoState* demoState)
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::WHITE);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SPECTATOR;
 			}
+
+			break;
 		}
 		default:
 			demoState->mpSceneManager->mpCurrentScene->addToChatList(MessageType::EITHER, "Yo, ~I just got a packet, ~I just got a packet! ~I just got a packet, ~don't know; ~what it's; ~from!");

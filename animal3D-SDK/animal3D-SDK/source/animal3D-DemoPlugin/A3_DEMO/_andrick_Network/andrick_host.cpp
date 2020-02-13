@@ -214,68 +214,72 @@ void Host::receivePacket(const a3_DemoState* demoState)
 
 		case PacketEventId::UNMUTE_USER:
 			break;
-		//case PacketEventId::UPDATE_TICTAC_STATE:
-		//{
-		//	UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Host::spInstance->mpPacket->data);
-		//
-		//	for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
-		//	{
-		//		for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
-		//		{
-		//			gs_tictactoe_setSpaceState(demoState->mpSceneManager->mpTictactoe->mTictacBoard, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
-		//		}
-		//	}
-		//
-		//	if (Client::isHost())
-		//	{
-		//		Host::spInstance->broadcastPacket((const char*)(&Host::spInstance->mpPacket), sizeof(UpdateTicTacState));
-		//	}
-		//
-		//	if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2)
-		//	{
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::GREEN);
-		//		demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
-		//	}
-		//	else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id &&
-		//		demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
-		//	{
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
-		//		demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
-		//	}
-		//}
-		//case PacketEventId::SETUP_TICTAC_GAME:
-		//{
-		//	SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Host::spInstance->mpPacket->data);
-		//
-		//	demoState->mpSceneManager->mpTictactoe->mPlayer1Id = setupTictacPacket->player1Id;
-		//	demoState->mpSceneManager->mpTictactoe->mPlayer2Id = setupTictacPacket->player2Id;
-		//	demoState->mpSceneManager->mpTictactoe->mPlayer1Username = setupTictacPacket->player1Username;
-		//	demoState->mpSceneManager->mpTictactoe->mPlayer2Username = setupTictacPacket->player2Username;
-		//
-		//	if (Host::spInstance->mpHost->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer1Id)
-		//	{
-		//		demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::PLAYER1;
-		//		//You are player 1!
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::GREEN);
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::WHITE);
-		//		demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
-		//		demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
-		//	}
-		//	else if (Host::spInstance->mpHost->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer2Id)
-		//	{
-		//		demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::PLAYER2;
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::GREEN);
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::WHITE);
-		//		demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
-		//		demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
-		//	}
-		//	else
-		//	{
-		//		demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::SPECTATOR;
-		//		demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::WHITE);
-		//		demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SPECTATOR;
-		//	}
-		//}
+		case PacketEventId::UPDATE_TICTAC_STATE:
+		{
+			UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
+
+			for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
+			{
+				for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
+				{
+					gs_tictactoe_setSpaceState(demoState->mpSceneManager->mpTictactoe->mTictacBoard, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
+				}
+			}
+
+			if (Client::isHost())
+			{
+				Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
+			}
+
+			if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2)
+			{
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::GREEN);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
+			}
+			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id &&
+				demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
+			{
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
+			}
+
+			break;
+		}
+		case PacketEventId::SETUP_TICTAC_GAME:
+		{
+			SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
+
+			demoState->mpSceneManager->mpTictactoe->mPlayer1Id = setupTictacPacket->player1Id;
+			demoState->mpSceneManager->mpTictactoe->mPlayer2Id = setupTictacPacket->player2Id;
+			demoState->mpSceneManager->mpTictactoe->mPlayer1Username = setupTictacPacket->player1Username;
+			demoState->mpSceneManager->mpTictactoe->mPlayer2Username = setupTictacPacket->player2Username;
+
+			if (Client::spInstance->mpClient->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer1Id)
+			{
+				demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::PLAYER1;
+				//You are player 1!
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 1! Congrats! - X", 2, TextFormatter::GREEN);
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::WHITE);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
+				demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
+			}
+			else if (Client::spInstance->mpClient->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer2Id)
+			{
+				demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::PLAYER2;
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::GREEN);
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Type \"/play (1-9 on numpad)\" to pick your spot", 2, TextFormatter::WHITE);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
+				demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_o;
+			}
+			else
+			{
+				demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::SPECTATOR;
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::SPECTOR, "You are a spectator :)", 2, TextFormatter::WHITE);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SPECTATOR;
+			}
+
+			break;
+		}
 		case ID_NEW_INCOMING_CONNECTION:
 			//this just eats raknets trash
 			break;
