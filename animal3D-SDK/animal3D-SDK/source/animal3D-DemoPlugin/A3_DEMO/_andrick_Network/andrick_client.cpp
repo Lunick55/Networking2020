@@ -144,7 +144,7 @@ void Client::receivePacket(const a3_DemoState* demoState)
 
 			for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
 			{
-				for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
+				for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; j++)
 				{
 					gs_tictactoe_setSpaceState(demoState->mpSceneManager->mpTictactoe->mTictacBoard, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
 				}
