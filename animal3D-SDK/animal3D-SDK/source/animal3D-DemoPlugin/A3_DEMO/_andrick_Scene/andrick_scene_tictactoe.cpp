@@ -322,14 +322,15 @@ void TictactoeScene::handleInputYourTurn(a3_DemoState* demoState)
 				if (command.compare(PLAY_TURN_COMMAND) == 0)
 				{
 					const std::pair<int, int> boardLocation = getIndexOnBoard((a3_KeyboardKey)commandOutput[0]);
-					gs_tictactoe_space_state result = gs_tictactoe_setSpaceState(mTictacBoard, mPlayerSignature, boardLocation.first, boardLocation.second);
+					gs_tictactoe_space_state result = gs_tictactoe_getSpaceState(mTictacBoard, boardLocation.first, boardLocation.second);
 
-					if (result == gs_tictactoe_space_invalid)
+					if (result != gs_tictactoe_space_open)
 					{
 						addToChatList(MessageType::PLAYER, "Invalid move! Go again.", 1, TextFormatter::RED);
 					}
 					else
 					{
+						gs_tictactoe_setSpaceState(mTictacBoard, mPlayerSignature, boardLocation.first, boardLocation.second);
 						finishTurn(demoState);
 					}
 				}
