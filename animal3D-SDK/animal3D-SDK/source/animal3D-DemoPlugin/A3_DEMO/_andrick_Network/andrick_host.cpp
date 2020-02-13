@@ -228,17 +228,25 @@ void Host::receivePacket(const a3_DemoState* demoState)
 
 			Host::spInstance->broadcastPacket((const char*)(&Host::spInstance->mpPacket), sizeof(UpdateTicTacState));
 
-			if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2)
+			if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2 ||
+				updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
 			{
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::GREEN);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
 			}
-			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id &&
-				demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
+			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER2)
 			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
-				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " just made a move!", 1, TextFormatter::WHITE);
 			}
+			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER1)
+			{
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " just made a move!", 1, TextFormatter::WHITE);
+			}
+			//else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
+			//{
+			//	demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
+			//	demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
+			//}
 
 			break;
 		}
