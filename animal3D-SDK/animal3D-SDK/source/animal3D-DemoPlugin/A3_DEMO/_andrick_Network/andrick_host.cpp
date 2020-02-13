@@ -216,20 +216,17 @@ void Host::receivePacket(const a3_DemoState* demoState)
 			break;
 		case PacketEventId::UPDATE_TICTAC_STATE:
 		{
-			UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Client::spInstance->mpPacket->data);
+			UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Host::spInstance->mpPacket->data);
 
 			for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
 			{
-				for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; i++)
+				for (int j = 0; i < GS_TICTACTOE_BOARD_WIDTH; j++)
 				{
 					gs_tictactoe_setSpaceState(demoState->mpSceneManager->mpTictactoe->mTictacBoard, (gs_tictactoe_space_state)updatedPacket->tictactoeboard[i][j], i, j);
 				}
 			}
 
-			if (Client::isHost())
-			{
-				Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
-			}
+			Host::spInstance->broadcastPacket((const char*)(&Host::spInstance->mpPacket), sizeof(UpdateTicTacState));
 
 			if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2)
 			{
@@ -247,14 +244,14 @@ void Host::receivePacket(const a3_DemoState* demoState)
 		}
 		case PacketEventId::SETUP_TICTAC_GAME:
 		{
-			SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Client::spInstance->mpPacket->data);
+			SetupTictacGame* setupTictacPacket = (SetupTictacGame*)(Host::spInstance->mpPacket->data);
 
 			demoState->mpSceneManager->mpTictactoe->mPlayer1Id = setupTictacPacket->player1Id;
 			demoState->mpSceneManager->mpTictactoe->mPlayer2Id = setupTictacPacket->player2Id;
 			demoState->mpSceneManager->mpTictactoe->mPlayer1Username = setupTictacPacket->player1Username;
 			demoState->mpSceneManager->mpTictactoe->mPlayer2Username = setupTictacPacket->player2Username;
 
-			if (Client::spInstance->mpClient->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer1Id)
+			if (Host::spInstance->mpHost->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer1Id)
 			{
 				demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::PLAYER1;
 				//You are player 1!
@@ -263,7 +260,7 @@ void Host::receivePacket(const a3_DemoState* demoState)
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
 				demoState->mpSceneManager->mpTictactoe->mPlayerSignature = gs_tictactoe_space_state::gs_tictactoe_space_x;
 			}
-			else if (Client::spInstance->mpClient->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer2Id)
+			else if (Host::spInstance->mpHost->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer2Id)
 			{
 				demoState->mpSceneManager->mpTictactoe->mPlayerType = TictactoeScene::PlayerType::PLAYER2;
 				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "You are player 2! Congrats! - O", 2, TextFormatter::GREEN);
