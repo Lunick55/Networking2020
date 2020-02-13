@@ -150,45 +150,48 @@ void Client::receivePacket(const a3_DemoState* demoState)
 				}
 			}
 
-			if (demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER2)
+			if (!Client::isHost())
 			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " won!", 1, TextFormatter::YELLOW);
-				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
-				gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
-				return;
-			}
-			else if ((demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER1))
-			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " won!", 1, TextFormatter::YELLOW);
-				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
-				gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
-				return;
-			}
+				if (demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER2)
+				{
+					demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " won!", 1, TextFormatter::YELLOW);
+					demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
+					gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
+					return;
+				}
+				else if ((demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER1))
+				{
+					demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " won!", 1, TextFormatter::YELLOW);
+					demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
+					gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
+					return;
+				}
 
-			//if (Client::isHost())
-			//{
-			//	Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
-			//}
+				//if (Client::isHost())
+				//{
+				//	Host::spInstance->broadcastPacket((const char*)(&Client::spInstance->mpPacket), sizeof(UpdateTicTacState));
+				//}
 
-			if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2 ||
-				updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
-			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::GREEN);
-				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
+				if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2 ||
+					updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
+				{
+					demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "It's your turn!", 1, TextFormatter::GREEN);
+					demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::YOUR_TURN;
+				}
+				else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER2)
+				{
+					demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " just made a move!", 1, TextFormatter::WHITE);
+				}
+				else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER1)
+				{
+					demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " just made a move!", 1, TextFormatter::WHITE);
+				}
+				//else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
+				//{
+				//	demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
+				//	demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
+				//}
 			}
-			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER2)
-			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " just made a move!", 1, TextFormatter::WHITE);
-			}
-			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER1)
-			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " just made a move!", 1, TextFormatter::WHITE);
-			}
-			//else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
-			//{
-			//	demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, "Your turn has ended.", 1, TextFormatter::WHITE);
-			//	demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::OPPONENTS_TURN;
-			//}
 
 			break;
 		}

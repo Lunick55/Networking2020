@@ -217,7 +217,9 @@ void Host::receivePacket(const a3_DemoState* demoState)
 		case PacketEventId::UPDATE_TICTAC_STATE:
 		{
 			UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Host::spInstance->mpPacket->data);
-			Host::spInstance->broadcastPacket((const char*)(&Host::spInstance->mpPacket), sizeof(UpdateTicTacState));
+
+			UpdateTicTacState sendPacket = UpdateTicTacState(Host::spInstance->mpHost->getUserId(), updatedPacket->tictactoeboard);
+			Host::spInstance->broadcastPacket((const char*)(&sendPacket), sizeof(UpdateTicTacState));
 
 			for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
 			{
@@ -229,14 +231,14 @@ void Host::receivePacket(const a3_DemoState* demoState)
 
 			if (demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER2)
 			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " won!", 1, TextFormatter::YELLOW);
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " won!", 1, TextFormatter::YELLOW);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
 				gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
 				return;
 			}
 			else if ((demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER1))
 			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " won!", 1, TextFormatter::YELLOW);
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " won!", 1, TextFormatter::YELLOW);
 				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
 				gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
 				return;
@@ -250,11 +252,11 @@ void Host::receivePacket(const a3_DemoState* demoState)
 			}
 			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER2)
 			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " just made a move!", 1, TextFormatter::WHITE);
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " just made a move!", 1, TextFormatter::WHITE);
 			}
 			else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType != TictactoeScene::PlayerType::PLAYER1)
 			{
-				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " just made a move!", 1, TextFormatter::WHITE);
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::EITHER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " just made a move!", 1, TextFormatter::WHITE);
 			}
 			//else if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
 			//{
