@@ -73,7 +73,7 @@ private:
 
 	bool handleInputEscape(const a3_DemoState* demoState, TicTacStep targetStep);
 
-
+	PlayerType isWin();
 	char getXOSpace(int i, int j);
 	const std::pair<int, int> getIndexOnBoard(a3_KeyboardKey key);
 	void finishTurn(const a3_DemoState* demoState);

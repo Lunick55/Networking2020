@@ -217,6 +217,7 @@ void Host::receivePacket(const a3_DemoState* demoState)
 		case PacketEventId::UPDATE_TICTAC_STATE:
 		{
 			UpdateTicTacState* updatedPacket = (UpdateTicTacState*)(Host::spInstance->mpPacket->data);
+			Host::spInstance->broadcastPacket((const char*)(&Host::spInstance->mpPacket), sizeof(UpdateTicTacState));
 
 			for (int i = 0; i < GS_TICTACTOE_BOARD_HEIGHT; i++)
 			{
@@ -226,7 +227,20 @@ void Host::receivePacket(const a3_DemoState* demoState)
 				}
 			}
 
-			Host::spInstance->broadcastPacket((const char*)(&Host::spInstance->mpPacket), sizeof(UpdateTicTacState));
+			if (demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER2)
+			{
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer2Username + " won!", 1, TextFormatter::YELLOW);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
+				gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
+				return;
+			}
+			else if ((demoState->mpSceneManager->mpTictactoe->isWin() == TictactoeScene::PlayerType::PLAYER1))
+			{
+				demoState->mpSceneManager->mpTictactoe->addToChatList(MessageType::PLAYER, demoState->mpSceneManager->mpTictactoe->mPlayer1Username + " won!", 1, TextFormatter::YELLOW);
+				demoState->mpSceneManager->mpTictactoe->mCurrentStep = TictactoeScene::TicTacStep::SELECT_PLAYERS;
+				gs_tictactoe_reset(demoState->mpSceneManager->mpTictactoe->mTictacBoard);
+				return;
+			}
 
 			if (updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer1Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER2 ||
 				updatedPacket->fromUserId == demoState->mpSceneManager->mpTictactoe->mPlayer2Id && demoState->mpSceneManager->mpTictactoe->mPlayerType == TictactoeScene::PlayerType::PLAYER1)
@@ -258,6 +272,7 @@ void Host::receivePacket(const a3_DemoState* demoState)
 			demoState->mpSceneManager->mpTictactoe->mPlayer2Id = setupTictacPacket->player2Id;
 			demoState->mpSceneManager->mpTictactoe->mPlayer1Username = setupTictacPacket->player1Username;
 			demoState->mpSceneManager->mpTictactoe->mPlayer2Username = setupTictacPacket->player2Username;
+			demoState->mpSceneManager->mpTictactoe->mChatLog.clear();
 
 			if (Host::spInstance->mpHost->getUserId() == demoState->mpSceneManager->mpTictactoe->mPlayer1Id)
 			{

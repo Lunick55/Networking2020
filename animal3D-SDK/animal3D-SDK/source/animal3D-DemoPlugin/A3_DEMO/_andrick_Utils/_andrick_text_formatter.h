@@ -32,6 +32,7 @@ public:
 	static a3vec4 BLACK;
 	static a3vec4 RED;
 	static a3vec4 GREEN;
+	static a3vec4 YELLOW;
 
 	static TextFormatter& get()
 	{

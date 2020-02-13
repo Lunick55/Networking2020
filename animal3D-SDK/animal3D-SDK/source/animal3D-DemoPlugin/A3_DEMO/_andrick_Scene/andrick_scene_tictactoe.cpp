@@ -101,6 +101,113 @@ const std::pair<int, int> TictactoeScene::getIndexOnBoard(a3_KeyboardKey key)
 	return std::pair<int, int>(-1, -1);
 }
 
+TictactoeScene::PlayerType TictactoeScene::isWin()
+{
+	bool threeInARow;
+	for (int i = 0; i < 3; ++i)
+	{
+		threeInARow = true;
+		for (int j = 0; j < 3; ++j)
+		{
+			if (mTictacBoard[i][j] != gs_tictactoe_space_o)
+			{
+				threeInARow = false;
+			}
+		}
+
+		if (threeInARow)
+		{
+			return TictactoeScene::PlayerType::PLAYER2;
+		}
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		threeInARow = true;
+		for (int j = 0; j < 3; ++j)
+		{
+			if (mTictacBoard[j][i] != gs_tictactoe_space_o)
+			{
+				threeInARow = false;
+			}
+		}
+
+		if (threeInARow)
+		{
+			return TictactoeScene::PlayerType::PLAYER2;
+		}
+	}
+
+	if (mTictacBoard[0][0] == gs_tictactoe_space_o
+		&& mTictacBoard[1][1] == gs_tictactoe_space_o
+		&& mTictacBoard[2][2] == gs_tictactoe_space_o
+		||
+		mTictacBoard[0][2] == gs_tictactoe_space_o
+		&& mTictacBoard[1][1] == gs_tictactoe_space_o
+		&& mTictacBoard[2][0] == gs_tictactoe_space_o)
+	{
+		threeInARow = true;
+	}
+
+	if (threeInARow)
+	{
+		return TictactoeScene::PlayerType::PLAYER2;
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		threeInARow = true;
+		for (int j = 0; j < 3; ++j)
+		{
+			if (mTictacBoard[i][j] != gs_tictactoe_space_x)
+			{
+				threeInARow = false;
+			}
+		}
+
+		if (threeInARow)
+		{
+			return TictactoeScene::PlayerType::PLAYER1;
+		}
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		threeInARow = true;
+		for (int j = 0; j < 3; ++j)
+		{
+			if (mTictacBoard[j][i] != gs_tictactoe_space_x)
+			{
+				threeInARow = false;
+			}
+		}
+
+		if (threeInARow)
+		{
+			return TictactoeScene::PlayerType::PLAYER1;
+		}
+	}
+
+	if (mTictacBoard[0][0] == gs_tictactoe_space_x
+		&& mTictacBoard[1][1] == gs_tictactoe_space_x
+		&& mTictacBoard[2][2] == gs_tictactoe_space_x
+		||
+		mTictacBoard[0][2] == gs_tictactoe_space_x
+		&& mTictacBoard[1][1] == gs_tictactoe_space_x
+		&& mTictacBoard[2][0] == gs_tictactoe_space_x)
+	{
+		threeInARow = true;
+	}
+
+	if (threeInARow)
+	{
+		return TictactoeScene::PlayerType::PLAYER1;
+	}
+
+	//No win yet
+	return TictactoeScene::PlayerType::SPECTATOR;
+}
+
 void TictactoeScene::finishTurn(const a3_DemoState* demoState)
 {
 	if (Client::isHost())
@@ -115,8 +222,22 @@ void TictactoeScene::finishTurn(const a3_DemoState* demoState)
 			PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
 			0, Client::spInstance->mHostAddress, false);
 	}
-
-	mCurrentStep = TicTacStep::OPPONENTS_TURN;
+	if (isWin() == TictactoeScene::PlayerType::PLAYER2)
+	{
+		addToChatList(MessageType::PLAYER, mPlayer2Username + " won!", 1, TextFormatter::YELLOW);
+		mCurrentStep = TicTacStep::SELECT_PLAYERS;
+		gs_tictactoe_reset(mTictacBoard);
+	}
+	else if ((isWin() == TictactoeScene::PlayerType::PLAYER1))
+	{
+		addToChatList(MessageType::PLAYER, mPlayer1Username + " won!", 1, TextFormatter::YELLOW);
+		mCurrentStep = TicTacStep::SELECT_PLAYERS;
+		gs_tictactoe_reset(mTictacBoard);
+	}
+	else
+	{
+		mCurrentStep = TicTacStep::OPPONENTS_TURN;
+	}
 }
 
 bool TictactoeScene::handleInputEscape(const a3_DemoState* demoState, TicTacStep targetStep)
@@ -366,14 +487,14 @@ void TictactoeScene::networkSend(const a3_DemoState* demoState)
 //Can only ever be called from the host
 bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 {
-	//if (player1.compare(player2) == 0)
-	//{
-	//	//Players cant be the same;
-	//	addToChatList(MessageType::EITHER, "That player can't play by himself!", 1, TextFormatter::RED);
-	//	return false;
-	//}
-	//else
-	//{
+	if (player1.compare(player2) == 0)
+	{
+		//Players cant be the same;
+		addToChatList(MessageType::EITHER, "That player can't play by himself!", 1, TextFormatter::RED);
+		return false;
+	}
+	else
+	{
 		std::map<UserId, std::shared_ptr<User>>::iterator iter = Host::spInstance->mpConnectedUsers.begin();
 		UserId player1Id = -1;
 		UserId player2Id = -1;
@@ -420,6 +541,7 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 			mPlayer2Id = player2Id;
 			mPlayer1Username = player1;
 			mPlayer2Username = player2;
+			mChatLog.clear();
 
 			if (Host::spInstance->mpHost->getUserId() == mPlayer1Id)
 			{
@@ -447,8 +569,8 @@ bool TictactoeScene::setupPlayers(std::string player1, std::string player2)
 
 			return true;
 		}
-	//}
-	//
+	}
+	
 	return false;
 }
 
