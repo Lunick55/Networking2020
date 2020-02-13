@@ -18,25 +18,25 @@ TictactoeScene::TictactoeScene() :
 {
 	gs_tictactoe_reset(mTictacBoard);
 
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad1, {0, 0} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad2, {1, 0} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad3, {2, 0} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad4, {0, 1} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad1, {2, 0} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad2, {2, 1} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad3, {2, 2} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad4, {1, 0} });
 	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad5, {1, 1} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad6, {2, 1} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad7, {0, 2} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad8, {1, 2} });
-	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad9, {2, 2} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad6, {1, 2} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad7, {0, 0} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad8, {0, 1} });
+	mKeypadToBoardMap.insert({ a3_KeyboardKey::a3key_numpad9, {0, 2} });
 
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_1, {0, 0} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_2, {1, 0} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_3, {2, 0} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_4, {0, 1} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_1, {2, 0} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_2, {2, 1} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_3, {2, 2} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_4, {1, 0} });
 	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_5, {1, 1} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_6, {2, 1} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_7, {0, 2} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_8, {1, 2} });
-	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_9, {2, 2} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_6, {1, 2} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_7, {0, 0} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_8, {0, 1} });
+	mNumbersToBoardMap.insert({ a3_KeyboardKey::a3key_9, {0, 2} });
 }
 
 void TictactoeScene::enteringScene(const a3_DemoState* demoState)
