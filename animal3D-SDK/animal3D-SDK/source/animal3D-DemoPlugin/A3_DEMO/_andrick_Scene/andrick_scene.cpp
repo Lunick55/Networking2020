@@ -1,45 +1,52 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
+#include <A3_DEMO/_andrick_Scene/_andrick_State/andrick_scenestate.h>
 //#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
 //#include "A3_DEMO/_andrick_Network/andrick_client.h"
 //#include "A3_DEMO/_andrick_Network/andrick_host.h"
 
-Scene::Scene(const SceneId id, const Color backgroundColor) :
-	mId(id),
-	mBackgroundColor(backgroundColor),
-	mpInputHandler(std::make_unique<SceneInputHandler>())
+Scene::Scene(const SceneId id, std::shared_ptr<SceneState> defaultState) :
+	mID(id),
+	mpDefaultState(defaultState),
+	mpCurrentState(mpDefaultState)
 {
+	assert(mpDefaultState != nullptr);
+}
 
+void Scene::initSceneState(std::shared_ptr<SceneState> newState)
+{
+	assert(newState != nullptr);
+	mSceneStateMap.insert({ newState->mID, newState });
 }
 
 const SceneId Scene::getId() const 
 { 
-	return mId; 
+	return mID; 
 }
 
 void Scene::enteringScene()
 {
-	mpInputHandler->clear();
+	mpCurrentState = mpDefaultState;
 }
 
 void Scene::input()
 {
-	mpInputHandler->processInput();
+	mpCurrentState->processInput();
 }
 
-void Scene::processIncomingEvents()
+void Scene::update()
 {
-	
-}
-
-void Scene::packageOutgoingEvents()
-{
-
+	mpCurrentState->update();
 }
 
 void Scene::render()
 {
-	glClearColor(mBackgroundColor.r, mBackgroundColor.g, mBackgroundColor.b, mBackgroundColor.a);
+	mpCurrentState->render();
+}
+
+void Scene::exitingScene()
+{
+	mpCurrentState->exitingState();
 }
 
 //bool Scene::isCommand(const std::string& input)

@@ -131,23 +131,23 @@ void LobbyScene::handleUpdateLeaveServer()
 
 void LobbyScene::render()
 {
-	glClearColor(1.0f, 0.5f, 1.0f, 1.0f);
-
-	TextFormatter& formatter = TextFormatter::get();
-
-	formatter.setLine(0);
-	formatter.drawText("Lobby Scene", AndrickColors::WHITE, TextAlign::CENTER_X);
-	formatter.offsetLine(2);
-
-	std::vector<LogInfo>::iterator iter = mChatLog.begin();
-	for (; iter != mChatLog.end(); ++iter)
-		formatter.drawText(iter->text, iter->color);
-
-	if (mCurrentStep == LobbyStep::LEAVE_SERVER_CONFIRM)
-		formatter.drawText("Are you sure you want to leave the server? (Y/N)");
-
-	formatter.offsetLine(2);
-	formatter.drawText(mCurrentInput);
+	//glClearColor(1.0f, 0.5f, 1.0f, 1.0f);
+	//
+	//TextFormatter& formatter = TextFormatter::get();
+	//
+	//formatter.setLine(0);
+	//formatter.drawText("Lobby Scene", AndrickColors::WHITE, TextAlign::CENTER_X);
+	//formatter.offsetLine(2);
+	//
+	//std::vector<LogInfo>::iterator iter = mChatLog.begin();
+	//for (; iter != mChatLog.end(); ++iter)
+	//	formatter.drawText(iter->text, iter->color);
+	//
+	//if (mCurrentStep == LobbyStep::LEAVE_SERVER_CONFIRM)
+	//	formatter.drawText("Are you sure you want to leave the server? (Y/N)");
+	//
+	//formatter.offsetLine(2);
+	//formatter.drawText(mCurrentInput);
 }
 
 

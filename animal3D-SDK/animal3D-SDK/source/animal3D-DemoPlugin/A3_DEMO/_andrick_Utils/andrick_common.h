@@ -27,6 +27,7 @@ static const int MAX_INPUT_LENGTH = 512;
 //static const std::string PLAY_BATTLE = "battle";
 
 extern struct a3_DemoState*& gDemoState;
+TextFormatter& gTextFormatter = TextFormatter::get();
 
 struct AndrickUtils
 {
@@ -61,6 +62,7 @@ struct AndrickColors
 	static const Color RED;
 	static const Color GREEN;
 	static const Color YELLOW;
+	static const Color LIGHT_BLUE;
 };
 
 const Color AndrickColors::WHITE = createColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -69,6 +71,7 @@ const Color AndrickColors::DARK_GREY = createColor(0.2f, 0.2f, 0.2f, 1.0f);
 const Color AndrickColors::RED = createColor(1.0f, 0.0f, 0.0f, 1.0f);
 const Color AndrickColors::GREEN = createColor(0.0f, 1.0f, 0.0f, 1.0f);
 const Color AndrickColors::YELLOW = createColor(0.0f, 1.0f, 1.0f, 1.0f);
+const Color AndrickColors::LIGHT_BLUE = createColor(0.0f, 0.5f, 2.0f, 1.0f);
 
 enum class TextAlign : a3byte
 {
@@ -110,6 +113,7 @@ const enum class MessageType : unsigned char
 
 const enum class SceneId : unsigned char
 {
+	MainMenu,
 	SelectRole,
 	Lobby,
 	Tictactoe,

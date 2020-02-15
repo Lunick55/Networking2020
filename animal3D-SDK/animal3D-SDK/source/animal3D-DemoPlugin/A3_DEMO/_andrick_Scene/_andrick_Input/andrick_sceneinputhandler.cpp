@@ -64,7 +64,7 @@ bool SceneInputHandler::isKeyReleased(enum a3_KeyboardKey key)
 	return a3keyboardIsReleasedASCII(gDemoState->keyboard, key);
 }
 
-void SceneInputHandler::processInput()
+void SceneInputHandler::getInput()
 {
 	if (!handleBackspace(mCurrentInput))
 	{

@@ -15,7 +15,7 @@ public:
 
 	void clear();
 
-	void processInput();
+	void getInput();
 
 	bool isCommand(const std::string& input);
 	bool processCommand(const std::string& input, std::shared_ptr<class Command>& out);

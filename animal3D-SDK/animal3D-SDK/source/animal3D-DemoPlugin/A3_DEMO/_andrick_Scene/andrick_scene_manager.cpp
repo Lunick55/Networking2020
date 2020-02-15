@@ -3,7 +3,9 @@
 //#include "andrick_scene_selectrole.h"
 //#include "andrick_scene_lobby.h"
 
-#include "A3_DEMO/_andrick_Scene/andrick_scene_manager.h"
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 
 SceneManager::SceneManager(std::shared_ptr<Scene> defaultScene) :
 	mpDefaultScene(defaultScene),
@@ -20,7 +22,8 @@ SceneManager::~SceneManager()
 
 void SceneManager::initScene(std::shared_ptr<Scene> newScene)
 {
-	mSceneMap.insert({ newScene->mId, newScene });
+	assert(newScene != nullptr);
+	mSceneMap.insert({ newScene->mID, newScene });
 }
 
 void SceneManager::switchToScene(enum class SceneId id)
