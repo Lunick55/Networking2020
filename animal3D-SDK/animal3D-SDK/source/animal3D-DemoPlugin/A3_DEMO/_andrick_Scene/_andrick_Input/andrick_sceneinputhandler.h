@@ -14,8 +14,10 @@ public:
 	SceneInputHandler& operator=(const SceneInputHandler& scene) = delete;
 
 	void clear();
+	void clearCurrentInput();
 
-	void getInput();
+	void updateInput();
+	const std::string& getCurrentInput() const;
 
 	bool isCommand(const std::string& input);
 	bool processCommand(const std::string& input, std::shared_ptr<struct Command>& out);

@@ -158,6 +158,8 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 	{
 		if (a3timerUpdate(demoState->renderTimer) > 0)
 		{
+			gTextFormatter.setAlignment(TextAlign::LEFT);
+			gTextFormatter.setLine(0);
 			demoState->mpSceneManager->input();
 			demoState->mpSceneManager->processIncomingEvents();
 			demoState->mpSceneManager->update();

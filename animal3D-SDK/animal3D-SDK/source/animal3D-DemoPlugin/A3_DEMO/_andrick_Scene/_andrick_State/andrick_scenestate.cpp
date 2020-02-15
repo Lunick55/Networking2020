@@ -26,18 +26,12 @@ void SceneState::processInput()
 				gDemoState->exitFlag = -1;
 				return;
 			}
-			else if (iter->sceneId == mpParentScene->getId())
-			{
-				mpParentScene->switchToState(iter->stateId);
-			}
-			else
-			{
-				gDemoState->mpSceneManager->switchToScene(iter->sceneId, mID);
-			}
+
+			mpParentScene->switchToState(iter->sceneId, iter->stateId);
 		}
 	}
 
-	mpInputHandler->getInput();
+	mpInputHandler->updateInput();
 }
 
 void SceneState::render()

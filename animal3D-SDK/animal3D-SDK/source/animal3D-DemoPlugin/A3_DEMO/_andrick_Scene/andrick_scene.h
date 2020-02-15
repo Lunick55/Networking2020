@@ -16,7 +16,7 @@ public:
 
 	void setDefaultState(std::shared_ptr<SceneState> defaultState);
 	void initSceneState(std::shared_ptr<SceneState> newState);
-	void switchToState(const SceneStateId id);
+	void switchToState(const SceneId sceneId, const SceneStateId stateId);
 
 	const SceneId getId() const;
 

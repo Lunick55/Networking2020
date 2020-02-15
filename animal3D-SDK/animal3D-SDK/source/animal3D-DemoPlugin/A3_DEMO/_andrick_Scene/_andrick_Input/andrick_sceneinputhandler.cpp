@@ -9,8 +9,13 @@ SceneInputHandler::SceneInputHandler(const unsigned int linesToDisplay) :
 
 void SceneInputHandler::clear()
 {
-	mCurrentInput.clear();
+	clearCurrentInput();
 	mpChatLog->clearChatLog();
+}
+
+void SceneInputHandler::clearCurrentInput()
+{
+	mCurrentInput.clear();
 }
 
 bool SceneInputHandler::isCommand(const std::string& input)
@@ -64,12 +69,17 @@ bool SceneInputHandler::isKeyReleased(enum a3_KeyboardKey key)
 	return a3keyboardIsReleasedASCII(gDemoState->keyboard, key);
 }
 
-void SceneInputHandler::getInput()
+void SceneInputHandler::updateInput()
 {
 	if (!handleBackspace(mCurrentInput))
 	{
 		handleTyping(mCurrentInput);
 	}
+}
+
+const std::string& SceneInputHandler::getCurrentInput() const
+{
+	return mCurrentInput;
 }
 
 bool SceneInputHandler::handleBackspace(std::string& input)
