@@ -18,7 +18,7 @@ bool SceneInputHandler::isCommand(const std::string& input)
 	return input[0] == _COMMAND_DELIMITER;
 }
 
-bool SceneInputHandler::processCommand(const std::string& input, std::shared_ptr<class Command>& out)
+bool SceneInputHandler::processCommand(const std::string& input, std::shared_ptr<struct Command>& out)
 {
 	return Command::processCommand(input.substr(1), out);
 	//if (commandInput.compare(LIST_USERS_COMMAND) == 0)

@@ -23,7 +23,7 @@ bool Command::compareWithVector(const std::string& input, const std::vector<std:
 	return success;
 }
 
-const std::string& Command::mergeCommand(const std::vector<std::string>& commandArgs, std::size_t startIndex)
+const std::string Command::mergeCommand(const std::vector<std::string>& commandArgs, std::size_t startIndex)
 {
 	std::stringstream ss;
 	for (std::vector<std::string>::const_iterator iter = commandArgs.begin() + startIndex; iter < commandArgs.end(); ++iter)
@@ -112,11 +112,11 @@ bool ListCommand::createCommand(const std::vector<std::string>& commandArgs, std
 		return false;
 	}
 
-	out = std::make_shared<ListCommand>(gDemoState->mpUser, ListType::ALL);
+	out = std::make_shared<ListCommand>(gDemoState->mpCurrentUser, ListType::ALL);
 	return true;
 }
 
-ListCommand::ListCommand(class std::shared_ptr<class User> sender, ListType type) :
+ListCommand::ListCommand(class std::shared_ptr<Client> sender, ListType type) :
 	Command(CommandId::LIST_PLAYERS),
 	mpSender(sender),
 	mType(type) {}
@@ -135,14 +135,20 @@ bool WhisperCommand::createCommand(const std::vector<std::string>& commandArgs, 
 		return false;
 	}
 
-	std::string receiver = commandArgs.at(1);
-	std::string message = mergeCommand(commandArgs, 2);
-	out = std::make_shared<WhisperCommand>(gDemoState->mpUser, receiver, message);
-	return true;
+	std::string receiverUsername = commandArgs.at(1);
+	std::shared_ptr<Client> receiver;
 
+	if (gDemoState->mpCurrentUser->getClientFromUsername(receiverUsername, receiver))
+	{
+		std::string message = mergeCommand(commandArgs, 2);
+		out = std::make_shared<WhisperCommand>(gDemoState->mpCurrentUser, receiver, message);
+		return true;
+	}
+
+	return false;
 }
 
-WhisperCommand::WhisperCommand(std::shared_ptr<User> sender, std::shared_ptr<Client> reciever,
+WhisperCommand::WhisperCommand(std::shared_ptr<Client> sender, std::shared_ptr<Client> reciever,
 	const std::string& message) :
 	Command(CommandId::WHISPER),
 	mpSender(sender),

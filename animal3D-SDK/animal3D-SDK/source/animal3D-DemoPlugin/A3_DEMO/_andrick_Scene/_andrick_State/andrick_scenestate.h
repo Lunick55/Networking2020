@@ -1,14 +1,15 @@
 #ifndef SCENE_STATE_H_
 #define SCENE_STATE_H_
 
-#include <A3_DEMO/_andrick_Scene/andrick_scene.h>
+#include <GL/glew.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
 class SceneState
 {
 	friend class Scene;
 
 public:
-	SceneState(std::weak_ptr<Scene> parentScene, Scene::SceneStateId id, Color backgroundColor = AndrickColors::DARK_GREY);
+	SceneState(std::shared_ptr<Scene> parentScene, SceneStateId id, Color backgroundColor = DARK_GREY);
 	virtual ~SceneState() = default;
 
 	SceneState(const SceneState& scene) = delete;
@@ -20,12 +21,15 @@ public:
 	virtual void render();
 	virtual void exitingState();
 
-	const Scene::SceneStateId getId() const;
+	const enum SceneStateId getId() const;
+
+	void renderMenuOptions(Color color, TextAlign alignment, a3vec3 viewportPosition = a3vec3());
 
 protected:
-	const std::weak_ptr<Scene> mpParentScene;
-	const Scene::SceneStateId mID;
+	const std::shared_ptr<Scene> mpParentScene;
+	const SceneStateId mID;
 	std::shared_ptr<class SceneInputHandler> mpInputHandler;
+	std::vector<struct MenuOption> mMenuOptions;
 	Color mBackgroundColor;
 };
 

@@ -1,8 +1,7 @@
 #ifndef ANDRICK_SCENE_MANAGER_H_
 #define ANDRICK_SCENE_MANAGER_H_
 
-#include <GL/glew.h>
-#include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 
 class SceneManager
 {
@@ -12,7 +11,7 @@ public:
 
 	void initScene(std::shared_ptr<class Scene> newScene);
 
-	void switchToScene(enum class SceneId id);
+	void switchToScene(SceneId sceneId, SceneStateId stateId);
 
 	void input();
 	void processIncomingEvents();

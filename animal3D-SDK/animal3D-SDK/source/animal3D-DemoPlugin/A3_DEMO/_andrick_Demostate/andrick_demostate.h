@@ -51,7 +51,7 @@ struct a3_DemoState
 
 	RakNet::RakPeerInterface* peer;
 	std::shared_ptr<class SceneManager> mpSceneManager;
-	std::shared_ptr<class User> mpUser;
+	std::shared_ptr<class Client> mpCurrentUser;
 
 	//New input in order this frame.
 	std::string newInput;

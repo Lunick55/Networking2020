@@ -5,12 +5,21 @@
 //#include "A3_DEMO/_andrick_Network/andrick_client.h"
 //#include "A3_DEMO/_andrick_Network/andrick_host.h"
 
-Scene::Scene(const SceneId id, std::shared_ptr<SceneState> defaultState) :
+Scene::Scene(const SceneId id) :
 	mID(id),
-	mpDefaultState(defaultState),
-	mpCurrentState(mpDefaultState)
+	mpDefaultState(nullptr),
+	mpCurrentState(nullptr)
 {
-	assert(mpDefaultState != nullptr);
+
+}
+
+void Scene::setDefaultState(std::shared_ptr<SceneState> defaultState)
+{
+	assert(defaultState != nullptr);
+
+	initSceneState(defaultState);
+	mpDefaultState = defaultState;
+	mpCurrentState = mpDefaultState;
 }
 
 void Scene::initSceneState(std::shared_ptr<SceneState> newState)
@@ -19,14 +28,32 @@ void Scene::initSceneState(std::shared_ptr<SceneState> newState)
 	mSceneStateMap.insert({ newState->mID, newState });
 }
 
+void Scene::switchToState(const SceneStateId id)
+{
+	mpCurrentState->exitingState();
+
+	auto iter = mSceneStateMap.find(id);
+	if (iter != mSceneStateMap.end())
+	{
+		mpCurrentState = iter->second;
+	}
+	else
+	{
+		std::cout << "Could not find state with id: " << std::to_string((char)id) << std::endl;
+		mpCurrentState = mpDefaultState;
+	}
+
+	mpCurrentState->enteringState();
+}
+
 const SceneId Scene::getId() const 
 { 
 	return mID; 
 }
 
-void Scene::enteringScene()
+void Scene::enteringScene(const SceneStateId state)
 {
-	mpCurrentState = mpDefaultState;
+	switchToState(state);
 }
 
 void Scene::input()

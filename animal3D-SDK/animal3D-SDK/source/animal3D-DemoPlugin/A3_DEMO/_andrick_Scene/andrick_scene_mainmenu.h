@@ -9,18 +9,19 @@ public:
 	const enum class MenuSceneStateId : char
 	{
 		INVALID_STATE = (char)SceneStateId::INVALID_STATE,
-		MAIN_MENU
+		TITLE_MENU,
+		SERVER_MAX_USERS
 	};
 
 	MainMenuScene();
 	virtual ~MainMenuScene() = default;
 
 protected:
-	virtual void input() override;
+	//virtual void input() override;
 	virtual void processIncomingEvents() override;
-	virtual void update() override;
+	//virtual void update() override;
 	virtual void packageOutgoingEvents() override;
-	virtual void render() override;
+	//virtual void render() override;
 
 private:
 

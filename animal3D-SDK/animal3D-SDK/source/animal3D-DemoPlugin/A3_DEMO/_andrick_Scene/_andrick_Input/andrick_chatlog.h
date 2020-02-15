@@ -7,7 +7,7 @@ struct LogInfo
 {
 	MessageType type;
 	std::string text;
-	Color color = AndrickColors::WHITE;
+	Color color = WHITE;
 };
 
 class ChatLog
@@ -25,7 +25,7 @@ public:
 	void clearChatLog();
 
 	const LogInfo& getLogAt(std::size_t line);
-	void append(MessageType type, const std::string& msg, Color color = AndrickColors::WHITE, unsigned int newLineAmount = 1);
+	void append(MessageType type, const std::string& msg, Color color = WHITE, unsigned int newLineAmount = 1);
 	void append(std::shared_ptr<LogInfo> logInfo, unsigned int newLineAmount = 1);
 
 private:

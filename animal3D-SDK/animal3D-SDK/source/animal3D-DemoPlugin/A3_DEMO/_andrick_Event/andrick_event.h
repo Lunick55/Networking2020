@@ -7,7 +7,7 @@ struct Event
 {
 public:
 	Event(EventId id) : ID(id) {}
-	virtual ~Event();
+	virtual ~Event() = default;
 
 	virtual void execute() = 0;
 

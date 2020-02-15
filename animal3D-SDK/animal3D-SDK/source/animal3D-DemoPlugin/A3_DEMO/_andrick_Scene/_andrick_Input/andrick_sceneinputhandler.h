@@ -18,7 +18,7 @@ public:
 	void getInput();
 
 	bool isCommand(const std::string& input);
-	bool processCommand(const std::string& input, std::shared_ptr<class Command>& out);
+	bool processCommand(const std::string& input, std::shared_ptr<struct Command>& out);
 
 	bool isKeyPressed(enum a3_KeyboardKey key);
 	bool isKeyHeld(enum a3_KeyboardKey key);

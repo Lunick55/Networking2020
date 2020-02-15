@@ -186,16 +186,25 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_event_chatmessage.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_event</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_user.cpp">
-      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\andrick_scenestate.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_mainmenu.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_scenestate_menuoptions.cpp">
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_client.cpp">
+      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_server.cpp">
+      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Utils\andrick_common.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_mainmenu_servermaxusers.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_mainmenu_title.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
     </ClCompile>
   </ItemGroup>
@@ -257,17 +266,20 @@
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_event_chatmessage.h">
       <Filter>Header Files\A3_DEMO\_andrick_event</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_user.h">
-      <Filter>Header Files\A3_DEMO\_andrick_network</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\andrick_scenestate.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_scenestate_menuoptions.h">
-      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_mainmenu.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_Input\andrick_menuoption.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_mainmenu_title.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_mainmenu_servermaxusers.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

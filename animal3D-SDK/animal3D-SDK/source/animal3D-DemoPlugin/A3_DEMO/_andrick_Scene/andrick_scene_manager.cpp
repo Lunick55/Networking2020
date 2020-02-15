@@ -26,20 +26,22 @@ void SceneManager::initScene(std::shared_ptr<Scene> newScene)
 	mSceneMap.insert({ newScene->mID, newScene });
 }
 
-void SceneManager::switchToScene(enum class SceneId id)
+void SceneManager::switchToScene(SceneId sceneId, SceneStateId stateId)
 {
-	auto iter = mSceneMap.find(id);
+	mpCurrentScene->exitingScene();
+
+	auto iter = mSceneMap.find(sceneId);
 	if (iter != mSceneMap.end())
 	{
 		mpCurrentScene = iter->second;
 	}
 	else
 	{
-		std::cout << "Could not find scene with id: " << std::to_string((unsigned char)id) << std::endl;
+		std::cout << "Could not find scene with id: " << std::to_string((unsigned char)sceneId) << std::endl;
 		mpCurrentScene = mpDefaultScene;
 	}
 
-	mpCurrentScene->enteringScene();
+	mpCurrentScene->enteringScene(stateId);
 }
 
 void SceneManager::input()

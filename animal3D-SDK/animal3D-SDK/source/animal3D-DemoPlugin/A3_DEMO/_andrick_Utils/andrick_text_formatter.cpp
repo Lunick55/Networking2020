@@ -11,7 +11,7 @@ const float TextFormatter::LINE_HEIGHT = 0.08f;
 const float TextFormatter::LETTER_SIZE = 0.023f;
 
 TextFormatter::TextFormatter() :
-	mColor(AndrickColors::WHITE),
+	mColor(WHITE),
 	mAlignment(TextAlign::LEFT)
 {
 	setLine(0);

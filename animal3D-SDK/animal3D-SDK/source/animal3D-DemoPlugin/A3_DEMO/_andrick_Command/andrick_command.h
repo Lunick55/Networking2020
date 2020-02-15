@@ -28,7 +28,7 @@ struct Command
 {
 	static bool processCommand(const std::string& userInput, std::shared_ptr<Command>& out);
 	static bool splitCommand(const std::string& userInput, std::vector<std::string>& out);
-	static const std::string& mergeCommand(const std::vector<std::string>& commandArgs, std::size_t startIndex);
+	static const std::string mergeCommand(const std::vector<std::string>& commandArgs, std::size_t startIndex);
 	static bool compareWithVector(const std::string& input, const std::vector<std::string>& vector);
 
 	Command(CommandId id) : ID(id) {}
@@ -41,10 +41,10 @@ struct ListCommand : public Command
 {
 	static bool createCommand(const std::vector<std::string>& commandArgs, std::shared_ptr<Command>& out);
 
-	ListCommand(class std::shared_ptr<class User> sender, ListType type);
+	ListCommand(class std::shared_ptr<class Client> sender, ListType type);
 	virtual ~ListCommand() = default;
 
-	std::shared_ptr<class User> mpSender;
+	std::shared_ptr<class Client> mpSender;
 	ListType mType;
 };
 
@@ -53,11 +53,11 @@ struct WhisperCommand : public Command
 {
 	static bool createCommand(const std::vector<std::string>&, std::shared_ptr<Command>& out);
 
-	WhisperCommand(class std::shared_ptr<class User> sender, class std::shared_ptr<class Client> reciever,
+	WhisperCommand(class std::shared_ptr<class Client> sender, class std::shared_ptr<class Client> reciever,
 		const std::string& message);
 	virtual ~WhisperCommand() = default;
 
-	std::shared_ptr<class User> mpSender;
+	std::shared_ptr<class Client> mpSender;
 	std::shared_ptr<class Client> mpReciever;
 	std::string mMessage;
 };

@@ -27,15 +27,16 @@
 	********************************************
 */
 
-#include "a3_dylib_config_export.h"
+#include <a3_dylib_config_export.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "A3_DEMO/_andrick_Utils/andrick_text_formatter.h"
-#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
-#include "A3_DEMO/_andrick_Scene/andrick_scene_manager.h"
+#include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 
 // get the size of the persistent state to allocate
 //	(good idea to keep it relatively constant, so that addresses don't change 
@@ -198,7 +199,7 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		memset(demoState, 0, stateSize);
 		*demoState = copy;
 
-		// call refresh to re-link pointers in case demo state address changed
+		// call refresh to re-nlik pointers in case demo state address changed
 		//a3demo_refresh(demoState);
 		//a3demo_initSceneRefresh(demoState);
 		a3trigInitSetTables(trigSamplesPerDegree, demoState->trigTable);
@@ -226,7 +227,8 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		demoState->textInit = 1;
 		demoState->textMode = 1;
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
-		demoState->mpSceneManager = std::make_shared<SceneManager>();
+		demoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
+		demoState->mpCurrentUser = nullptr;
 		gDemoState = demoState;
 
 		//Init

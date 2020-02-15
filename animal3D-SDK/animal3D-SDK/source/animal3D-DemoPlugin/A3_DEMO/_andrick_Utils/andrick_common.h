@@ -26,8 +26,8 @@ static const int MAX_INPUT_LENGTH = 512;
 //static const std::string PLAY_TICTACTOE = "tic";
 //static const std::string PLAY_BATTLE = "battle";
 
-extern struct a3_DemoState*& gDemoState;
-TextFormatter& gTextFormatter = TextFormatter::get();
+extern struct a3_DemoState* gDemoState;
+extern class TextFormatter& gTextFormatter;
 
 struct AndrickUtils
 {
@@ -55,23 +55,15 @@ struct AndrickColors
 		color.a = a;
 		return color;
 	}
-
-	static const Color WHITE;
-	static const Color BLACK;
-	static const Color DARK_GREY;
-	static const Color RED;
-	static const Color GREEN;
-	static const Color YELLOW;
-	static const Color LIGHT_BLUE;
 };
 
-const Color AndrickColors::WHITE = createColor(1.0f, 1.0f, 1.0f, 1.0f);
-const Color AndrickColors::BLACK = createColor(0.0f, 0.0f, 0.0f, 1.0f);
-const Color AndrickColors::DARK_GREY = createColor(0.2f, 0.2f, 0.2f, 1.0f);
-const Color AndrickColors::RED = createColor(1.0f, 0.0f, 0.0f, 1.0f);
-const Color AndrickColors::GREEN = createColor(0.0f, 1.0f, 0.0f, 1.0f);
-const Color AndrickColors::YELLOW = createColor(0.0f, 1.0f, 1.0f, 1.0f);
-const Color AndrickColors::LIGHT_BLUE = createColor(0.0f, 0.5f, 2.0f, 1.0f);
+static const Color WHITE = AndrickColors::createColor(1.0f, 1.0f, 1.0f, 1.0f);
+static const Color BLACK = AndrickColors::createColor(0.0f, 0.0f, 0.0f, 1.0f);
+static const Color DARK_GREY = AndrickColors::createColor(0.2f, 0.2f, 0.2f, 1.0f);
+static const Color RED = AndrickColors::createColor(1.0f, 0.0f, 0.0f, 1.0f);
+static const Color GREEN = AndrickColors::createColor(0.0f, 1.0f, 0.0f, 1.0f);
+static const Color YELLOW = AndrickColors::createColor(0.0f, 1.0f, 1.0f, 1.0f);
+static const Color LIGHT_BLUE = AndrickColors::createColor(0.0f, 0.5f, 2.0f, 1.0f);
 
 enum class TextAlign : a3byte
 {
@@ -111,13 +103,22 @@ const enum class MessageType : unsigned char
 	PLAYER
 };
 
-const enum class SceneId : unsigned char
+const enum class SceneStateId : char
 {
-	MainMenu,
-	SelectRole,
-	Lobby,
-	Tictactoe,
-	Battleship,
+	INVALID_STATE = -1,
+	EXIT_STATE,
+	NEXT_SCENE_STATE
+};
+
+const enum class SceneId : char
+{
+	INVALID_SCENE = -1,
+	EXIT,
+	MAIN_MENU,
+	//SelectRole,
+	//Lobby,
+	//Tictactoe,
+	//Battleship,
 	Count
 };
 
