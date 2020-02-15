@@ -1,19 +1,14 @@
 #pragma once
 
-#include "animal3D/animal3D.h"
-#include "animal3D-A3DG/animal3D-A3DG.h"
-#include "animal3D-A3DM/animal3D-A3DM.h"
-
-#include "RakNet/RakPeerInterface.h"
-
-#include "A3_DEMO/_andrick_Scene/andrick_scene_manager.h"
-
 #include <memory>
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <animal3D/animal3D.h>
+#include <animal3D-A3DG/animal3D-A3DG.h>
+#include <animal3D-A3DM/animal3D-A3DM.h>
+#include <RakNet/RakPeerInterface.h>
 
-// persistent demo state data structure
 struct a3_DemoState
 {
 	//---------------------------------------------------------------------
@@ -47,28 +42,17 @@ struct a3_DemoState
 	a3_KeyboardInput keyboard[1];
 	a3_XboxControllerInput xcontrol[4];
 
-	//New input in order this frame.
-	std::string newInput;
-
 	// pointer to fast trig table
 	a3f32 trigTable[4096 * 4];
-
-
-	//---------------------------------------------------------------------
-	//Networking Stuff-----------------------------------------------------
-
 	a3_Timer renderTimer[1];
 
+	//---------------------------------------------------------------------
+	//custom andrick stuff
+
 	RakNet::RakPeerInterface* peer;
-	//RakPeerInteface has a lot of good stuff.
+	std::shared_ptr<class SceneManager> mpSceneManager;
+	std::shared_ptr<class User> mpUser;
 
-	struct RemoteInformation
-	{
-		char remoteName[32];
-		int rgrgnrig;
-	};
-
-	RemoteInformation remote[20];
-
-	std::shared_ptr<SceneManager> mpSceneManager;
+	//New input in order this frame.
+	std::string newInput;
 };

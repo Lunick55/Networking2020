@@ -1,5 +1,6 @@
-#include "_andrick_text_formatter.h"
+#include "andrick_text_formatter.h"
 #include "../_andrick_Demostate/andrick_demostate.h"
+#include "A3_DEMO/_andrick_Utils/andrick_common.h"
 
 const float TextFormatter::SCREEN_LEFT = -0.98f;
 const float TextFormatter::SCREEN_RIGHT = 0.98f;
@@ -9,33 +10,8 @@ const float TextFormatter::SCREEN_CENTER = 0.0f;
 const float TextFormatter::LINE_HEIGHT = 0.08f;
 const float TextFormatter::LETTER_SIZE = 0.023f;
 
-a3vec4 TextFormatter::WHITE = createColor(1.0f, 1.0f, 1.0f, 1.0f);
-a3vec4 TextFormatter::BLACK = createColor(0.0f, 0.0f, 0.0f, 1.0f);
-a3vec4 TextFormatter::RED = createColor(1.0f, 0.0f, 0.0f, 1.0f);
-a3vec4 TextFormatter::GREEN = createColor(0.0f, 1.0f, 0.0f, 1.0f);
-a3vec4 TextFormatter::YELLOW = createColor(0.0f, 1.0f, 1.0f, 1.0f);
-
-a3vec4 TextFormatter::createColor(float r, float g, float b, float a)
-{
-	a3vec4 color;
-	color.r = r;
-	color.g = g;
-	color.b = b;
-	color.a = a;
-	return color;
-}
-
-a3vec3 TextFormatter::createVec3(float x, float y, float z)
-{
-	a3vec3 vec;
-	vec.x = x;
-	vec.y = y;
-	vec.z = z;
-	return vec;
-}
-
 TextFormatter::TextFormatter() :
-	mColor(WHITE),
+	mColor(AndrickColors::WHITE),
 	mAlignment(TextAlign::LEFT)
 {
 	setLine(0);
@@ -60,12 +36,12 @@ void TextFormatter::setCursorPos(float x, float y, float z)
 	mCursorPosition.z = z;
 }
 
-void TextFormatter::drawText(const a3_DemoState* demoState, const std::string& string, TextAlign alignOverride)
+void TextFormatter::drawText(const std::string& string, TextAlign alignOverride)
 {
-	drawText(demoState, string, mColor, alignOverride);
+	drawText(string, mColor, alignOverride);
 }
 
-void TextFormatter::drawText(const a3_DemoState* demoState, const std::string& string, a3vec4 color, TextAlign alignOverride, a3vec3 viewportPosition)
+void TextFormatter::drawText(const std::string& string, a3vec4 color, TextAlign alignOverride, a3vec3 viewportPosition)
 {
 	a3vec3 position = mCursorPosition;
 
@@ -84,7 +60,7 @@ void TextFormatter::drawText(const a3_DemoState* demoState, const std::string& s
 	}
 	else
 	{
-		a3textDraw(demoState->text, position.x, position.y, position.z, color.r, color.g, color.b, 1.0f, string.c_str());
+		a3textDraw(gDemoState->text, position.x, position.y, position.z, color.r, color.g, color.b, 1.0f, string.c_str());
 	}
 
 }

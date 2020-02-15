@@ -1,25 +1,11 @@
 #ifndef ANDRICK_TEXT_FORMATTER_H_
 #define ANDRICK_TEXT_FORMATTER_H_
 
-#include <string>
-#include "animal3D-A3DM/animal3D-A3DM.h"
-
-struct a3_DemoState;
+#include "A3_DEMO/_andrick_Utils/andrick_common.h"
 
 class TextFormatter
 {
 public:
-	enum class TextAlign : a3byte
-	{
-		NONE,
-		UNALIGN,
-		LEFT,
-		CENTER_X,
-		CENTER_Y,
-		CENTER,
-		RIGHT
-	};
-
 	//Helper vars that will be used a lot
 	static const float SCREEN_LEFT;
 	static const float SCREEN_RIGHT;
@@ -28,11 +14,6 @@ public:
 	static const float SCREEN_CENTER;
 	static const float LINE_HEIGHT;
 	static const float LETTER_SIZE;
-	static a3vec4 WHITE;
-	static a3vec4 BLACK;
-	static a3vec4 RED;
-	static a3vec4 GREEN;
-	static a3vec4 YELLOW;
 
 	static TextFormatter& get()
 	{
@@ -41,19 +22,15 @@ public:
 	}
 
 	TextFormatter();
-	void drawText(const a3_DemoState* demoState, const std::string& string, TextAlign alignOverride = TextAlign::NONE);
+	void drawText(const std::string& string, TextAlign alignOverride = TextAlign::NONE);
 	//viewportPosition only affects the draw location if alignOverride is set to UNALIGN.
-	void drawText(const a3_DemoState* demoState, const std::string& string, a3vec4 color, TextAlign alignOverride = TextAlign::NONE, a3vec3 viewportPosition = a3vec3());
+	void drawText(const std::string& string, a3vec4 color, TextAlign alignOverride = TextAlign::NONE, a3vec3 viewportPosition = a3vec3());
 	void newLine();
 	void setLine(int lineNumber);
 	void offsetLine(int offset);
 	void setCursorPos(float x, float y, float z = -1.0f);
 	void setColor(a3vec4 color);
 	void setAlignment(TextAlign align);
-
-	//Because a3vec4s structs don't have constructors to initalize the vars...
-	static a3vec4 createColor(float x, float y, float z, float a);
-	static a3vec3 createVec3(float x, float y, float z);
 
 private:
 	a3vec3 mCursorPosition;

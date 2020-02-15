@@ -1,7 +1,7 @@
 #ifndef ANDRICK_SCENE_LOBBY_H_
 #define ANDRICK_SCENE_LOBBY_H_
 
-#include "andrick_scene.h"
+#include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 
 class LobbyScene : public Scene
 {
@@ -10,14 +10,15 @@ public:
 	virtual ~LobbyScene() = default;
 
 protected:
-	virtual void enteringScene(const a3_DemoState* demoState) override;
-	virtual void input(a3_DemoState* demoState) override;
-	virtual void networkReceive(const a3_DemoState* demoState) override;
-	virtual void update(const a3_DemoState* demoState) override;
-	virtual void networkSend(const a3_DemoState* demoState) override;
-	virtual void render(const a3_DemoState* demoState) override;
+	virtual void enteringScene() override;
+	virtual void input() override;
+	virtual void processIncomingEvents() override;
+	virtual void update() override;
+	virtual void packageOutgoingEvents() override;
+	virtual void render() override;
 
 private:
+	//Create a step class and map to the steps
 	enum class LobbyStep : a3byte
 	{
 		LEAVE_SERVER = -1,
@@ -29,12 +30,12 @@ private:
 	GameType mSelectedGame;
 	bool mInitSuccessful;
 
-	void handleInputChatRoom(a3_DemoState* demoState);
-	void handleInputLeaveServerConfirm(const a3_DemoState* demoState);
+	void handleInputChatRoom();
+	void handleInputLeaveServerConfirm();
 
-	void handleUpdateLeaveServer(const a3_DemoState* demoState);
+	void handleUpdateLeaveServer();
 
-	void handleNetworkSendChatRoomStep(const a3_DemoState* demoState);
+	void handleNetworkSendChatRoomStep();
 };
 
 #endif

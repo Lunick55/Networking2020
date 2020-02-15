@@ -1,92 +1,67 @@
-#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
-#include "andrick_scene_manager.h"
-#include "andrick_scene_selectrole.h"
-#include "andrick_scene_lobby.h"
-#include "andrick_scene_tictactoe.h"
-#include "andrick_scene_battleship.h"
+//#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
+//#include "andrick_scene_manager.h"
+//#include "andrick_scene_selectrole.h"
+//#include "andrick_scene_lobby.h"
 
-SceneManager::SceneManager() :
-	mpSelectRole(new SelectRoleScene()),
-	mpLobby(new LobbyScene()),
-	mpTictactoe(new TictactoeScene()),
-	mpBattleShip(new BattleShipScene())
+#include "A3_DEMO/_andrick_Scene/andrick_scene_manager.h"
+
+SceneManager::SceneManager(std::shared_ptr<Scene> defaultScene) :
+	mpDefaultScene(defaultScene),
+	mpCurrentScene(mpDefaultScene)
 {
-	mpCurrentScene = mpSelectRole;
+	assert(mpDefaultScene != nullptr);
 }
 
 SceneManager::~SceneManager()
 {
-	delete mpSelectRole;
-	mpSelectRole = nullptr;
-
-	delete mpLobby;
-	mpLobby = nullptr;
-
-	delete mpTictactoe;
-	mpTictactoe = nullptr;
-
-	delete mpBattleShip;
-	mpBattleShip = nullptr;
-
 	mpCurrentScene = nullptr;
+	mSceneMap.clear();
 }
 
-void SceneManager::switchToScene(const a3_DemoState* demoState, enum class SceneId id)
+void SceneManager::initScene(std::shared_ptr<Scene> newScene)
 {
-	bool success = true;
+	mSceneMap.insert({ newScene->mId, newScene });
+}
 
-	switch (id)
+void SceneManager::switchToScene(enum class SceneId id)
+{
+	auto iter = mSceneMap.find(id);
+	if (iter != mSceneMap.end())
 	{
-	case SceneId::SelectRole:
-		mpCurrentScene = mpSelectRole;
-		break;
-	case SceneId::Tictactoe:
-		mpCurrentScene = mpTictactoe;
-		break;
-	case SceneId::Lobby:
-		mpCurrentScene = mpLobby;
-		break;
-	case SceneId::Battleship:
-		mpCurrentScene = mpBattleShip;
-		break;
-	default:
-		success = false;
-		break;
-	}
-
-	if (success)
-	{
-		mpCurrentScene->enteringScene(demoState);
+		mpCurrentScene = iter->second;
 	}
 	else
 	{
-		mpCurrentScene->addToChatList(MessageType::EITHER, "Unknown scene!");
+		std::cout << "Could not find scene with id: " << std::to_string((unsigned char)id) << std::endl;
+		mpCurrentScene = mpDefaultScene;
 	}
+
+	mpCurrentScene->enteringScene();
 }
 
-void SceneManager::input(a3_DemoState* demoState)
+void SceneManager::input()
 {
-	mpCurrentScene->input(demoState);
-	demoState->newInput.clear();
+	mpCurrentScene->input();
+	gDemoState->newInput.clear();
 }
 
-void SceneManager::networkReceive(const a3_DemoState* demoState)
+void SceneManager::processIncomingEvents()
 {
-	mpCurrentScene->networkReceive(demoState);
+	mpCurrentScene->processIncomingEvents();
 }
 
-void SceneManager::update(const a3_DemoState* demoState)
+void SceneManager::update()
 {
-	mpCurrentScene->update(demoState);
+	mpCurrentScene->update();
 }
 
-void SceneManager::networkSend(const a3_DemoState* demoState)
+void SceneManager::packageOutgoingEvents()
 {
-	mpCurrentScene->networkSend(demoState);
+	mpCurrentScene->packageOutgoingEvents();
 }
 
-void SceneManager::render(const a3_DemoState* demoState)
+void SceneManager::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	mpCurrentScene->render(demoState);
+	mpCurrentScene->render();
 }

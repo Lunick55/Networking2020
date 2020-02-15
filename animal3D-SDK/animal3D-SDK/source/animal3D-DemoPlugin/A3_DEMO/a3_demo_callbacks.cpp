@@ -33,8 +33,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "_andrick_Demostate/andrick_demostate.h"
-#include "_andrick_Scene/andrick_scene.h"
+#include "A3_DEMO/_andrick_Utils/andrick_text_formatter.h"
+#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
+#include "A3_DEMO/_andrick_Scene/andrick_scene_manager.h"
 
 // get the size of the persistent state to allocate
 //	(good idea to keep it relatively constant, so that addresses don't change 
@@ -156,16 +157,11 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 	{
 		if (a3timerUpdate(demoState->renderTimer) > 0)
 		{
-			// render timer ticked, update demo state and draw
-			//a3demo_update(demoState, demoState->renderTimer->secondsPerTick);
-			//a3demo_input(demoState, demoState->renderTimer->secondsPerTick);
-			//a3demo_render(demoState);
-
-			demoState->mpSceneManager->input(demoState);
-			demoState->mpSceneManager->networkReceive(demoState);
-			demoState->mpSceneManager->update(demoState);
-			demoState->mpSceneManager->networkSend(demoState);
-			demoState->mpSceneManager->render(demoState);
+			demoState->mpSceneManager->input();
+			demoState->mpSceneManager->processIncomingEvents();
+			demoState->mpSceneManager->update();
+			demoState->mpSceneManager->packageOutgoingEvents();
+			demoState->mpSceneManager->render();
 
 			// update input
 			a3mouseUpdate(demoState->mouse);
@@ -230,9 +226,9 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		demoState->textInit = 1;
 		demoState->textMode = 1;
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
-
 		demoState->mpSceneManager = std::make_shared<SceneManager>();
-		
+		gDemoState = demoState;
+
 		//Init
 		TextFormatter::get();
 

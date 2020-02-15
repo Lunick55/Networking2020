@@ -3,34 +3,26 @@
 
 #include "andrick_scene.h"
 
-class SelectRoleScene;
-class LobbyScene; 
-class TictactoeScene;
-class BattleShipScene;
-
 class SceneManager
 {
-	friend class Host;
-	friend class Client;
-
 public:
-	SceneManager();
+	SceneManager(std::shared_ptr<Scene> defaultScene);
 	~SceneManager();
 
-	void switchToScene(const a3_DemoState* demoState, enum class SceneId id);
+	void initScene(std::shared_ptr<Scene> newScene);
 
-	void input(a3_DemoState* demoState);
-	void networkReceive(const a3_DemoState* demoState);
-	void update(const a3_DemoState* demoState);
-	void networkSend(const a3_DemoState* demoState);
-	void render(const a3_DemoState* demoState);
+	void switchToScene(enum class SceneId id);
+
+	void input();
+	void processIncomingEvents();
+	void update();
+	void packageOutgoingEvents();
+	void render();
 
 private:
-	Scene* mpCurrentScene;
-	SelectRoleScene* mpSelectRole;
-	LobbyScene* mpLobby;
-	TictactoeScene* mpTictactoe;
-	BattleShipScene* mpBattleShip;
+	std::map<SceneId, std::shared_ptr<Scene>> mSceneMap;
+	std::shared_ptr<Scene> mpDefaultScene;
+	std::shared_ptr<Scene> mpCurrentScene;
 };
 
 #endif

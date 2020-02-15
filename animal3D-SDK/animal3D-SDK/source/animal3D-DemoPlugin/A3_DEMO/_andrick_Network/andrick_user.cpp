@@ -1,28 +1,26 @@
-#include "andrick_user.h"
+#include <A3_DEMO/_andrick_Network/andrick_user.h>
 
-User::User(UserId id, const std::string username, AuthorityId authority, const RakNet::SystemAddress& address) :
-	mId(id), 
-	mUsername(username), 
-	mAuthority(authority),
-	mAddress(address)
+UserId User::sUserIdCounter = 0;
+
+User::User(const std::string& name, AuthorityId authority) :
+	mID(sUserIdCounter++),
+	mUSERNAME(name),
+	mAuthority(authority)
 {
 
 }
 
-std::string User::formatMessage(const char* username, const char* message, AuthorityId authority)
+const UserId& User::getId() const
 {
-	std::string formattedMessage = "[";
-
-	if (authority == AuthorityId::ADMIN)
-	{
-		formattedMessage += "** ";
-	}
-
-	formattedMessage += std::string(username) + "] " + std::string(message);
-	return formattedMessage;
+	return mID;
 }
 
-std::string User::formatMessage(const std::string& username, const std::string& message, AuthorityId authority)
+const std::string& User::getUsername() const
 {
-	return formatMessage(username.c_str(), message.c_str(), authority);
+	return mUSERNAME;
+}
+
+const AuthorityId& User::getAuthority() const
+{
+	return mAuthority;
 }

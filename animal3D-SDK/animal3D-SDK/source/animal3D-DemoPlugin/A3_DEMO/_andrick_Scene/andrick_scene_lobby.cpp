@@ -1,6 +1,9 @@
-#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
-#include "andrick_scene_lobby.h"
-#include "../_andrick_Network/andrick_host.h"
+#include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
+#include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
+//#include "../_andrick_Network/andrick_host.h"
 
 LobbyScene::LobbyScene() :
 	Scene(SceneId::Lobby),
@@ -11,59 +14,59 @@ LobbyScene::LobbyScene() :
 
 }
 
-void LobbyScene::enteringScene(const a3_DemoState* demoState)
+void LobbyScene::enteringScene()
 {
-	Scene::enteringScene(demoState);
+	Scene::enteringScene();
 	mInitSuccessful = false;
 
 	mCurrentStep = LobbyStep::CHATROOM;
 
-	if (Client::isHost())
-	{
-		mInitSuccessful = Host::spInstance->startChatRoom(demoState);
-	}
-	else
-	{
-		if (Client::spInstance->connectToServer())
-		{
-			mInitSuccessful = true;
-			addToChatList(MessageType::EITHER, "Trying to connect...");
-		}
-		else
-		{
-			mInitSuccessful = false;
-			addToChatList(MessageType::EITHER, "Failed to connect to server.");
-		}
-	}
+	//if (Client::isHost())
+	//{
+	//	mInitSuccessful = Host::spInstance->startChatRoom(demoState);
+	//}
+	//else
+	//{
+	//	if (Client::spInstance->connectToServer())
+	//	{
+	//		mInitSuccessful = true;
+	//		addToChatList(MessageType::EITHER, "Trying to connect...");
+	//	}
+	//	else
+	//	{
+	//		mInitSuccessful = false;
+	//		addToChatList(MessageType::EITHER, "Failed to connect to server.");
+	//	}
+	//}
 }
 
 //Input handling
-void LobbyScene::input(a3_DemoState* demoState)
+void LobbyScene::input()
 {
 	switch (mCurrentStep)
 	{
 	case LobbyStep::CHATROOM:
-		handleInputChatRoom(demoState);
+		handleInputChatRoom();
 		break;
 	case LobbyStep::LEAVE_SERVER_CONFIRM:
-		handleInputLeaveServerConfirm(demoState);
+		handleInputLeaveServerConfirm();
 		break;
 	default:
 		return;
 	}
 }
-void LobbyScene::handleInputChatRoom(a3_DemoState* demoState)
+void LobbyScene::handleInputChatRoom()
 {
-	if (isKeyPressed(demoState, a3key_escape))
+	if (mpInputHandler->isKeyPressed(a3key_escape))
 	{
 		mCurrentStep = LobbyStep::LEAVE_SERVER_CONFIRM;
 	}
-	else if (isKeyPressed(demoState, a3key_enter))
+	else if (mpInputHandler->isKeyPressed(a3key_enter))
 	{
 		if (!mCurrentInput.empty())
 		{
 			std::string command, commandResult;
-			if (processCommand(demoState, mCurrentInput, command, commandResult))
+			if (processCommand(mCurrentInput, command, commandResult))
 			{
 				if (command.compare(START_GAME_COMMAND) == 0)
 				{
@@ -75,7 +78,7 @@ void LobbyScene::handleInputChatRoom(a3_DemoState* demoState)
 			}
 			else
 			{
-				sendPublicMessage(demoState, mCurrentInput, MessageType::EITHER);
+				sendPublicMessage(mCurrentInput, MessageType::EITHER);
 			}
 
 			mCurrentInput.clear();
@@ -83,77 +86,77 @@ void LobbyScene::handleInputChatRoom(a3_DemoState* demoState)
 	}
 	else
 	{
-		Scene::input(demoState);
+		Scene::input();
 	}
 }
-void LobbyScene::handleInputLeaveServerConfirm(const a3_DemoState* demoState)
+void LobbyScene::handleInputLeaveServerConfirm()
 {
-	if (isKeyPressed(demoState, a3key_Y))
+	if (mpInputHandler->isKeyPressed(a3key_Y))
 	{
 		mCurrentStep = LobbyStep::LEAVE_SERVER;
 	}
-	else if (isKeyPressed(demoState, a3key_N))
+	else if (mpInputHandler->isKeyPressed(a3key_N))
 	{
 		mCurrentStep = LobbyStep::CHATROOM;
 	}
 }
 
 //Incoming packet handling. For now we, propagate the packers to the client/host.
-void LobbyScene::networkReceive(const a3_DemoState* demoState)
+void LobbyScene::processIncomingEvents()
 {
-	Scene::networkReceive(demoState);
+	Scene::processIncomingEvents();
 }
 
 //Update handling.
-void LobbyScene::update(const a3_DemoState* demoState)
+void LobbyScene::update()
 {
 	switch (mCurrentStep)
 	{
 		case LobbyStep::LEAVE_SERVER:
-			handleUpdateLeaveServer(demoState);
+			handleUpdateLeaveServer();
 			break;
 		default:
 			return;
 	}
 }
-void LobbyScene::handleUpdateLeaveServer(const a3_DemoState* demoState)
+void LobbyScene::handleUpdateLeaveServer()
 {
-	if (Client::isHost()) 
-		Host::cleanup();
-	else 
-		Client::cleanup();
+	//if (Client::isHost()) 
+	//	Host::cleanup();
+	//else 
+	//	Client::cleanup();
 
-	demoState->mpSceneManager->switchToScene(demoState, SceneId::SelectRole);
+	gDemoState->mpSceneManager->switchToScene(SceneId::SelectRole);
 }
 
-void LobbyScene::render(const a3_DemoState* demoState)
+void LobbyScene::render()
 {
 	glClearColor(1.0f, 0.5f, 1.0f, 1.0f);
 
 	TextFormatter& formatter = TextFormatter::get();
 
 	formatter.setLine(0);
-	formatter.drawText(demoState, "Lobby Scene", TextFormatter::WHITE, TextFormatter::TextAlign::CENTER_X);
+	formatter.drawText("Lobby Scene", AndrickColors::WHITE, TextAlign::CENTER_X);
 	formatter.offsetLine(2);
 
 	std::vector<LogInfo>::iterator iter = mChatLog.begin();
 	for (; iter != mChatLog.end(); ++iter)
-		formatter.drawText(demoState, iter->text, iter->color);
+		formatter.drawText(iter->text, iter->color);
 
 	if (mCurrentStep == LobbyStep::LEAVE_SERVER_CONFIRM)
-		formatter.drawText(demoState, "Are you sure you want to leave the server? (Y/N)");
+		formatter.drawText("Are you sure you want to leave the server? (Y/N)");
 
 	formatter.offsetLine(2);
-	formatter.drawText(demoState, mCurrentInput);
+	formatter.drawText(mCurrentInput);
 }
 
 
-void LobbyScene::networkSend(const a3_DemoState* demoState)
+void LobbyScene::packageOutgoingEvents()
 {
 	switch (mCurrentStep)
 	{
 	case LobbyStep::CHATROOM:
-		handleNetworkSendChatRoomStep(demoState);
+		handleNetworkSendChatRoomStep();
 		break;
 	default:
 		return;
@@ -162,20 +165,20 @@ void LobbyScene::networkSend(const a3_DemoState* demoState)
 
 
 
-void LobbyScene::handleNetworkSendChatRoomStep(const a3_DemoState* demoState)
+void LobbyScene::handleNetworkSendChatRoomStep()
 {
-	if (Client::isHost())
-	{
-		switch (mSelectedGame)
-		{
-		case GameType::TICTAC:
-			Host::spInstance->serverTravel(demoState, SceneId::Tictactoe);
-			break;
-		case GameType::BATTLESHIP:
-			Host::spInstance->serverTravel(demoState, SceneId::Battleship);
-			break;
-		default:
-			return;
-		}
-	}
+	//if (Client::isHost())
+	//{
+	//	switch (mSelectedGame)
+	//	{
+	//	case GameType::TICTAC:
+	//		Host::spInstance->serverTravel(demoState, SceneId::Tictactoe);
+	//		break;
+	//	case GameType::BATTLESHIP:
+	//		Host::spInstance->serverTravel(demoState, SceneId::Battleship);
+	//		break;
+	//	default:
+	//		return;
+	//	}
+	//}
 }
