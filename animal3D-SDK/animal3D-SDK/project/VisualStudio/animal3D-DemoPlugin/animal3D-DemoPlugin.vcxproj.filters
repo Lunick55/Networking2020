@@ -115,6 +115,12 @@
     <Filter Include="Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu">
       <UniqueIdentifier>{31be4f93-9884-4d76-87c0-731f93ff6406}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby">
+      <UniqueIdentifier>{bd7ddb63-5466-4e1d-b499-d16320bb6038}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby">
+      <UniqueIdentifier>{b667a5f1-a722-43c4-8b88-1684dca96c5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -207,6 +213,9 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_mainmenu_title.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_Lobby\andrick_lobby_chatroom.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -280,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MainMenu\andrick_mainmenu_servermaxusers.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_mainmenu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_Lobby\andrick_lobby_chatroom.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

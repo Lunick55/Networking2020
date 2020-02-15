@@ -18,9 +18,9 @@ public:
 
 protected:
 	//virtual void input() override;
-	virtual void processIncomingEvents() override;
+	//virtual void processIncomingEvents() override;
 	//virtual void update() override;
-	virtual void packageOutgoingEvents() override;
+	//virtual void packageOutgoingEvents() override;
 	//virtual void render() override;
 
 private:

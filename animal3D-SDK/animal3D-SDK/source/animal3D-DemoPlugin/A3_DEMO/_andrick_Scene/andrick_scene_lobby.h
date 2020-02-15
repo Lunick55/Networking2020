@@ -6,36 +6,24 @@
 class LobbyScene : public Scene
 {
 public:
+	const enum class LobbySceneStateId : char
+	{
+		INVALID_STATE = (char)SceneStateId::INVALID_STATE,
+		CHATROOM
+	};
+
 	LobbyScene();
 	virtual ~LobbyScene() = default;
 
 protected:
-	virtual void enteringScene() override;
-	virtual void input() override;
-	virtual void processIncomingEvents() override;
-	virtual void update() override;
-	virtual void packageOutgoingEvents() override;
-	virtual void render() override;
+	//virtual void input() override;
+	//virtual void processIncomingEvents() override;
+	//virtual void update() override;
+	//virtual void packageOutgoingEvents() override;
+	//virtual void render() override;
 
 private:
-	//Create a step class and map to the steps
-	enum class LobbyStep : a3byte
-	{
-		LEAVE_SERVER = -1,
-		LEAVE_SERVER_CONFIRM,
-		CHATROOM
-	};
-
-	LobbyStep mCurrentStep;
-	GameType mSelectedGame;
-	bool mInitSuccessful;
-
-	void handleInputChatRoom();
-	void handleInputLeaveServerConfirm();
-
-	void handleUpdateLeaveServer();
-
-	void handleNetworkSendChatRoomStep();
+	
 };
 
 #endif

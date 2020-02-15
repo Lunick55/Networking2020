@@ -23,7 +23,17 @@ void MainMenuTitle::processInput()
 	SceneState::processInput();
 }
 
+void MainMenuTitle::processIncomingEvents()
+{
+
+}
+
 void MainMenuTitle::update()
+{
+
+}
+
+void MainMenuTitle::packageOutgoingEvents()
 {
 
 }

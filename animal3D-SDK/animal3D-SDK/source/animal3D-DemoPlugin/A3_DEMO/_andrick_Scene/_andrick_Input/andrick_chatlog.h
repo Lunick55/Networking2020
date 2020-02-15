@@ -5,15 +5,18 @@
 
 struct LogInfo
 {
+	LogInfo(MessageType t = MessageType::GLOBAL, const std::string msg = "\n", Color c = WHITE) :
+		type(t), text(msg), color(c) {}
+
 	MessageType type;
 	std::string text;
-	Color color = WHITE;
+	Color color;
 };
 
 class ChatLog
 {
 public:
-	explicit ChatLog(const unsigned int linesToDisplay);
+	explicit ChatLog();
 	virtual ~ChatLog() = default;
 
 	ChatLog(const ChatLog& scene) = delete;
@@ -24,12 +27,13 @@ public:
 
 	void clearChatLog();
 
-	const LogInfo& getLogAt(std::size_t line);
-	void append(MessageType type, const std::string& msg, Color color = WHITE, unsigned int newLineAmount = 1);
-	void append(std::shared_ptr<LogInfo> logInfo, unsigned int newLineAmount = 1);
+	std::shared_ptr<LogInfo> getLogAt(std::size_t line);
+	void append(MessageType type, const std::string& msg, Color color = WHITE, unsigned int newLineAmount = 0);
+	void append(std::shared_ptr<LogInfo> logInfo, unsigned int newLineAmount = 0);
+
+	const std::vector<std::shared_ptr<LogInfo>> getRecentChatLog(unsigned int offsetFromMostRecent = 0, unsigned int lineHistory = 10);
 
 private:
-	unsigned int mLinesToDisplay;
 	std::shared_ptr<LogInfo> mpCurrentLine;
 	std::vector<std::shared_ptr<LogInfo>> mChatLog;
 };

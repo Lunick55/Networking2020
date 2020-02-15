@@ -1,13 +1,13 @@
-#ifndef MAINMENU_TITLE_H_
-#define MAINMENU_TITLE_H_
+#ifndef LOBBY_CHATROOM_H_
+#define LOBBY_CHATROOM_H_
 
 #include <A3_DEMO/_andrick_Scene/_andrick_State/andrick_scenestate.h>
 
-class MainMenuTitle : public SceneState
+class LobbyChatroom : public SceneState
 {
 public:
-	MainMenuTitle(std::shared_ptr<class Scene> parentScene);
-	virtual ~MainMenuTitle() = default;
+	LobbyChatroom(std::shared_ptr<class Scene> parentScene);
+	virtual ~LobbyChatroom() = default;
 
 	virtual void enteringState() override;
 	virtual void processInput() override;
@@ -16,6 +16,10 @@ public:
 	virtual void packageOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
+
+private:
+	unsigned int mChatHistory;
+	std::vector<std::shared_ptr<struct LogInfo>> mChatLogHistory;
 };
 
 #endif

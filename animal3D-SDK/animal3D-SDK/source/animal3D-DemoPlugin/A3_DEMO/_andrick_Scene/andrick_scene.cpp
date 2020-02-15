@@ -62,6 +62,16 @@ void Scene::enteringScene(const SceneStateId state)
 	switchToState(mID, state);
 }
 
+void Scene::processIncomingEvents()
+{
+	mpCurrentState->processIncomingEvents();
+}
+
+void Scene::packageOutgoingEvents()
+{
+	mpCurrentState->packageOutgoingEvents();
+}
+
 void Scene::input()
 {
 	mpCurrentState->processInput();

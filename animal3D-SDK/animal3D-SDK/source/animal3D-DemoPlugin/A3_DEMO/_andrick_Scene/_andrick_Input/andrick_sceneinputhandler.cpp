@@ -3,9 +3,10 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Command/andrick_command.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
-SceneInputHandler::SceneInputHandler(const unsigned int linesToDisplay) :
-	mpChatLog(std::make_unique<ChatLog>(linesToDisplay)) {}
+SceneInputHandler::SceneInputHandler() :
+	mpChatLog(std::make_shared<ChatLog>()) {}
 
 void SceneInputHandler::clear()
 {
@@ -52,6 +53,11 @@ bool SceneInputHandler::processCommand(const std::string& input, std::shared_ptr
 	//	success = processPlayTictacCommand(commandArgs, outputResults);
 	//}
 	//return success;
+}
+
+std::shared_ptr<ChatLog> SceneInputHandler::getChatLog()
+{
+	return mpChatLog;
 }
 
 bool SceneInputHandler::isKeyPressed(enum a3_KeyboardKey key)

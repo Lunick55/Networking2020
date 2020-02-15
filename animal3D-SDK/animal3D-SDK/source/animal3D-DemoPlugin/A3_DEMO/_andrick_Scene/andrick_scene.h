@@ -29,9 +29,9 @@ protected:
 
 	virtual void enteringScene(const SceneStateId state);
 	virtual void input();
-	virtual void processIncomingEvents() = 0;
+	virtual void processIncomingEvents();
 	virtual void update();
-	virtual void packageOutgoingEvents() = 0;
+	virtual void packageOutgoingEvents();
 	virtual void render();
 	virtual void exitingScene();
 

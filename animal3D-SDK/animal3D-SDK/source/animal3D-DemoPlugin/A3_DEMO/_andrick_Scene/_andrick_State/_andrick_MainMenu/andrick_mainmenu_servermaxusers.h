@@ -11,7 +11,9 @@ public:
 
 	virtual void enteringState() override;
 	virtual void processInput() override;
+	virtual void processIncomingEvents() override;
 	virtual void update() override;
+	virtual void packageOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
 

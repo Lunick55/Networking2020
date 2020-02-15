@@ -4,6 +4,7 @@
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
 
 MainMenuServerMaxUsers::MainMenuServerMaxUsers(std::shared_ptr<class Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MAX_USERS, DARK_GREY),
@@ -37,14 +38,24 @@ void MainMenuServerMaxUsers::processInput()
 		}
 		else
 		{
-			mpParentScene->switchToState(SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU);
+			mpParentScene->switchToState(SceneId::LOBBY, (SceneStateId)LobbyScene::LobbySceneStateId::CHATROOM);
 		}
 
 		mpInputHandler->clearCurrentInput();
 	}
 }
 
+void MainMenuServerMaxUsers::processIncomingEvents()
+{
+
+}
+
 void MainMenuServerMaxUsers::update()
+{
+
+}
+
+void MainMenuServerMaxUsers::packageOutgoingEvents()
 {
 
 }

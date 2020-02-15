@@ -6,12 +6,15 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
 
 SceneManager::SceneManager(std::shared_ptr<Scene> defaultScene) :
 	mpDefaultScene(defaultScene),
 	mpCurrentScene(mpDefaultScene)
 {
 	assert(mpDefaultScene != nullptr);
+
+	initScene(std::make_shared<LobbyScene>());
 }
 
 SceneManager::~SceneManager()

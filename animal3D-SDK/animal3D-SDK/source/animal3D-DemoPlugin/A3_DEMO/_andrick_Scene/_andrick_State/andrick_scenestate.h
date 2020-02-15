@@ -17,13 +17,16 @@ public:
 
 	virtual void enteringState();
 	virtual void processInput();
+	virtual void processIncomingEvents() = 0;
 	virtual void update() = 0;
+	virtual void packageOutgoingEvents() = 0;
 	virtual void render();
 	virtual void exitingState();
 
 	const enum SceneStateId getId() const;
 
-	void renderMenuOptions(Color color, TextAlign alignment, a3vec3 viewportPosition = a3vec3());
+	void renderMenuOptions(Color color, TextAlign alignment, unsigned int spacing = 2, a3vec3 viewportPosition = a3vec3());
+	void renderChatLogHistory(const std::vector<std::shared_ptr<struct LogInfo>>& chatLogHistory, TextAlign alignment, unsigned int spacing = 2, a3vec3 viewportPosition = a3vec3());
 
 protected:
 	const std::shared_ptr<Scene> mpParentScene;

@@ -3,11 +3,12 @@
 
 #include <memory>
 #include <string>
+#include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 
 class SceneInputHandler
 {
 public:
-	explicit SceneInputHandler(const unsigned int linesToDisplay = 10);
+	explicit SceneInputHandler();
 	virtual ~SceneInputHandler() = default;
 
 	SceneInputHandler(const SceneInputHandler& scene) = delete;
@@ -29,11 +30,13 @@ public:
 	bool handleBackspace(std::string& input);
 	void handleTyping(std::string& input);
 
+	std::shared_ptr<class ChatLog> getChatLog();
+
 	bool validateUsername(std::string& input);
 	bool validateNumber(const std::string& input, int& number);
 
 private:
-	std::unique_ptr<class ChatLog> mpChatLog;
+	std::shared_ptr<class ChatLog> mpChatLog;
 	std::string mCurrentInput;
 };
 

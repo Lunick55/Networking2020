@@ -98,7 +98,7 @@ enum class GameType : unsigned char
 
 const enum class MessageType : unsigned char
 {
-	EITHER,
+	GLOBAL,
 	SPECTOR,
 	PLAYER
 };
@@ -115,6 +115,7 @@ const enum class SceneId : char
 	INVALID_SCENE = -1,
 	EXIT,
 	MAIN_MENU,
+	LOBBY,
 	//SelectRole,
 	//Lobby,
 	//Tictactoe,
@@ -270,7 +271,7 @@ struct SendPublicMessageRequestPacket
 	char message[sMAX_MESSAGE_LENGTH];
 	char msgType;
 
-	SendPublicMessageRequestPacket(UserId user, const std::string& newMessage, MessageType type = MessageType::EITHER) :
+	SendPublicMessageRequestPacket(UserId user, const std::string& newMessage, MessageType type = MessageType::GLOBAL) :
 		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
 		userId(user),
 		msgType((char)type)
@@ -308,7 +309,7 @@ struct DeliverPublicMessagePacket
 	char msgType;
 
 	//TODO: init user id also at some point
-	DeliverPublicMessagePacket(UserId user, const std::string& newMessage, MessageType type = MessageType::EITHER) :
+	DeliverPublicMessagePacket(UserId user, const std::string& newMessage, MessageType type = MessageType::GLOBAL) :
 		packetId(PacketEventId::DELIVER_PUBLIC_MESSAGE),
 		userId(user),
 		msgType((char)type)
