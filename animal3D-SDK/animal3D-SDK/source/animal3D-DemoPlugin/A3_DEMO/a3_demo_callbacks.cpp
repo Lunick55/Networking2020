@@ -38,6 +38,10 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 
+//HACK: Karim's testing trash. DELETE
+#include "_andrick_Event/andrick_eventSystem.h"
+#include "_andrick_Event/TestEvent.h"
+
 // get the size of the persistent state to allocate
 //	(good idea to keep it relatively constant, so that addresses don't change 
 //	when the library is reloaded... that would mess everything up!)
@@ -183,11 +187,28 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 	return -1;
 }
 
+//HACK: Karim's testing trash. DELETE
+void DemoFunc(std::shared_ptr<Event> evnt)
+{
+	std::shared_ptr<TestEvent> eventClass;
+	eventClass = std::static_pointer_cast<TestEvent>(evnt);
+
+
+	std::string test = "TESTING";
+}
+
 // demo is loaded
 A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hotbuild)
 {
 	const a3ui32 stateSize = a3demo_getPersistentStateSize();
 	const a3ui32 trigSamplesPerDegree = 4;
+
+	//HACK: Karim's testing trash. DELETE
+	EventSystem eSys;
+	eSys.AddListener("Ham", DemoFunc);
+	std::string str = "Benis";
+	std::shared_ptr<TestEvent> tEv = std::make_shared<TestEvent>(str, 7);
+	eSys.FireEvent("Ham", tEv);
 
 	// do any re-allocation tasks
 	if (demoState && hotbuild)
