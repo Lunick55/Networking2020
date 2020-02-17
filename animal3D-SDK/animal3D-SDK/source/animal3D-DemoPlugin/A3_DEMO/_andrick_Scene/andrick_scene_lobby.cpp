@@ -6,8 +6,6 @@
 LobbyScene::LobbyScene() :
 	Scene(SceneId::LOBBY)
 {
-	std::shared_ptr<LobbyScene> scene = std::shared_ptr<LobbyScene>(this);
-
 	//init scene states
-	setDefaultState(std::make_shared<LobbyChatroom>(scene));
+	setDefaultState(std::make_shared<LobbyChatroom>(*this));
 }

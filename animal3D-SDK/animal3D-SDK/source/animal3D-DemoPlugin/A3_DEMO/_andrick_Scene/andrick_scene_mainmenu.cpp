@@ -7,10 +7,7 @@
 MainMenuScene::MainMenuScene() :
 	Scene(SceneId::MAIN_MENU)
 {
-	std::shared_ptr<MainMenuScene> scene = std::shared_ptr<MainMenuScene>(this);
-	
 	//init scene states
-	setDefaultState(std::make_shared<MainMenuTitle>(scene));
-	initSceneState(std::make_shared<MainMenuServerMaxUsers>(scene));
-	
+	setDefaultState(std::make_shared<MainMenuTitle>(*this));
+	initSceneState(std::make_shared<MainMenuServerMaxUsers>(*this));
 }

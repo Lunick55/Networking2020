@@ -17,9 +17,9 @@ public:
 
 protected:
 	//virtual void input() override;
-	//virtual void processIncomingEvents() override;
+	//virtual void processIncomingEvent(std::shared_ptr<Event> evnt) override;
 	//virtual void update() override;
-	//virtual void packageOutgoingEvents() override;
+	//virtual void queueOutgoingEvents() override;
 	//virtual void render() override;
 
 private:

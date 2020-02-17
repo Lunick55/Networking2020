@@ -37,6 +37,7 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
 
 //HACK: Karim's testing trash. DELETE
 #include "_andrick_Event/andrick_eventSystem.h"
@@ -165,9 +166,10 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 			gTextFormatter.setAlignment(TextAlign::LEFT);
 			gTextFormatter.setLine(0);
 			demoState->mpSceneManager->input();
-			demoState->mpSceneManager->processIncomingEvents();
+			gEventSystem.executeQueuedLocalEvents();//demoState->mpSceneManager->processIncomingEvent(evnt);
 			demoState->mpSceneManager->update();
-			demoState->mpSceneManager->packageOutgoingEvents();
+			demoState->mpSceneManager->queueOutgoingEvents();
+			gEventSystem.sendQueuedNetworkEvents();
 			demoState->mpSceneManager->render();
 
 			// update input
@@ -188,12 +190,12 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 }
 
 //HACK: Karim's testing trash. DELETE
-void DemoFunc(std::shared_ptr<Event> evnt)
-{
-	std::shared_ptr<TestEvent> eventClass;
-	eventClass = std::static_pointer_cast<TestEvent>(evnt);
-	std::string test = "TESTING";
-}
+//void DemoFunc(std::shared_ptr<Event> evnt)
+//{
+//	std::shared_ptr<TestEvent> eventClass;
+//	eventClass = std::static_pointer_cast<TestEvent>(evnt);
+//	std::string test = "TESTING";
+//}
 
 // demo is loaded
 A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hotbuild)
@@ -202,10 +204,10 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 	const a3ui32 trigSamplesPerDegree = 4;
 
 	//HACK: Karim's testing trash. DELETE
-	gEventSystem.AddListener(EventId::CHAT_MESSAGE, DemoFunc);
-	std::string str = "Benis";
-	std::shared_ptr<TestEvent> tEv = std::make_shared<TestEvent>(str, 7);
-	gEventSystem.FireEvent(EventId::CHAT_MESSAGE, tEv);
+	//gEventSystem.AddListener(EventId::COMMAND, DemoFunc);
+	//std::string str = "Benis";
+	//std::shared_ptr<TestEvent> tEv = std::make_shared<TestEvent>(str, 7);
+	//gEventSystem.QueueEvent(tEv);
 
 	// do any re-allocation tasks
 	if (demoState && hotbuild)
@@ -242,17 +244,21 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		a3timerSet(demoState->renderTimer, 30.0);
 		a3timerStart(demoState->renderTimer);
 
+		//Init
+		TextFormatter::get();
+		EventSystem::get();
+
 		// text
 		a3demo_initializeText(demoState->text);
 		demoState->textInit = 1;
 		demoState->textMode = 1;
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
-		demoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
-		demoState->mpCurrentUser = nullptr;
 		gDemoState = demoState;
+		gDemoState->mpCurrentUser = nullptr;
+		gDemoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
+		gDemoState->mpSceneManager->initScene(std::make_shared<LobbyScene>());
 
-		//Init
-		TextFormatter::get();
+		gEventSystem.addListener(gDemoState->mpSceneManager);
 
 		// enable asset streaming between loads
 		//	demoState->streaming = 1;

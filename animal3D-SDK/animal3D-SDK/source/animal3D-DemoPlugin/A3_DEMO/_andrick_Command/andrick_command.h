@@ -33,6 +33,9 @@ struct Command
 
 	Command(CommandId id) : ID(id) {}
 	virtual ~Command() = default;
+
+	virtual void runCommand() = 0;
+
 	const CommandId ID;
 };
 
@@ -43,6 +46,8 @@ struct ListCommand : public Command
 
 	ListCommand(class std::shared_ptr<class Client> sender, ListType type);
 	virtual ~ListCommand() = default;
+
+	virtual void runCommand();
 
 	std::shared_ptr<class Client> mpSender;
 	ListType mType;
@@ -56,6 +61,8 @@ struct WhisperCommand : public Command
 	WhisperCommand(class std::shared_ptr<class Client> sender, class std::shared_ptr<class Client> reciever,
 		const std::string& message);
 	virtual ~WhisperCommand() = default;
+
+	virtual void runCommand();
 
 	std::shared_ptr<class Client> mpSender;
 	std::shared_ptr<class Client> mpReciever;

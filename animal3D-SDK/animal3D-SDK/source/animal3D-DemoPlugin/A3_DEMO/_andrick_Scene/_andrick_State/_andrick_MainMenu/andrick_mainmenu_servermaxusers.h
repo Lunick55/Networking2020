@@ -6,14 +6,14 @@
 class MainMenuServerMaxUsers : public SceneState
 {
 public:
-	MainMenuServerMaxUsers(std::shared_ptr<class Scene> parentScene);
+	MainMenuServerMaxUsers(class Scene& parentScene);
 	virtual ~MainMenuServerMaxUsers() = default;
 
 	virtual void enteringState() override;
 	virtual void processInput() override;
-	virtual void processIncomingEvents() override;
+	virtual void processIncomingEvent(std::shared_ptr<Event> evnt) override;
 	virtual void update() override;
-	virtual void packageOutgoingEvents() override;
+	virtual void queueOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
 

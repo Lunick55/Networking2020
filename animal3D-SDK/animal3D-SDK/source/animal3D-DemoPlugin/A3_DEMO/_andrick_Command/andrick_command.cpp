@@ -57,7 +57,7 @@ bool Command::splitCommand(const std::string& userInput, std::vector<std::string
 bool Command::processCommand(const std::string& userInput, std::shared_ptr<Command>& out)
 {
 	std::vector<std::string> commandArgs;
-	bool success = splitCommand(userInput.substr(1), commandArgs);
+	bool success = splitCommand(userInput, commandArgs);
 
 	if (success)
 	{
@@ -116,6 +116,12 @@ bool ListCommand::createCommand(const std::vector<std::string>& commandArgs, std
 	return true;
 }
 
+void ListCommand::runCommand()
+{
+	std::cout << "List command executed!" << std::endl;
+	//List out the players in the server depending on the command arguments.
+}
+
 ListCommand::ListCommand(class std::shared_ptr<Client> sender, ListType type) :
 	Command(CommandId::LIST_PLAYERS),
 	mpSender(sender),
@@ -132,20 +138,28 @@ bool WhisperCommand::createCommand(const std::vector<std::string>& commandArgs, 
 	if (commandArgs.size() < 3)
 	{
 		out = nullptr;
-		return false;
 	}
-
-	std::string receiverUsername = commandArgs.at(1);
-	std::shared_ptr<Client> receiver;
-
-	if (gDemoState->mpCurrentUser->getClientFromUsername(receiverUsername, receiver))
+	else
 	{
-		std::string message = mergeCommand(commandArgs, 2);
-		out = std::make_shared<WhisperCommand>(gDemoState->mpCurrentUser, receiver, message);
-		return true;
+		std::string receiverUsername = commandArgs.at(1);
+		std::shared_ptr<Client> receiver;
+
+		if (gDemoState->mpCurrentUser && gDemoState->mpCurrentUser->getClientFromUsername(receiverUsername, receiver))
+		{
+			std::string message = mergeCommand(commandArgs, 2);
+			out = std::make_shared<WhisperCommand>(gDemoState->mpCurrentUser, receiver, message);
+			return true;
+		}
 	}
 
+	std::cout << "Couldn't do the whisper command!" << std::endl;
 	return false;
+}
+
+void WhisperCommand::runCommand()
+{
+	std::cout << "Whisper command executed!" << std::endl;
+	//Whisper the message to the receiver using the command args data.
 }
 
 WhisperCommand::WhisperCommand(std::shared_ptr<Client> sender, std::shared_ptr<Client> reciever,

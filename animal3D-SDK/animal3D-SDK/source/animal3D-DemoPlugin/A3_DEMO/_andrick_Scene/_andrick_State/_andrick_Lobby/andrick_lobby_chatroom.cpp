@@ -6,8 +6,9 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
+#include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 
-LobbyChatroom::LobbyChatroom(std::shared_ptr<class Scene> parentScene) :
+LobbyChatroom::LobbyChatroom(class Scene& parentScene) :
 	SceneState(parentScene, (SceneStateId)LobbyScene::LobbySceneStateId::CHATROOM, DARK_GREY),
 	mChatHistory(10)
 {
@@ -25,18 +26,26 @@ void LobbyChatroom::processInput()
 
 	if (mpInputHandler->isKeyPressed(a3key_enter))
 	{
-		//add input to chatlog
-		//Send event in the future. Don't add to log here.
-		mpInputHandler->getChatLog()->append(MessageType::GLOBAL, mpInputHandler->getCurrentInput());
-		mChatLogHistory = mpInputHandler->getChatLog()->getRecentChatLog(0, mChatHistory);
+		//Check if the input is a command. If it is, fire the respective command event.
+		if (!mpInputHandler->handleCommandInput())
+		{
+			//Send event a public message event.
+			mpInputHandler->getChatLog()->append(MessageType::GLOBAL, mpInputHandler->getCurrentInput());
+			
+			//TODO: Don't add to log here in the future.
+			mChatLogHistory = mpInputHandler->getChatLog()->getRecentChatLog(0, mChatHistory);
+			
+			//TODO: Fire public message event.
+			//gEventSystem.QueueEvent(std::shared_ptr<PublicMessageEvent>(gDemoState->mpCurrentUser, mpInputHandler->getCurrentInput()));
+		}
 
 		mpInputHandler->clearCurrentInput();
 	}
 }
 
-void LobbyChatroom::processIncomingEvents()
+void LobbyChatroom::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
-
+	SceneState::processIncomingEvent(evnt);
 }
 
 void LobbyChatroom::update()
@@ -44,7 +53,7 @@ void LobbyChatroom::update()
 
 }
 
-void LobbyChatroom::packageOutgoingEvents()
+void LobbyChatroom::queueOutgoingEvents()
 {
 
 }

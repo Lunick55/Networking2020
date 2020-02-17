@@ -4,7 +4,7 @@
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 
-MainMenuTitle::MainMenuTitle(std::shared_ptr<class Scene> parentScene) :
+MainMenuTitle::MainMenuTitle(class Scene& parentScene) :
 	SceneState(parentScene, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU,
 		LIGHT_BLUE)
 {
@@ -23,7 +23,7 @@ void MainMenuTitle::processInput()
 	SceneState::processInput();
 }
 
-void MainMenuTitle::processIncomingEvents()
+void MainMenuTitle::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
 
 }
@@ -33,7 +33,7 @@ void MainMenuTitle::update()
 
 }
 
-void MainMenuTitle::packageOutgoingEvents()
+void MainMenuTitle::queueOutgoingEvents()
 {
 
 }

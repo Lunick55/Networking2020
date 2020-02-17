@@ -62,14 +62,14 @@ void Scene::enteringScene(const SceneStateId state)
 	switchToState(mID, state);
 }
 
-void Scene::processIncomingEvents()
+void Scene::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
-	mpCurrentState->processIncomingEvents();
+	mpCurrentState->processIncomingEvent(evnt);
 }
 
-void Scene::packageOutgoingEvents()
+void Scene::queueOutgoingEvents()
 {
-	mpCurrentState->packageOutgoingEvents();
+	mpCurrentState->queueOutgoingEvents();
 }
 
 void Scene::input()

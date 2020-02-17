@@ -7,18 +7,20 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
+#include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 
 SceneManager::SceneManager(std::shared_ptr<Scene> defaultScene) :
 	mpDefaultScene(defaultScene),
 	mpCurrentScene(mpDefaultScene)
 {
 	assert(mpDefaultScene != nullptr);
-
-	initScene(std::make_shared<LobbyScene>());
+	initScene(mpDefaultScene);
 }
 
 SceneManager::~SceneManager()
 {
+	//gEventSystem.removeListener(std::shared_ptr<SceneManager>(this));
 	mpCurrentScene = nullptr;
 	mSceneMap.clear();
 }
@@ -53,9 +55,9 @@ void SceneManager::input()
 	gDemoState->newInput.clear();
 }
 
-void SceneManager::processIncomingEvents()
+void SceneManager::processIncomingEvent(std::shared_ptr<struct Event> evnt)
 {
-	mpCurrentScene->processIncomingEvents();
+	mpCurrentScene->processIncomingEvent(evnt);
 }
 
 void SceneManager::update()
@@ -63,9 +65,9 @@ void SceneManager::update()
 	mpCurrentScene->update();
 }
 
-void SceneManager::packageOutgoingEvents()
+void SceneManager::queueOutgoingEvents()
 {
-	mpCurrentScene->packageOutgoingEvents();
+	mpCurrentScene->queueOutgoingEvents();
 }
 
 void SceneManager::render()

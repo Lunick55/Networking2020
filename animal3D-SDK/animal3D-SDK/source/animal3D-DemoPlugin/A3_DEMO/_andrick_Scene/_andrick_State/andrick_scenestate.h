@@ -2,14 +2,16 @@
 #define SCENE_STATE_H_
 
 #include <GL/glew.h>
+#include <set>
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_Event/andrick_event.h>
 
 class SceneState
 {
 	friend class Scene;
 
 public:
-	SceneState(std::shared_ptr<Scene> parentScene, SceneStateId id, Color backgroundColor = DARK_GREY);
+	SceneState(Scene& parentScene, SceneStateId id, Color backgroundColor = DARK_GREY);
 	virtual ~SceneState() = default;
 
 	SceneState(const SceneState& scene) = delete;
@@ -17,11 +19,15 @@ public:
 
 	virtual void enteringState();
 	virtual void processInput();
-	virtual void processIncomingEvents() = 0;
+	virtual void processIncomingEvent(std::shared_ptr<Event> evnt);
 	virtual void update() = 0;
-	virtual void packageOutgoingEvents() = 0;
+	virtual void queueOutgoingEvents() = 0;
 	virtual void render();
 	virtual void exitingState();
+
+	void addValidCommand(CommandId commandId);
+	void removeValidCommand(CommandId commandId);
+	virtual void handleCommandEvent(std::shared_ptr<CommandEvent> commandEvnt);
 
 	const enum SceneStateId getId() const;
 
@@ -29,11 +35,14 @@ public:
 	void renderChatLogHistory(const std::vector<std::shared_ptr<struct LogInfo>>& chatLogHistory, TextAlign alignment, unsigned int spacing = 2, a3vec3 viewportPosition = a3vec3());
 
 protected:
-	const std::shared_ptr<Scene> mpParentScene;
+	Scene& mParentScene;
 	const SceneStateId mID;
 	std::shared_ptr<class SceneInputHandler> mpInputHandler;
 	std::vector<struct MenuOption> mMenuOptions;
 	Color mBackgroundColor;
+
+private:
+	std::set<CommandId> mValidCommands;
 };
 
 #endif

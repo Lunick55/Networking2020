@@ -4,6 +4,8 @@
 #include <A3_DEMO/_andrick_Command/andrick_command.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
+#include <A3_DEMO/_andrick_Event/TestEvent.h>
 
 SceneInputHandler::SceneInputHandler() :
 	mpChatLog(std::make_shared<ChatLog>()) {}
@@ -81,6 +83,50 @@ void SceneInputHandler::updateInput()
 	{
 		handleTyping(mCurrentInput);
 	}
+}
+
+bool SceneInputHandler::handleCommandInput()
+{
+	return handleCommandInput(mCurrentInput);
+}
+
+bool SceneInputHandler::isCommand()
+{
+	return isCommand(mCurrentInput);
+}
+
+bool SceneInputHandler::processCommand(std::shared_ptr<struct Command>& out)
+{
+	return processCommand(mCurrentInput, out);
+}
+
+bool SceneInputHandler::handleCommandInput(const std::string& input)
+{
+	bool success = isCommand(input);
+
+	if (success)
+	{
+		std::shared_ptr<Command> out;
+		if (processCommand(input, out))
+		{
+			std::shared_ptr<CommandEvent> evnt;
+
+			switch (out->ID)
+			{
+			case CommandId::WHISPER:
+				evnt = std::make_shared<WhisperCommandEvent>(std::dynamic_pointer_cast<WhisperCommand>(out));
+				break;
+			default:
+				std::cout << "I don't know how to process commad with ID: " << std::to_string((int)out->ID) << "!" << std::endl;
+				return false;
+			}
+
+			gEventSystem.queueLocalEvent(evnt);//For now for testing. Remove later
+			gEventSystem.queueNetworkEvent(evnt);
+		}
+	}
+
+	return success;
 }
 
 const std::string& SceneInputHandler::getCurrentInput() const

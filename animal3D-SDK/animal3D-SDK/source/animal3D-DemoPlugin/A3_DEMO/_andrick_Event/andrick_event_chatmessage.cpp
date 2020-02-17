@@ -13,17 +13,5 @@ ChatMessageEvent::ChatMessageEvent(std::shared_ptr<Client> sender, std::shared_p
 
 void ChatMessageEvent::execute()
 {
-	//std::shared_ptr<Event> messageEvent;
 
-	//Send event to display public chat message
-	if (!mpReciever)
-	{
-		//messageEvent = std::shared_ptr<PublicChatEvent>(mSender. mMessage);
-	}
-	else
-	{
-		//messageEvent = std::shared_ptr<PrivateChatEvent>(mSender, mReciever, mMessage);
-	}
-
-	//gDemoState->mpEventManager->fireEvent(messageEvent);
 }

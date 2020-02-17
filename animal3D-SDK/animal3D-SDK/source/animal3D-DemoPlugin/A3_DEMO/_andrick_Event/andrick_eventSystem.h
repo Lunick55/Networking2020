@@ -1,12 +1,19 @@
 #ifndef EVENT_SYSTEM_H_
 #define EVENT_SYSTEM_H_
 
-#include <string>
+#include <queue>
+#include <vector>
 #include <functional>
 #include <A3_DEMO/_andrick_Event/andrick_event.h>
 
 typedef std::function<void(std::shared_ptr<Event>)> FuncPtr;
-typedef std::multimap<EventId, FuncPtr> MultMap;
+typedef std::multimap<EventId, std::shared_ptr<FuncPtr>> MultMap;
+
+class EventAgnosticListener
+{
+public:
+	virtual void processIncomingEvent(std::shared_ptr<Event> evnt) = 0;
+};
 
 class EventSystem
 {
@@ -23,9 +30,20 @@ public:
 	EventSystem() {};
 	~EventSystem() = default;
 
-	void AddListener(EventId eventId, FuncPtr func);
-	void RemoveListener(EventId eventId, FuncPtr func);
-	void FireEvent(EventId eventId, std::shared_ptr<Event> eventData);
+	void addListener(EventId eventId, FuncPtr func);
+	void addListener(std::shared_ptr<EventAgnosticListener> evntListener);
+
+	void removeListener(EventId eventId, FuncPtr func);
+	void removeListener(std::shared_ptr<EventAgnosticListener> evntListener);
+	
+	//Two separate functions to streamline event handling so the compiler
+	//can optimize the code path without if statements.
+	void queueNetworkEvent(std::shared_ptr<Event> networkEvent);
+	void queueLocalEvent(std::shared_ptr<Event> localEvent);
+
+	//Should only be called from a3_demo_callbacks
+	void executeQueuedLocalEvents();
+	void sendQueuedNetworkEvents();
 
 	static EventSystem& get()
 	{
@@ -35,6 +53,14 @@ public:
 
 private:
 	MultMap mListenerFuncMap;
+	std::vector<std::shared_ptr<EventAgnosticListener>> mEventAgnosticListeners;
+
+	//Events to process locally. (Maybe they just came from the network 
+	//or are simply just events we want to process on the clientside only)
+	std::queue<std::shared_ptr<Event>> mQueuedLocalEvents;
+
+	//Events to get sent over the network
+	std::queue<std::shared_ptr<Event>> mQueuedNetworkEvents;
 };
 
 //REFERENCE

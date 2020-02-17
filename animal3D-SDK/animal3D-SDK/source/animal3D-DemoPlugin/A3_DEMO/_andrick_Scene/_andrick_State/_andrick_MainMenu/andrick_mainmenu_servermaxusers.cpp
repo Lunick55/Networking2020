@@ -6,7 +6,7 @@
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
 
-MainMenuServerMaxUsers::MainMenuServerMaxUsers(std::shared_ptr<class Scene> parentScene) :
+MainMenuServerMaxUsers::MainMenuServerMaxUsers(class Scene& parentScene) :
 	SceneState(parentScene, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MAX_USERS, DARK_GREY),
 	mNormalText("How many connections do you want to allow on the server?"),
 	mErrorText("Please enter a valid number!"),
@@ -38,14 +38,14 @@ void MainMenuServerMaxUsers::processInput()
 		}
 		else
 		{
-			mpParentScene->switchToState(SceneId::LOBBY, (SceneStateId)LobbyScene::LobbySceneStateId::CHATROOM);
+			mParentScene.switchToState(SceneId::LOBBY, (SceneStateId)LobbyScene::LobbySceneStateId::CHATROOM);
 		}
 
 		mpInputHandler->clearCurrentInput();
 	}
 }
 
-void MainMenuServerMaxUsers::processIncomingEvents()
+void MainMenuServerMaxUsers::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
 
 }
@@ -55,7 +55,7 @@ void MainMenuServerMaxUsers::update()
 
 }
 
-void MainMenuServerMaxUsers::packageOutgoingEvents()
+void MainMenuServerMaxUsers::queueOutgoingEvents()
 {
 
 }

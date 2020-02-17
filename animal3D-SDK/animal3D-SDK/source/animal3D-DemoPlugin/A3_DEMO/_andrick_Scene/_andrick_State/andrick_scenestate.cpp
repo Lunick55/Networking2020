@@ -4,9 +4,10 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
+#include <A3_DEMO/_andrick_Command/andrick_command.h>
 
-SceneState::SceneState(std::shared_ptr<Scene> parentScene, SceneStateId id, Color backgroundColor) :
-	mpParentScene(parentScene),
+SceneState::SceneState(Scene& parentScene, SceneStateId id, Color backgroundColor) :
+	mParentScene(parentScene),
 	mID(id),
 	mpInputHandler(std::make_shared<SceneInputHandler>()),
 	mBackgroundColor(backgroundColor) {}
@@ -28,11 +29,23 @@ void SceneState::processInput()
 				return;
 			}
 
-			mpParentScene->switchToState(iter->sceneId, iter->stateId);
+			mParentScene.switchToState(iter->sceneId, iter->stateId);
 		}
 	}
 
 	mpInputHandler->updateInput();
+}
+
+void SceneState::processIncomingEvent(std::shared_ptr<Event> evnt)
+{
+	switch (evnt->ID)
+	{
+	case EventId::COMMAND:
+		handleCommandEvent(std::dynamic_pointer_cast<CommandEvent>(evnt));
+		break;
+	default:
+		break;
+	}
 }
 
 void SceneState::render()
@@ -66,4 +79,24 @@ void SceneState::exitingState()
 const SceneStateId SceneState::getId() const
 { 
 	return mID; 
+}
+
+void SceneState::addValidCommand(CommandId commandId)
+{
+	mValidCommands.insert(commandId);
+}
+
+void SceneState::removeValidCommand(CommandId commandId)
+{
+	mValidCommands.erase(commandId);
+}
+
+void SceneState::handleCommandEvent(std::shared_ptr<CommandEvent> commandEvnt)
+{
+	std::set<CommandId>::iterator iter = mValidCommands.find(commandEvnt->command->ID);
+
+	if (iter != mValidCommands.end())
+	{
+		commandEvnt->execute();
+	}
 }

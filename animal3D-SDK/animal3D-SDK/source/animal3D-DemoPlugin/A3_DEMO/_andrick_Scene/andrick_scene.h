@@ -29,9 +29,9 @@ protected:
 
 	virtual void enteringScene(const SceneStateId state);
 	virtual void input();
-	virtual void processIncomingEvents();
+	virtual void processIncomingEvent(std::shared_ptr<Event> evnt);
 	virtual void update();
-	virtual void packageOutgoingEvents();
+	virtual void queueOutgoingEvents();
 	virtual void render();
 	virtual void exitingScene();
 

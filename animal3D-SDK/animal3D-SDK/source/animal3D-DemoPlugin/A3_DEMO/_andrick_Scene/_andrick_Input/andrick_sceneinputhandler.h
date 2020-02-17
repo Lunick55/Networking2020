@@ -20,6 +20,11 @@ public:
 	void updateInput();
 	const std::string& getCurrentInput() const;
 
+	bool handleCommandInput();
+	bool isCommand();
+	bool processCommand(std::shared_ptr<struct Command>& out);
+
+	bool handleCommandInput(const std::string& input);
 	bool isCommand(const std::string& input);
 	bool processCommand(const std::string& input, std::shared_ptr<struct Command>& out);
 

@@ -121,6 +121,9 @@
     <Filter Include="Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby">
       <UniqueIdentifier>{b667a5f1-a722-43c4-8b88-1684dca96c5c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_network\_andrick_packet">
+      <UniqueIdentifier>{ea67b18e-0632-4f39-84be-50270a24c9ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -219,6 +222,9 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_eventsystem.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_event</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_event.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -301,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_eventsystem.h">
       <Filter>Header Files\A3_DEMO\_andrick_event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packet.h">
+      <Filter>Header Files\A3_DEMO\_andrick_network\_andrick_packet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
