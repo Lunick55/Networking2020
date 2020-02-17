@@ -18,6 +18,7 @@ private:
 	const UserId mID;
 	const std::string mUSERNAME;
 	AuthorityId mAuthority;
+	RakNet::SystemAddress mLocalAddress;
 	std::map<UserId, std::shared_ptr<Client>> mClientMap;
 
 };

@@ -31,7 +31,7 @@ public:
 	void setCursorPos(float x, float y, float z = -1.0f);
 	void setColor(a3vec4 color);
 	void setAlignment(TextAlign align);
-
+	
 private:
 	a3vec3 mCursorPosition;
 	a3vec4 mColor;

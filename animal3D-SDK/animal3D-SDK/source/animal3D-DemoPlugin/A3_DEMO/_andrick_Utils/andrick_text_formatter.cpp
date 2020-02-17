@@ -127,3 +127,21 @@ float TextFormatter::calculateLineHeight(int line)
 	lineHeight -= mCurrentLine * LINE_HEIGHT;
 	return lineHeight;
 }
+
+std::string TextFormatter::formattedChatMessage(const char* username, const char* message, AuthorityId authority)
+{
+	std::string formattedMessage = "[";
+
+	if (authority == AuthorityId::ADMIN)
+	{
+		formattedMessage += "*** ";
+	}
+
+	formattedMessage += std::string(username) + "] " + std::string(message);
+	return formattedMessage;
+}
+
+std::string TextFormatter::formattedChatMessage(const std::string& username, const std::string& message, AuthorityId authority)
+{
+	return formattedChatMessage(username.c_str(), message.c_str(), authority);
+}

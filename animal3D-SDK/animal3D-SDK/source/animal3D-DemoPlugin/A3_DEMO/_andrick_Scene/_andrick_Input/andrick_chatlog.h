@@ -31,6 +31,9 @@ public:
 	void append(MessageType type, const std::string& msg, Color color = WHITE, unsigned int newLineAmount = 0);
 	void append(std::shared_ptr<LogInfo> logInfo, unsigned int newLineAmount = 0);
 
+	void appendFormattedChatMessage(MessageType type, const char* username, const char* message, AuthorityId authority, unsigned int newLineAmount = 0);
+	void appendFormattedChatMessage(MessageType type, const std::string& username, const std::string& message, AuthorityId authority, unsigned int newLineAmount = 0);
+
 	const std::vector<std::shared_ptr<LogInfo>> getRecentChatLog(unsigned int offsetFromMostRecent = 0, unsigned int lineHistory = 10);
 
 private:
