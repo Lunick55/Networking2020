@@ -216,6 +216,9 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_Lobby\andrick_lobby_chatroom.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_eventsystem.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_event</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -292,6 +295,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_Lobby\andrick_lobby_chatroom.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\TestEvent.h">
+      <Filter>Header Files\A3_DEMO\_andrick_event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_eventsystem.h">
+      <Filter>Header Files\A3_DEMO\_andrick_event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

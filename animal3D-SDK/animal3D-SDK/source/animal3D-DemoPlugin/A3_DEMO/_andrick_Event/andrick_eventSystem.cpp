@@ -1,19 +1,18 @@
-#include "andrick_eventSystem.h"
-#include "TestEvent.h"
+#include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 
 //std::shared_ptr<EventSystem> EventSystem::spInstance_ = nullptr;
 
-void EventSystem::AddListener(std::string eventName, FuncPtr func)
+void EventSystem::AddListener(EventId eventId, FuncPtr func)
 {	
 	//TODO: maybe check if contained already?
-	mListenerFuncMap.insert({ eventName, func });
+	mListenerFuncMap.insert({ eventId, func });
 }
 
-void EventSystem::RemoveListener(std::string eventName, FuncPtr func)
+void EventSystem::RemoveListener(EventId eventId, FuncPtr func)
 {
 	//should get me all the values with the key
 	//std::pair<MMAPIterator, MMAPIterator> result = mmapOfPos.equal_range('c');
-	std::pair<MultMap::iterator, MultMap::iterator> multKeyResult = mListenerFuncMap.equal_range(eventName);
+	std::pair<MultMap::iterator, MultMap::iterator> multKeyResult = mListenerFuncMap.equal_range(eventId);
 
 	MultMap::iterator iter = multKeyResult.first;
 
@@ -30,19 +29,18 @@ void EventSystem::RemoveListener(std::string eventName, FuncPtr func)
 	}
 }
 
-void EventSystem::FireEvent(std::string eventName, std::shared_ptr<Event> eventData)
+void EventSystem::FireEvent(EventId eventId, std::shared_ptr<Event> eventData)
 {
 	//TODO instead of passing in the event code, just read the eventData's eventID
 
 	//should get me all the values with the key
 	//then iterate through those key vlaues, and fire events!
 
-	std::pair<MultMap::iterator, MultMap::iterator> multKeyResult = mListenerFuncMap.equal_range(eventName);
+	std::pair<MultMap::iterator, MultMap::iterator> multKeyResult = mListenerFuncMap.equal_range(eventId);
 	
 	MultMap::iterator iter;
 	for (iter = multKeyResult.first; iter != multKeyResult.second; iter++)
 	{
 		iter->second(eventData);
 	}
-
 }

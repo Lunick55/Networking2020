@@ -192,8 +192,6 @@ void DemoFunc(std::shared_ptr<Event> evnt)
 {
 	std::shared_ptr<TestEvent> eventClass;
 	eventClass = std::static_pointer_cast<TestEvent>(evnt);
-
-
 	std::string test = "TESTING";
 }
 
@@ -204,11 +202,10 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 	const a3ui32 trigSamplesPerDegree = 4;
 
 	//HACK: Karim's testing trash. DELETE
-	EventSystem eSys;
-	eSys.AddListener("Ham", DemoFunc);
+	gEventSystem.AddListener(EventId::CHAT_MESSAGE, DemoFunc);
 	std::string str = "Benis";
 	std::shared_ptr<TestEvent> tEv = std::make_shared<TestEvent>(str, 7);
-	eSys.FireEvent("Ham", tEv);
+	gEventSystem.FireEvent(EventId::CHAT_MESSAGE, tEv);
 
 	// do any re-allocation tasks
 	if (demoState && hotbuild)

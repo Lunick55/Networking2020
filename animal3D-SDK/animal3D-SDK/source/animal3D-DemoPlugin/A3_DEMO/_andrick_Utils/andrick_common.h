@@ -28,6 +28,7 @@ static const int MAX_INPUT_LENGTH = 512;
 
 extern struct a3_DemoState* gDemoState;
 extern class TextFormatter& gTextFormatter;
+extern class EventSystem& gEventSystem;
 
 struct AndrickUtils
 {

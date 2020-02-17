@@ -3,10 +3,10 @@
 
 #include <string>
 #include <functional>
-#include "andrick_event.h"
+#include <A3_DEMO/_andrick_Event/andrick_event.h>
 
 typedef std::function<void(std::shared_ptr<Event>)> FuncPtr;
-typedef std::multimap < std::string, FuncPtr> MultMap;
+typedef std::multimap<EventId, FuncPtr> MultMap;
 
 class EventSystem
 {
@@ -21,16 +21,19 @@ public:
 	//	return spInstance_;
 	//}
 	EventSystem() {};
-
 	~EventSystem() = default;
 
-	void AddListener(std::string eventName, FuncPtr func);
-	void RemoveListener(std::string eventName, FuncPtr func);
-	void FireEvent(std::string eventName, std::shared_ptr<Event> eventData);
+	void AddListener(EventId eventId, FuncPtr func);
+	void RemoveListener(EventId eventId, FuncPtr func);
+	void FireEvent(EventId eventId, std::shared_ptr<Event> eventData);
+
+	static EventSystem& get()
+	{
+		static EventSystem instance;
+		return instance;
+	}
 
 private:
-	//static std::shared_ptr<EventSystem> spInstance_;
-
 	MultMap mListenerFuncMap;
 };
 
