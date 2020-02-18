@@ -198,4 +198,24 @@ struct WhisperPacket
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct BasicEventPacket
+{
+	PacketEventId packetId;
+	//UserId senderId;
+	//UserId recieverId;
+
+	EventId ID;
+
+	BasicEventPacket(EventId id)://(UserId sender, UserId reciever, EventId id) :
+		packetId(PacketEventId::BASIC_EVENT),
+		//senderId(sender),
+		//recieverId(reciever),
+		ID(id)
+	{
+
+	}
+};
+#pragma pack(pop)
+
 #endif

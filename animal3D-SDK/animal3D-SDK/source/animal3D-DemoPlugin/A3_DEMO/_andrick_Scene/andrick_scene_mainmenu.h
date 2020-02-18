@@ -10,7 +10,8 @@ public:
 	{
 		INVALID_STATE = (char)SceneStateId::INVALID_STATE,
 		TITLE_MENU,
-		SERVER_MAX_USERS
+		SERVER_MAX_USERS,
+		SERVER_MINIGAME //HACK: testing some stuff real quick, getting familiar with scenes
 	};
 
 	MainMenuScene();

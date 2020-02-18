@@ -33,3 +33,16 @@ PacketEventId WhisperCommandEvent::generatePacket(const char*& packetData)
 	//return the packet id
 	return packet.packetId;
 }
+
+PacketEventId BasicEvent::generatePacket(const char*& packetData)
+{
+	//Generate packet with command args
+	BasicEventPacket packet = BasicEventPacket(ID);
+
+	//Convert to packet data
+	packetData = (const char*)&packet;
+
+	//return the packet id
+	return packet.packetId;
+}
+

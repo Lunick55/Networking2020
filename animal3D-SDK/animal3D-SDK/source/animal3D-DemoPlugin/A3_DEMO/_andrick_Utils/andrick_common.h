@@ -88,6 +88,7 @@ enum class EventId : char
 {
 	INVALID_EVENT = -1,
 	CHAT_MESSAGE,
+	INCREMENT_THE_SPACE,
 	COMMAND
 };
 
@@ -118,6 +119,7 @@ const enum class SceneId : char
 	EXIT,
 	MAIN_MENU,
 	LOBBY,
+	MINIGAME,
 	//SelectRole,
 	//Lobby,
 	//Tictactoe,
@@ -155,6 +157,8 @@ enum PacketEventId : unsigned char
 	UNMUTE_USER,
 
 	WHISPER_COMMAND,
+
+	BASIC_EVENT,
 
 	UPDATE_TICTAC_STATE,
 

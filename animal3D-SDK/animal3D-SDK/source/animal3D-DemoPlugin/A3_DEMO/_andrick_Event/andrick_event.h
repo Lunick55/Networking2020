@@ -24,6 +24,15 @@ struct Event
 	EventDispatchType dispatchType;
 };
 
+struct BasicEvent : public Event
+{
+	BasicEvent(EventId id) : Event(id) {};
+	virtual ~BasicEvent() = default;
+
+	virtual void execute() {};
+	virtual PacketEventId generatePacket(const char*& packetData);
+};
+
 struct CommandEvent : public Event
 {
 	CommandEvent(std::shared_ptr<struct Command> command);

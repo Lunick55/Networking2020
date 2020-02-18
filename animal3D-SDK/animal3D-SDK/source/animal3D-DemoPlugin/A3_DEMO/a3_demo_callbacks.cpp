@@ -38,6 +38,7 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_miniGame.h>
 
 //HACK: Karim's testing trash. DELETE
 #include "_andrick_Event/andrick_eventSystem.h"
@@ -257,6 +258,7 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		gDemoState->mpCurrentUser = nullptr;
 		gDemoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
 		gDemoState->mpSceneManager->initScene(std::make_shared<LobbyScene>());
+		gDemoState->mpSceneManager->initScene(std::make_shared<MiniGameScene>());
 
 		gEventSystem.addListener(gDemoState->mpSceneManager);
 

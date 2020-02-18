@@ -30,10 +30,10 @@ public:
 	EventSystem() {};
 	~EventSystem() = default;
 
-	void addListener(EventId eventId, FuncPtr func);
+	void addListener(EventId eventId, FuncPtr func); // unusable :'(
 	void addListener(std::shared_ptr<EventAgnosticListener> evntListener);
 
-	void removeListener(EventId eventId, FuncPtr func);
+	void removeListener(EventId eventId, FuncPtr func); // unusable :'(
 	void removeListener(std::shared_ptr<EventAgnosticListener> evntListener);
 	
 	//Two separate functions to streamline event handling so the compiler

@@ -32,6 +32,9 @@ public:
 	void setColor(a3vec4 color);
 	void setAlignment(TextAlign align);
 	
+	std::string formattedChatMessage(const char* username, const char* message, AuthorityId authority);
+	std::string formattedChatMessage(const std::string& username, const std::string& message, AuthorityId authority);
+
 private:
 	a3vec3 mCursorPosition;
 	a3vec4 mColor;
