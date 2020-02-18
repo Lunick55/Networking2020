@@ -124,6 +124,12 @@
     <Filter Include="Header Files\A3_DEMO\_andrick_network\_andrick_packet">
       <UniqueIdentifier>{ea67b18e-0632-4f39-84be-50270a24c9ed}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_miniGame">
+      <UniqueIdentifier>{fb1fdaed-582b-49c5-b181-a9e3ba53a982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_miniGame">
+      <UniqueIdentifier>{2fa0b35e-b87f-4ae3-8fb3-0d2105698a05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -225,6 +231,12 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Event\andrick_event.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_event</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_miniGame.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MiniGame\andrick_miniGame_main.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_miniGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -310,6 +322,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packet.h">
       <Filter>Header Files\A3_DEMO\_andrick_network\_andrick_packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_miniGame.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_MiniGame\andrick_miniGame_main.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_miniGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
