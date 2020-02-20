@@ -16,6 +16,21 @@ MiniGameMain::MiniGameMain(class Scene& parentScene) :
 
 void MiniGameMain::enteringState()
 {
+	//TODO: move this to after number of users decided
+	a3_DemoState::a3netAddressStr const ipAddress = "127.0.0.1";
+	a3ui16 const port_server = 60006;
+	a3ui16 const port_client = 60005;
+	a3ui16 const maxConnections_server = 16;
+	a3ui16 const maxConnections_client = 1;
+	if (gDemoState->a3netStartup(0, port_server, 0, maxConnections_client) > 0)
+	{
+		if (gDemoState->a3netConnect(ipAddress) > 0)
+		{
+			printf("\n Client spinning up... \n");
+		}
+	}
+	//------------------------
+
 	SceneState::enteringState();
 }
 

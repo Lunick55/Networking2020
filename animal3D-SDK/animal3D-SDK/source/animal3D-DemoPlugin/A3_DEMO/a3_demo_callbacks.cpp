@@ -271,7 +271,7 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		//Setup Networking
 		if (!demoState->peer)
 		{
-			demoState->peer = RakNet::RakPeerInterface::GetInstance();
+			//demoState->peer = RakNet::RakPeerInterface::GetInstance();
 			//othernetworking setup
 		}
 

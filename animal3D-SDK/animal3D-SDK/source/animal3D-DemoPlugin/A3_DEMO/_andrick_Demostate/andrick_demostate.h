@@ -1,13 +1,18 @@
-#pragma once
+#ifndef ANDRICK_DEMOSTATE_H_
+#define ANDRICK_DEMOSTATE_H_
 
 #include <memory>
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
 #include <animal3D/animal3D.h>
 #include <animal3D-A3DG/animal3D-A3DG.h>
 #include <animal3D-A3DM/animal3D-A3DM.h>
 #include <RakNet/RakPeerInterface.h>
+#include "RakNet/MessageIdentifiers.h"
+#include "RakNet/RakNetTypes.h"
+#include "RakNet/BitStream.h"
 
 struct a3_DemoState
 {
@@ -55,4 +60,33 @@ struct a3_DemoState
 
 	//New input in order this frame.
 	std::string newInput;
+
+	//---------------------------------------------------------------------
+	//Dan Networking Edit
+	typedef a3byte a3netAddressStr[16];
+
+	a3ui16 port_inbound, port_outbound;
+	a3ui16 maxConnect_inbound, maxConnect_outbound;
+
+	// startup networking
+	a3i32 a3netStartup(a3ui16 port_inbound, a3ui16 port_outbound, a3ui16 maxConnect_inbound, a3ui16 maxConnect_outbound);
+
+	// shutdown networking
+	a3i32 a3netShutdown();
+
+
+	// connect
+	a3i32 a3netConnect(a3netAddressStr const ip);
+
+	// disconnect
+	a3i32 a3netDisconnect();
+
+
+	// process inbound packets
+	a3i32 a3netProcessInbound();
+
+	// process outbound packets
+	a3i32 a3netProcessOutbound();
 };
+
+#endif // !ANDRICK_DEMOSTATE_H_
