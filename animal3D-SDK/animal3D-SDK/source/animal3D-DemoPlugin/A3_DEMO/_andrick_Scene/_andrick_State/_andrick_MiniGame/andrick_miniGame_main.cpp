@@ -16,7 +16,6 @@ MiniGameMain::MiniGameMain(class Scene& parentScene) :
 
 void MiniGameMain::enteringState()
 {
-	//TODO: move this to after number of users decided
 	a3_DemoState::a3netAddressStr const ipAddress = "127.0.0.1";
 	a3ui16 const port_server = 60006;
 	a3ui16 const port_client = 60005;
@@ -43,7 +42,8 @@ void MiniGameMain::processInput()
 	{
 		std::shared_ptr<BasicEvent> evnt;
 		evnt = std::make_shared<BasicEvent>(EventId::INCREMENT_THE_SPACE);
-		gEventSystem.queueLocalEvent(evnt);
+		//gEventSystem.queueLocalEvent(evnt);
+		gEventSystem.queueNetworkEvent(evnt);
 		//TODO: !!! Make this NetworkEvent
 		//or gEventSystem.queueLocalEvent(std::make_shared<Event>(EventId::INCREMENT_THE_SPACE));
 		//Dunno which

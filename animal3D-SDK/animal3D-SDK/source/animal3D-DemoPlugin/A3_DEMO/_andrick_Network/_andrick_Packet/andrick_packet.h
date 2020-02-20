@@ -34,16 +34,16 @@ struct JoinAcceptedPacket
 	UserId userId;
 
 	//Holds user [id, username]
-	char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];	//[connectedUserCount][message length]
+	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];	//[connectedUserCount][message length]
 
-	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount, char userInfo[][sMAX_USERNAME_LENGTH + 1]) :
+	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount) : //, char userInfo[][sMAX_USERNAME_LENGTH + 1]) :
 		userId(user),
 		packetId(PacketEventId::JOIN_ACCEPTED),
 		maxUserCount(maxUsers),
 		connectedUserCount(currentUserCount)
 	{
 		strcpy(username, name.c_str());
-		memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * (sMAX_USERNAME_LENGTH + 1));
+		//memcpy(connectedUserInfo, userInfo, sizeof(char) * sMAX_USERS * (sMAX_USERNAME_LENGTH + 1));
 	}
 };
 #pragma pack(pop)

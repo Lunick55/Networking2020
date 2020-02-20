@@ -1,4 +1,6 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+//#include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
+#include <A3_DEMO/_andrick_Event/andrick_eventSystem.h>
 
 a3i32 a3_DemoState::a3netStartup(a3ui16 port_inbound, a3ui16 port_outbound, a3ui16 maxConnect_inbound, a3ui16 maxConnect_outbound)
 {
@@ -107,21 +109,33 @@ a3i32 a3_DemoState::a3netProcessInbound()
 					break;
 				case ID_CONNECTION_REQUEST_ACCEPTED:
 					printf("Our connection request has been accepted.\n");
+					if (!isServer)
 					{
-						// Use a BitStream to write a custom user message
-						// Bitstreams are easier to use than sending casted structures, 
-						//	and handle endian swapping automatically
-						//RakNet::BitStream bsOut[1];
-						//bsOut->Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-						//bsOut->Write("Hello world");
-						//peer->Send(bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
-
-						// ****TO-DO: write timestamped message
-
+						//setup self
+						serverAddress = packet->systemAddress;
 					}
 					break;
 				case ID_NEW_INCOMING_CONNECTION:
 					printf("A connection is incoming.\n");
+					if (isServer)
+					{
+						mUserAddressList.push_back(packet->systemAddress);
+
+
+						JoinAcceptedPacket joinAcceptedData = JoinAcceptedPacket(
+							'0',
+							"None",
+							10,
+							2
+						);
+
+						sendOncePacket((const char*)(&joinAcceptedData), sizeof(JoinAcceptedPacket), packet->systemAddress);
+
+						//RakNet::BitStream bsOut[1];
+						//bsOut->Write((RakNet::MessageID)ID_CONNECTION_REQUEST_ACCEPTED);
+						//bsOut->Write("Hello world");
+						//peer->Send(bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+					}
 					break;
 				case ID_NO_FREE_INCOMING_CONNECTIONS:
 					printf("The server is full.\n");
@@ -145,7 +159,21 @@ a3i32 a3_DemoState::a3netProcessInbound()
 
 				case BASIC_EVENT:
 					{
-						printf("DEBUG MESSAGE: received packet ID_GAME_MESSAGE_1.\n");
+						BasicEventPacket * data = (BasicEventPacket*)(packet->data);
+
+						printf("DEBUG MESSAGE: received packet BASIC_EVENT.\n");
+						if (isServer)
+						{
+							broadcastPacket((const char*)data, sizeof(BasicEventPacket));
+						}
+						else
+						{
+							//Add to local queue
+							std::shared_ptr<BasicEvent> evnt;
+							evnt = std::make_shared<BasicEvent>(data->ID);
+
+							gEventSystem.queueLocalEvent(evnt);
+						}
 					}
 					break;
 
@@ -159,4 +187,18 @@ a3i32 a3_DemoState::a3netProcessInbound()
 		return count;
 	}
 	return 0;
+}
+
+void a3_DemoState::broadcastPacket(const char* packetData, std::size_t packetSize)
+{
+	peer->Send(packetData, (int)packetSize,
+		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+void a3_DemoState::sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress)
+{
+	peer->Send(packetData, (int)packetSize,
+		PacketPriority::IMMEDIATE_PRIORITY, PacketReliability::RELIABLE_ORDERED,
+		0, ipAddress, false);
 }

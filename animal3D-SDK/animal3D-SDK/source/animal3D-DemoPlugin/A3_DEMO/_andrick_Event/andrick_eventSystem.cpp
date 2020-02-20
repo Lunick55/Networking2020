@@ -1,4 +1,5 @@
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 
 void EventSystem::addListener(EventId eventId, FuncPtr func)
 {	
@@ -113,7 +114,11 @@ void EventSystem::sendQueuedNetworkEvents()
 
 		const char* packet;
 		PacketEventId packetId = eventData->generatePacket(packet);
-		std::cout << "Sending of packet with ID: " << std::to_string((int)packetId) << "!" << std::endl;
+		//std::cout << "Sending of packet with ID: " << std::to_string((int)packetId) << "!" << std::endl;
 		//TODO: send off packet over the network
+		//HACK: not like this, this is brute force
+		BasicEventPacket pack = BasicEventPacket(EventId::INCREMENT_THE_SPACE);
+		a3_DemoState::a3netAddressStr const ipAddress = "127.0.0.1";
+		gDemoState->sendOncePacket((const char*)(&pack), sizeof(BasicEventPacket), gDemoState->serverAddress);
 	}
 }

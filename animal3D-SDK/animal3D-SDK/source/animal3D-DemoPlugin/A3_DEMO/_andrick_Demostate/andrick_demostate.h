@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packet.h>
 #include <animal3D/animal3D.h>
 #include <animal3D-A3DG/animal3D-A3DG.h>
 #include <animal3D-A3DM/animal3D-A3DM.h>
@@ -13,6 +14,10 @@
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/BitStream.h"
+
+//Refactor this
+#include <A3_DEMO/_andrick_Network/andrick_server.h>
+#include <A3_DEMO/_andrick_Network/andrick_client.h>
 
 struct a3_DemoState
 {
@@ -51,19 +56,24 @@ struct a3_DemoState
 	a3f32 trigTable[4096 * 4];
 	a3_Timer renderTimer[1];
 
+	typedef a3byte a3netAddressStr[16];
+
 	//---------------------------------------------------------------------
 	//custom andrick stuff
 
 	RakNet::RakPeerInterface* peer;
 	std::shared_ptr<class SceneManager> mpSceneManager;
 	std::shared_ptr<class Client> mpCurrentUser;
+	//std::shared_ptr<class Server> mpServer;
+	bool isServer = false; //HACK: ew gross
+	std::vector<RakNet::SystemAddress> mUserAddressList; // also gross
+	RakNet::SystemAddress serverAddress; //super gross
 
 	//New input in order this frame.
 	std::string newInput;
 
 	//---------------------------------------------------------------------
 	//Dan Networking Edit
-	typedef a3byte a3netAddressStr[16];
 
 	a3ui16 port_inbound, port_outbound;
 	a3ui16 maxConnect_inbound, maxConnect_outbound;
@@ -87,6 +97,10 @@ struct a3_DemoState
 
 	// process outbound packets
 	a3i32 a3netProcessOutbound();
+
+	void broadcastPacket(const char* packetData, std::size_t packetSize);
+
+	void sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress);
 };
 
 #endif // !ANDRICK_DEMOSTATE_H_

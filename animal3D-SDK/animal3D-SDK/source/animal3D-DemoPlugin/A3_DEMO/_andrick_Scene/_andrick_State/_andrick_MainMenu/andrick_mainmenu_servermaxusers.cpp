@@ -29,6 +29,7 @@ void MainMenuServerMaxUsers::enteringState()
 	a3ui16 const maxConnections_client = 1;
 	if (gDemoState->a3netStartup(port_server, 0, maxConnections_server, 0) > 0)
 	{
+		gDemoState->isServer = true;
 		printf("\n Server spinning up... \n");
 	}
 	//------------------------
