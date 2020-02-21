@@ -19,30 +19,27 @@ WhisperCommandEvent::WhisperCommandEvent(std::shared_ptr<WhisperCommand> command
 	CommandEvent(command) 
 {}
 
-PacketEventId WhisperCommandEvent::generatePacket(const char*& packetData)
+std::size_t WhisperCommandEvent::allocatePacket(char*& out)
 {
-	//Convert to derived class
 	std::shared_ptr<WhisperCommand> whisperCommandData = std::dynamic_pointer_cast<WhisperCommand>(command);
+	std::size_t packetSize = sizeof(WhisperPacket);
 
-	//Generate packet with command args
-	WhisperPacket packet = WhisperPacket(whisperCommandData->mpSender->getId(), whisperCommandData->mpReciever->getId(), whisperCommandData->mMessage.c_str());
+	out = (char*)malloc(packetSize);
+	memcpy(out, (char*)&WhisperPacket(whisperCommandData->mpSender->getId(), whisperCommandData->mpReciever->getId(), whisperCommandData->mMessage.c_str()), packetSize);
 
-	//Convert to packet data
-	packetData = (const char*)&packet;
-
-	//return the packet id
-	return packet.packetId;
+	return packetSize;
 }
 
-PacketEventId BasicEvent::generatePacket(const char*& packetData)
+std::size_t BasicEvent::allocatePacket(char*& out)
 {
-	//Generate packet with command args
-	BasicEventPacket packet = BasicEventPacket(ID);
+	//Get amount of memory we need to allocate
+	std::size_t packetSize = sizeof(BasicEventPacket);
 
-	//Convert to packet data
-	packetData = (const char*)&packet;
-
-	//return the packet id
-	return packet.packetId;
+	//Create that memory dynamically and copy it to our out variable (whoever calls this function is required to free this)
+	out = (char*)malloc(packetSize);
+	memcpy(out, (char*)&BasicEventPacket(ID), packetSize);
+	
+	//return the packet size
+	return packetSize;
 }
 

@@ -18,7 +18,7 @@ struct Event
 	virtual ~Event() = default;
 
 	virtual void execute() = 0;
-	virtual PacketEventId generatePacket(const char*& packetData) = 0;
+	virtual std::size_t allocatePacket(char*& out) = 0;
 
 	const EventId ID;
 	EventDispatchType dispatchType;
@@ -29,8 +29,8 @@ struct BasicEvent : public Event
 	BasicEvent(EventId id) : Event(id) {};
 	virtual ~BasicEvent() = default;
 
-	virtual void execute() {};
-	virtual PacketEventId generatePacket(const char*& packetData);
+	virtual void execute() override {};
+	virtual std::size_t allocatePacket(char*& out) override;
 };
 
 struct CommandEvent : public Event
@@ -39,10 +39,10 @@ struct CommandEvent : public Event
 	virtual ~CommandEvent() = default;
 
 	//Used on the client to execute the command.
-	virtual void execute();
+	virtual void execute() override;
 
 	//Used for packaging up the event and sending the data over the network.
-	virtual PacketEventId generatePacket(const char*& packetData) = 0;
+	virtual std::size_t allocatePacket(char*& out) override = 0;
 
 	std::shared_ptr<struct Command> command;
 };
@@ -52,7 +52,7 @@ struct WhisperCommandEvent : public CommandEvent
 	WhisperCommandEvent(std::shared_ptr<struct WhisperCommand> command);
 	virtual ~WhisperCommandEvent() = default;
 
-	virtual PacketEventId generatePacket(const char*& packetData);
+	virtual std::size_t allocatePacket(char*& out) override;
 };
 
 #endif

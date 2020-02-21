@@ -18,15 +18,6 @@ public:
 class EventSystem
 {
 public:
-	//static std::shared_ptr<EventSystem> spInstance()
-	//{
-	//	//static EventSystem* instance = new EventSystem();
-	//	if (!spInstance_)
-	//	{
-	//		spInstance_ = std::make_shared<EventSystem>();
-	//	}
-	//	return spInstance_;
-	//}
 	EventSystem() {};
 	~EventSystem() = default;
 
