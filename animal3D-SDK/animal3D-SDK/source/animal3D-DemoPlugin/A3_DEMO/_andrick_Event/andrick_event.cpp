@@ -14,7 +14,6 @@ void CommandEvent::execute()
 	command->runCommand();
 }
 
-
 WhisperCommandEvent::WhisperCommandEvent(std::shared_ptr<WhisperCommand> command) :
 	CommandEvent(command) 
 {}
@@ -42,4 +41,3 @@ std::size_t BasicEvent::allocatePacket(char*& out)
 	//return the packet size
 	return packetSize;
 }
-

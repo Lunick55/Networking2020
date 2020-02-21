@@ -24,21 +24,22 @@ struct RequestJoinServerPacket
 struct JoinAcceptedPacket
 {
 	PacketEventId packetId;
+
+	//The server assigns the client a userId and sends it to them!
+	UserId userId;
+
 	char username[sMAX_USERNAME_LENGTH];
 
 	//The maximum amount of users that can be on the server.
 	char maxUserCount;
 	char connectedUserCount;
 
-	//The server assigns the client a userId and sends it to them!
-	UserId userId;
-
 	//Holds user [id, username]
 	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];	//[connectedUserCount][message length]
 
 	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount) : //, char userInfo[][sMAX_USERNAME_LENGTH + 1]) :
-		userId(user),
 		packetId(PacketEventId::JOIN_ACCEPTED),
+		userId(user),
 		maxUserCount(maxUsers),
 		connectedUserCount(currentUserCount)
 	{
