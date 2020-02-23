@@ -1,0 +1,75 @@
+#include <cassert>
+
+#include "Steering.h"
+#include "CohesionSteering.h"
+#include "Game.h"
+#include "UnitManager.h"
+#include "Unit.h"
+
+
+CohesionSteering::CohesionSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(), mArriveSteering(ArriveSteering(ownerID, targetLoc, targetID, shouldFlee))
+{
+	if (shouldFlee)
+	{
+		mType = Steering::FLEE;
+	}
+	else
+	{
+		mType = Steering::COHESION;
+	}
+	setOwnerID(ownerID);
+	setTargetID(targetID);
+	setTargetLoc(targetLoc);
+}
+
+Steering* CohesionSteering::getSteering()
+{
+	Vector2D diff;
+	Unit* pOwner = gpGame->getUnitManager()->getUnit(mOwnerID);
+	//are we seeking a location or a unit?
+	PhysicsData data = pOwner->getPhysicsComponent()->getData();
+
+	Vector2D positionVector;
+	int neighborCount = 0;
+	mNeighborRadius = gpGame->getCohesionRadius();
+
+	std::map<UnitID, Unit*> unitMap = gpGame->getUnitManager()->getMap();
+
+	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
+	{
+		if (it->second != pOwner)
+		{
+			Vector2D unitPos = it->second->getPositionComponent()->getPosition();
+			diff = unitPos - pOwner->getPositionComponent()->getPosition();
+			if (diff.getLength() < mNeighborRadius)
+			{
+				positionVector += it->second->getPositionComponent()->getPosition();
+				neighborCount++;
+			}
+		}
+	}
+
+	if (neighborCount == 0)
+	{
+		//set the values
+		data.rotAcc = 0;
+		data.rotVel = 0;
+		data.acc = 0;
+		data.vel = 0;
+		this->mData = data;
+		return this;
+	}
+	positionVector /= neighborCount;
+
+	mArriveSteering.setTargetLoc(positionVector);
+	mArriveSteering.getSteering();
+
+	data.rotAcc = 0;
+	data.rotVel = 0;
+	data.acc = mArriveSteering.getData().acc;
+
+	this->mData = data;
+	return this;
+}
+
