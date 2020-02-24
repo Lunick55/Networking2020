@@ -19,49 +19,93 @@ enum class EventProcessingType : char
 
 struct Event
 {
-	Event(EventId id, EventProcessingType processType = EventProcessingType::BOTH) : 
+	inline Event(EventId id, EventProcessingType processType = EventProcessingType::BOTH) : 
 		eventId(id),
 		processingType(processType),
-		dispatchType(EventDispatchType::UNDEFINED)
-	{}
-
+		dispatchType(EventDispatchType::UNDEFINED) {}
 	virtual ~Event() = default;
-
 	virtual void execute() {};
-	virtual std::size_t allocatePacket(char*& out) = 0;
+
+	inline virtual std::size_t allocatePacket(char*& out)
+	{
+		//By default, events that don't/can't be sent over the network
+		//default to a size of 0.
+		out = nullptr;
+		return 0;
+	}
 
 	const EventId eventId;
 	EventProcessingType processingType;
 	EventDispatchType dispatchType;
 };
 
-//An event that gets fired when a client receives a connection accepted packet.
-struct ConnectionRequestAcceptedEvent : public Event
+struct SendableEvent : public Event
 {
-	ConnectionRequestAcceptedEvent(RakNet::SystemAddress serverAddress);
-	virtual ~ConnectionRequestAcceptedEvent() = default;
+	inline SendableEvent(EventId id, EventProcessingType processType = EventProcessingType::BOTH, bool isBroadcast = false, UserId receiverId = -1) :
+		Event(id),
+		isBroadcast(isBroadcast),
+		receiverId(receiverId) {}
+	virtual ~SendableEvent() = default;
 
+	virtual std::size_t allocatePacket(char*& out) = 0;//Used for packaging up the event and sending the data over the network.
+
+	bool isBroadcast;
+	UserId receiverId;
+};
+
+//An event that gets fired when a client receives a connection accepted packet.
+struct ConnectionRequestAcceptedEvent : public SendableEvent
+{
+	ConnectionRequestAcceptedEvent(RakNet::SystemAddress serverAddress, UserId newUserId,
+		bool isBroadcast = false, UserId receiverId = -1);
+
+	virtual ~ConnectionRequestAcceptedEvent() = default;
+	virtual void execute() override;
 	virtual std::size_t allocatePacket(char*& out) override;
 
 	RakNet::SystemAddress serverAddress;
+	UserId newUserId;
 };
 
-struct BasicEvent : public Event
+struct ConnectionRequestFailedEvent : public SendableEvent
 {
-	BasicEvent(EventId id);
-	virtual ~BasicEvent() = default;
+	inline ConnectionRequestFailedEvent(const std::string& errorMessage, 
+		bool isBroadcast = false, UserId receiverId = -1) :
+		SendableEvent(EventId::CONNECTION_REQUEST_FAILED, EventProcessingType::CLIENTSIDE, isBroadcast, receiverId),
+		errorMessage(errorMessage) {}
+
+	virtual ~ConnectionRequestFailedEvent() = default;
+	virtual void execute() override;
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	std::string errorMessage;
+};
+
+struct NewIncomingConnectionEvent : public Event
+{
+	inline NewIncomingConnectionEvent(RakNet::SystemAddress clientAddress) :
+		Event(EventId::NEW_INCOMING_CONNECTION, EventProcessingType::SERVERSIDE),
+		clientAddress(clientAddress) {}
+	virtual ~NewIncomingConnectionEvent() = default;
+	virtual void execute() override;
+
+	RakNet::SystemAddress clientAddress;
+};
+
+struct GenericEvent : public SendableEvent
+{
+	inline GenericEvent(EventId id, 
+		bool isBroadcast = false, UserId receiverId = -1) :
+		SendableEvent(id, EventProcessingType::BOTH, isBroadcast, receiverId) {}
+	virtual ~GenericEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
 };
 
-struct CommandEvent : public Event
+struct CommandEvent : public SendableEvent
 {
-	CommandEvent(std::shared_ptr<struct Command> command);
+	CommandEvent(std::shared_ptr<struct Command> command, bool isBroadcast = false, UserId receiverId = -1);
 	virtual ~CommandEvent() = default;
-
-	//Used on the client to execute the command.
 	virtual void execute() override;
-
-	//Used for packaging up the event and sending the data over the network.
 	virtual std::size_t allocatePacket(char*& out) override = 0;
 
 	std::shared_ptr<struct Command> command;
@@ -71,7 +115,6 @@ struct WhisperCommandEvent : public CommandEvent
 {
 	WhisperCommandEvent(std::shared_ptr<struct WhisperCommand> command);
 	virtual ~WhisperCommandEvent() = default;
-
 	virtual std::size_t allocatePacket(char*& out) override;
 };
 

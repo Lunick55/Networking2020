@@ -23,12 +23,12 @@ extern "C"
 		std::cout << "Initializing server and server packet handler!" << std::endl;
 	}
 
-	void initializeClientPacketHandler()
+	void initializeClient()
 	{
-		//gDemoState->mpClient = std::make_shared<Client>(id, name, authority);
-		//gEventSystem.addListener(gDemoState->mpClient, EventProcessingType::CLIENTSIDE);
+		gDemoState->mpClient = std::make_shared<Client>();
+		gEventSystem.addListener(gDemoState->mpClient, EventProcessingType::CLIENTSIDE);
 		gDemoState->mpPacketHandler = std::make_shared<PacketHandler>(false);
-		std::cout << "Initializing client packet handler! (Client is still null until it receives a connection accepted packet from server)" << std::endl;
+		std::cout << "Initializing client packet handler!" << std::endl;
 	}
 #ifdef __cplusplus
 }

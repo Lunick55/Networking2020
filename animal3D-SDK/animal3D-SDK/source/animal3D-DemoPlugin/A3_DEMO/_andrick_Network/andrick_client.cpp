@@ -1,21 +1,36 @@
 #include <A3_DEMO/_andrick_Network/andrick_client.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
-Client::Client(const UserId id, const std::string& name, AuthorityId authority) :
-	mID(id),
-	mUSERNAME(name),
-	mAuthority(authority)
+Client::Client() :
+	mIsConnected(false),
+	mAuthority(AuthorityId::NORMAL),
+	mUserId(-1)
+{}
+
+void Client::setUserId(const UserId id)
 {
+	mUserId = id;
+}
 
+void Client::setUsername(const std::string& username)
+{
+	mUsername = username;
+}
+
+void Client::setAuthority(AuthorityId authority)
+{
+	mAuthority = authority;
 }
 
 const UserId& Client::getId() const
 {
-	return mID;
+	return mUserId;
 }
 
 const std::string& Client::getUsername() const
 {
-	return mUSERNAME;
+	return mUsername;
 }
 
 const AuthorityId& Client::getAuthority() const
@@ -25,7 +40,23 @@ const AuthorityId& Client::getAuthority() const
 
 void Client::processIncomingEvent(std::shared_ptr<struct Event> evnt)
 {
+	///We can just use execute() in the future if necessary, but for now, switch is fine.
 
+	switch (evnt->eventId)
+	{
+	case EventId::CONNECTION_REQUEST_ACCEPTED:
+	{
+		evnt->execute();
+		break;
+	}
+	case EventId::CONNECTION_REQUEST_FAILED:
+	{
+		evnt->execute();
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 bool Client::getClientFromUsername(const std::string& username, std::shared_ptr<Client>& out)

@@ -3,6 +3,33 @@
 
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
+#pragma pack(push, 1)
+struct ConnectionRequestAcceptedPacket
+{
+	PacketEventId packetId;
+	UserId newUserId;
+
+	ConnectionRequestAcceptedPacket(UserId userId) :
+		packetId(andrick_ID_CONNECTION_REQUEST_ACCEPTED),
+		newUserId(userId)
+	{}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct ConnectionRequestFailedPacket
+{
+	PacketEventId packetId;
+	char errorMessage[sMAX_MESSAGE_LENGTH];
+
+	ConnectionRequestFailedPacket(const std::string& message) :
+		packetId(andrick_ID_CONNECTION_ATTEMPT_FAILED)
+	{
+		strcpy(errorMessage, message.c_str());
+	}
+};
+#pragma pack(pop)
+
 //Client sends to server to join.
 #pragma pack(push, 1)
 struct RequestJoinServerPacket

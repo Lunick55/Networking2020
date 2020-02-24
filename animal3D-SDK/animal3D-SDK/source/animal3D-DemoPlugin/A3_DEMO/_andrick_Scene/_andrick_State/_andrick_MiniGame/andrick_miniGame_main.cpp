@@ -52,8 +52,8 @@ void MiniGameMain::processInput()
 	//Handle Input
 	if (mpInputHandler->isKeyPressed(a3key_space))
 	{
-		std::shared_ptr<BasicEvent> evnt;
-		evnt = std::make_shared<BasicEvent>(EventId::INCREMENT_THE_SPACE);
+		std::shared_ptr<GenericEvent> evnt = nullptr;
+		evnt = std::make_shared<GenericEvent>(EventId::INCREMENT_THE_SPACE);
 		//gEventSystem.queueLocalEvent(evnt);
 		gEventSystem.queueNetworkEvent(evnt);
 		//TODO: !!! Make this NetworkEvent
