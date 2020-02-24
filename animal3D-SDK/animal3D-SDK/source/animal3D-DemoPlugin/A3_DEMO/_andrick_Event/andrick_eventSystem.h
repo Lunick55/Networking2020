@@ -9,7 +9,7 @@
 typedef std::function<void(std::shared_ptr<Event>)> FuncPtr;
 typedef std::multimap<EventId, std::shared_ptr<FuncPtr>> MultMap;
 
-class EventAgnosticListener
+class EventListener
 {
 public:
 	virtual void processIncomingEvent(std::shared_ptr<Event> evnt) = 0;
@@ -22,10 +22,10 @@ public:
 	~EventSystem() = default;
 
 	void addListener(EventId eventId, FuncPtr func); // unusable :'(
-	void addListener(std::shared_ptr<EventAgnosticListener> evntListener);
+	void addListener(std::shared_ptr<EventListener> evntListener, EventProcessingType processingType = EventProcessingType::BOTH);
 
 	void removeListener(EventId eventId, FuncPtr func); // unusable :'(
-	void removeListener(std::shared_ptr<EventAgnosticListener> evntListener);
+	void removeListener(std::shared_ptr<EventListener> evntListener);
 	
 	//Two separate functions to streamline event handling so the compiler
 	//can optimize the code path without if statements.
@@ -44,7 +44,7 @@ public:
 
 private:
 	MultMap mListenerFuncMap;
-	std::vector<std::shared_ptr<EventAgnosticListener>> mEventAgnosticListeners;
+	std::map<std::shared_ptr<EventListener>, EventProcessingType> mEventListeners;
 
 	//Events to process locally. (Maybe they just came from the network 
 	//or are simply just events we want to process on the clientside only)

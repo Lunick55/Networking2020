@@ -5,8 +5,8 @@
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
-//#include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
 MiniGameMain::MiniGameMain(class Scene& parentScene) :
 	SceneState(parentScene, (SceneStateId)::MiniGameScene::MiniGameSceneStateId::MINIGAME, RED)
@@ -21,13 +21,23 @@ void MiniGameMain::enteringState()
 	a3ui16 const port_client = 60005;
 	a3ui16 const maxConnections_server = 16;
 	a3ui16 const maxConnections_client = 1;
-	if (gDemoState->a3netStartup(0, port_server, 0, maxConnections_client) > 0)
+
+	//if (gDemoState->a3netStartup(0, port_server, 0, maxConnections_client) > 0)
+	//{
+	//	if (gDemoState->a3netConnect(ipAddress) > 0)
+	//	{
+	//		printf("\n Client spinning up... \n");
+	//	}
+	//}
+
+	if (gDemoState->mpPacketHandler->startup(maxConnections_client))
 	{
-		if (gDemoState->a3netConnect(ipAddress) > 0)
+		if (gDemoState->mpPacketHandler->connect(ipAddress))
 		{
-			printf("\n Client spinning up... \n");
+			std::cout << "Client spinning up..." << std::endl;
 		}
 	}
+
 	//------------------------
 
 	SceneState::enteringState();
@@ -53,7 +63,7 @@ void MiniGameMain::processInput()
 void MiniGameMain::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
 	SceneState::processIncomingEvent(evnt);
-	if (evnt->ID == EventId::INCREMENT_THE_SPACE)
+	if (evnt->eventId == EventId::INCREMENT_THE_SPACE)
 	{
 		IncrementSpace();
 	}

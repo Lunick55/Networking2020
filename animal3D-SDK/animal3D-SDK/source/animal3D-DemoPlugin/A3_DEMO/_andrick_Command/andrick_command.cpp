@@ -112,7 +112,7 @@ bool ListCommand::createCommand(const std::vector<std::string>& commandArgs, std
 		return false;
 	}
 
-	out = std::make_shared<ListCommand>(gDemoState->mpCurrentUser, ListType::ALL);
+	out = std::make_shared<ListCommand>(gDemoState->mpClient, ListType::ALL);
 	return true;
 }
 
@@ -144,10 +144,10 @@ bool WhisperCommand::createCommand(const std::vector<std::string>& commandArgs, 
 		std::string receiverUsername = commandArgs.at(1);
 		std::shared_ptr<Client> receiver;
 
-		if (gDemoState->mpCurrentUser && gDemoState->mpCurrentUser->getClientFromUsername(receiverUsername, receiver))
+		if (gDemoState->mpClient && gDemoState->mpClient->getClientFromUsername(receiverUsername, receiver))
 		{
 			std::string message = mergeCommand(commandArgs, 2);
-			out = std::make_shared<WhisperCommand>(gDemoState->mpCurrentUser, receiver, message);
+			out = std::make_shared<WhisperCommand>(gDemoState->mpClient, receiver, message);
 			return true;
 		}
 	}

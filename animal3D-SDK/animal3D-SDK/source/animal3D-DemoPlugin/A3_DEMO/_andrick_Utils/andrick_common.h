@@ -87,6 +87,7 @@ enum class CommandId : char
 enum class EventId : char
 {
 	INVALID_EVENT = -1,
+	CONNECTION_REQUEST_ACCEPTED,
 	CHAT_MESSAGE,
 	INCREMENT_THE_SPACE,
 	COMMAND
@@ -136,39 +137,50 @@ enum class AuthorityId : unsigned char
 
 enum PacketEventId : unsigned char
 {
-	SET_AUTHORITY = ID_USER_PACKET_ENUM,
+	andrick_ID_SET_AUTHORITY = ID_USER_PACKET_ENUM,
 
-	SEND_PUBLIC_MESSAGE_REQUEST,		//Clientside command
-	SEND_PRIVATE_MESSAGE_REQUEST,		//Clientside command
+	andrick_ID_SEND_PUBLIC_MESSAGE_REQUEST,		//Clientside command
+	andrick_ID_SEND_PRIVATE_MESSAGE_REQUEST,	//Clientside command
 
-	DELIVER_PUBLIC_MESSAGE,		//Serverside command
-	DELIVER_PRIVATE_MESSAGE,	//Serverside command
+	andrick_ID_DELIVER_PUBLIC_MESSAGE,			//Serverside command
+	andrick_ID_DELIVER_PRIVATE_MESSAGE,			//Serverside command
 
-	REQUEST_JOIN_SERVER,		//Client asks server to join
-	JOIN_ACCEPTED,				//Server sends a welcome message to joined user
-	USER_JOINED_SERVER,			//Server notifies everyone a user joined
+	andrick_ID_REQUEST_JOIN_SERVER,				//Client asks server to join
+	andrick_ID_JOIN_ACCEPTED,					//Server sends a welcome message to joined user
+	andrick_ID_USER_JOINED_SERVER,				//Server notifies everyone a user joined
 
-	USER_LEFT_SERVER,
-	SERVER_CLOSING,
+	andrick_ID_USER_LEFT_SERVER,
+	andrick_ID_SERVER_CLOSING,
 
 	////////////////////////
 
-	MUTE_USER,
-	UNMUTE_USER,
+	andrick_ID_MUTE_USER,
+	andrick_ID_UNMUTE_USER,
 
-	WHISPER_COMMAND,
+	andrick_ID_WHISPER_COMMAND,
 
-	BASIC_EVENT,
+	andrick_ID_BASIC_EVENT,
 
-	UPDATE_TICTAC_STATE,
+	andrick_ID_UPDATE_TICTAC_STATE,
 
-	SERVER_TRAVEL,
-	SETUP_TICTAC_GAME,
-	UPDATE_BATTLE_STATE,
-	SETUP_BATTLE_GAME,
-	ASK_IF_BATTLE_HIT,
-	REPLY_IF_BATTLE_HIT
+	andrick_ID_SERVER_TRAVEL,
+	andrick_ID_SETUP_TICTAC_GAME,
+	andrick_ID_UPDATE_BATTLE_STATE,
+	andrick_ID_SETUP_BATTLE_GAME,
+	andrick_ID_ASK_IF_BATTLE_HIT,
+	andrick_ID_REPLY_IF_BATTLE_HIT
 };
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+	// C header here
+	extern void initializeServer();
+	extern void initializeClient(const UserId id, const std::string& name, AuthorityId authority);
+#ifdef __cplusplus
+}
+#endif
 
 //#pragma pack(push, 1)
 //struct UpdateTicTacState

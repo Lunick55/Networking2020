@@ -39,10 +39,11 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_miniGame.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
 //HACK: Karim's testing trash. DELETE
-#include "_andrick_Event/andrick_eventSystem.h"
-#include "_andrick_Event/TestEvent.h"
+//#include "_andrick_Event/andrick_eventSystem.h"
+//#include "_andrick_Event/TestEvent.h"
 
 // get the size of the persistent state to allocate
 //	(good idea to keep it relatively constant, so that addresses don't change 
@@ -166,7 +167,12 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 		{
 			gTextFormatter.setAlignment(TextAlign::LEFT);
 			gTextFormatter.setLine(0);
-			gDemoState->a3netProcessInbound();
+
+			if (gDemoState->mpPacketHandler && gDemoState->mpPacketHandler->isInitialized())
+			{
+				gDemoState->mpPacketHandler->processInboundPackets();
+			}
+
 			demoState->mpSceneManager->input();
 			gEventSystem.executeQueuedLocalEvents();//demoState->mpSceneManager->processIncomingEvent(evnt);
 			demoState->mpSceneManager->update();
@@ -255,13 +261,17 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		demoState->textInit = 1;
 		demoState->textMode = 1;
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
+		
 		gDemoState = demoState;
-		gDemoState->mpCurrentUser = nullptr;
+		
 		gDemoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
 		gDemoState->mpSceneManager->initScene(std::make_shared<LobbyScene>());
 		gDemoState->mpSceneManager->initScene(std::make_shared<MiniGameScene>());
-
-		gEventSystem.addListener(gDemoState->mpSceneManager);
+		gEventSystem.addListener(gDemoState->mpSceneManager, EventProcessingType::BOTH);
+		
+		gDemoState->mpServer = nullptr;
+		gDemoState->mpClient = nullptr;
+		gDemoState->mpPacketHandler = nullptr;
 
 		// enable asset streaming between loads
 		//	demoState->streaming = 1;
