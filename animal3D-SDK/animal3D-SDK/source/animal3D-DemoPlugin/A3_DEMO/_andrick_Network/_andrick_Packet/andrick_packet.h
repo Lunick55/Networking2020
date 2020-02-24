@@ -11,7 +11,7 @@ struct RequestJoinServerPacket
 	char username[sMAX_USERNAME_LENGTH];
 
 	RequestJoinServerPacket(const std::string& name) :
-		packetId(PacketEventId::REQUEST_JOIN_SERVER)
+		packetId(andrick_ID_REQUEST_JOIN_SERVER)
 	{
 		strcpy(username, name.c_str());
 	}
@@ -38,7 +38,7 @@ struct JoinAcceptedPacket
 	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];	//[connectedUserCount][message length]
 
 	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount) : //, char userInfo[][sMAX_USERNAME_LENGTH + 1]) :
-		packetId(PacketEventId::JOIN_ACCEPTED),
+		packetId(andrick_ID_JOIN_ACCEPTED),
 		userId(user),
 		maxUserCount(maxUsers),
 		connectedUserCount(currentUserCount)
@@ -64,7 +64,7 @@ struct UserJoinedServerPacket
 	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];
 
 	UserJoinedServerPacket(UserId user, const std::string& name/*, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1]*/) :
-		packetId(PacketEventId::USER_JOINED_SERVER),
+		packetId(andrick_ID_USER_JOINED_SERVER),
 		userId(user),
 		username()
 		//connectedUserCount(currentUserCount)
@@ -85,7 +85,7 @@ struct UserLeftServerPacket
 	UserId userId;
 
 	UserLeftServerPacket(UserId user) :
-		packetId(PacketEventId::USER_LEFT_SERVER),
+		packetId(andrick_ID_USER_LEFT_SERVER),
 		userId(user)
 	{
 
@@ -99,7 +99,7 @@ struct ServerClosingPacket
 	PacketEventId packetId;
 
 	ServerClosingPacket() :
-		packetId(PacketEventId::SERVER_CLOSING)
+		packetId(andrick_ID_SERVER_CLOSING)
 	{
 
 	}
@@ -116,7 +116,7 @@ struct SendPublicMessageRequestPacket
 	char msgType;
 
 	SendPublicMessageRequestPacket(UserId user, const std::string& newMessage, MessageType type = MessageType::GLOBAL) :
-		packetId(PacketEventId::SEND_PUBLIC_MESSAGE_REQUEST),
+		packetId(andrick_ID_SEND_PUBLIC_MESSAGE_REQUEST),
 		userId(user),
 		msgType((char)type)
 	{
@@ -134,7 +134,7 @@ struct SendPrivateMessageRequestPacket
 	char message[sMAX_MESSAGE_LENGTH];
 
 	SendPrivateMessageRequestPacket(UserId fromUser, const std::string& toUser, const std::string& newMessage) :
-		packetId(PacketEventId::SEND_PRIVATE_MESSAGE_REQUEST),
+		packetId(andrick_ID_SEND_PRIVATE_MESSAGE_REQUEST),
 		fromUserId(fromUser)
 	{
 		strcpy(message, newMessage.c_str());
@@ -154,7 +154,7 @@ struct DeliverPublicMessagePacket
 
 	//TODO: init user id also at some point
 	DeliverPublicMessagePacket(UserId user, const std::string& newMessage, MessageType type = MessageType::GLOBAL) :
-		packetId(PacketEventId::DELIVER_PUBLIC_MESSAGE),
+		packetId(andrick_ID_DELIVER_PUBLIC_MESSAGE),
 		userId(user),
 		msgType((char)type)
 	{
@@ -172,7 +172,7 @@ struct DeliverPrivateMessagePacket
 	char message[sMAX_MESSAGE_LENGTH];
 
 	DeliverPrivateMessagePacket(UserId fromUser, UserId toUser, const std::string& newMessage) :
-		packetId(PacketEventId::DELIVER_PRIVATE_MESSAGE),
+		packetId(andrick_ID_DELIVER_PRIVATE_MESSAGE),
 		fromUserId(fromUser),
 		toUserId(toUser)
 	{
@@ -190,7 +190,7 @@ struct WhisperPacket
 	char message[sMAX_MESSAGE_LENGTH];
 
 	WhisperPacket(UserId sender, UserId reciever, const std::string& newMessage) :
-		packetId(PacketEventId::WHISPER_COMMAND),
+		packetId(andrick_ID_WHISPER_COMMAND),
 		senderId(sender),
 		recieverId(reciever)
 	{
@@ -209,7 +209,7 @@ struct BasicEventPacket
 	EventId ID;
 
 	BasicEventPacket(EventId id)://(UserId sender, UserId reciever, EventId id) :
-		packetId(PacketEventId::BASIC_EVENT),
+		packetId(andrick_ID_BASIC_EVENT),
 		//senderId(sender),
 		//recieverId(reciever),
 		ID(id)

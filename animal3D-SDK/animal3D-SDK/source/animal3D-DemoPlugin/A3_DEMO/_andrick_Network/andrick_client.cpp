@@ -23,6 +23,11 @@ const AuthorityId& Client::getAuthority() const
 	return mAuthority;
 }
 
+void Client::processIncomingEvent(std::shared_ptr<struct Event> evnt)
+{
+
+}
+
 bool Client::getClientFromUsername(const std::string& username, std::shared_ptr<Client>& out)
 {
 	bool success = false;

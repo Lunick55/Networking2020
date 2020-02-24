@@ -1,5 +1,6 @@
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
 void EventSystem::addListener(EventId eventId, FuncPtr func)
 {	
@@ -8,19 +9,19 @@ void EventSystem::addListener(EventId eventId, FuncPtr func)
 	mListenerFuncMap.insert({ eventId, funcWrapper });
 }
 
-void EventSystem::addListener(std::shared_ptr<EventAgnosticListener> evntListener)
+void EventSystem::addListener(std::shared_ptr<EventListener> evntListener, EventProcessingType processingType)
 {
-	std::vector< std::shared_ptr<EventAgnosticListener>>::iterator iter = mEventAgnosticListeners.begin();
+	std::map<std::shared_ptr<EventListener>, EventProcessingType>::iterator iter = mEventListeners.begin();
 
-	for (; iter != mEventAgnosticListeners.end(); ++iter)
+	for (; iter != mEventListeners.end(); ++iter)
 	{
-		if (*iter == evntListener)
+		if (iter->first == evntListener)
 		{
 			return;
 		}
 	}
 
-	mEventAgnosticListeners.push_back(evntListener);
+	mEventListeners.insert({ evntListener, processingType });
 }
 
 void EventSystem::removeListener(EventId eventId, FuncPtr func)
@@ -46,15 +47,15 @@ void EventSystem::removeListener(EventId eventId, FuncPtr func)
 	}
 }
 
-void EventSystem::removeListener(std::shared_ptr<EventAgnosticListener> evntListener)
+void EventSystem::removeListener(std::shared_ptr<EventListener> evntListener)
 {
-	std::vector<std::shared_ptr<EventAgnosticListener>>::iterator iter = mEventAgnosticListeners.begin();
+	std::map<std::shared_ptr<EventListener>, EventProcessingType>::iterator iter = mEventListeners.begin();
 
-	for (; iter != mEventAgnosticListeners.end(); ++iter)
+	for (; iter != mEventListeners.end(); ++iter)
 	{
-		if (*iter == evntListener)
+		if (iter->first == evntListener)
 		{
-			mEventAgnosticListeners.erase(iter);
+			mEventListeners.erase(iter);
 			return;
 		}
 	}
@@ -85,7 +86,7 @@ void EventSystem::executeQueuedLocalEvents()
 
 		//should get me all the values with the key
 		//then iterate through those key vlaues, and fire events!
-		std::pair<MultMap::iterator, MultMap::iterator> multKeyResult = mListenerFuncMap.equal_range(eventData->ID);
+		std::pair<MultMap::iterator, MultMap::iterator> multKeyResult = mListenerFuncMap.equal_range(eventData->eventId);
 
 		MultMap::iterator multMapIter;
 		for (multMapIter = multKeyResult.first; multMapIter != multKeyResult.second; multMapIter++)
@@ -93,10 +94,16 @@ void EventSystem::executeQueuedLocalEvents()
 			(*multMapIter->second)(eventData);
 		}
 
-		std::vector<std::shared_ptr<EventAgnosticListener>>::iterator agnosticListenersIter = mEventAgnosticListeners.begin();
-		for (; agnosticListenersIter != mEventAgnosticListeners.end(); ++agnosticListenersIter)
+		std::map<std::shared_ptr<EventListener>, EventProcessingType>::iterator listenersIter = mEventListeners.begin();
+		for (; listenersIter != mEventListeners.end(); ++listenersIter)
 		{
-			(*agnosticListenersIter)->processIncomingEvent(eventData);
+			if ((listenersIter->second == EventProcessingType::BOTH)
+			|| (eventData->processingType == EventProcessingType::BOTH)
+			|| (listenersIter->second == EventProcessingType::CLIENTSIDE && eventData->processingType == EventProcessingType::CLIENTSIDE)
+			|| (listenersIter->second == EventProcessingType::SERVERSIDE && eventData->processingType == EventProcessingType::SERVERSIDE))
+			{
+				listenersIter->first->processIncomingEvent(eventData);
+			}
 		}
 	}
 }
@@ -113,8 +120,8 @@ void EventSystem::sendQueuedNetworkEvents()
 		mQueuedNetworkEvents.pop();
 
 		char* packetData;
-		std::size_t packetSize = eventData->generatePacket(packetData);
-		gDemoState->sendOncePacket(packetData, packetSize, gDemoState->serverAddress);
+		std::size_t packetSize = eventData->allocatePacket(packetData);
+		gDemoState->mpPacketHandler->sendToOne(packetData, packetSize, gDemoState->mpPacketHandler->getServerAddress());
 
 		free(packetData);
 	}

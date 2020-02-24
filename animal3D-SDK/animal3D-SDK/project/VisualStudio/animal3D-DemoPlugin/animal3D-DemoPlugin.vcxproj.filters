@@ -73,9 +73,6 @@
     <Filter Include="Header Files\A3_DEMO\_andrick_network">
       <UniqueIdentifier>{5b0f1e86-36eb-4698-a5ad-af112230b629}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\common\A3_DEMO\andrick_network">
-      <UniqueIdentifier>{1f6da248-2e13-461d-9240-a217d3d26c58}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\A3_DEMO\_andrick_util">
       <UniqueIdentifier>{cf0decfe-f893-45f2-9f6f-9cddc5f0ec8e}</UniqueIdentifier>
     </Filter>
@@ -129,6 +126,12 @@
     </Filter>
     <Filter Include="Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_minigame">
       <UniqueIdentifier>{2fa0b35e-b87f-4ae3-8fb3-0d2105698a05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_network">
+      <UniqueIdentifier>{1f6da248-2e13-461d-9240-a217d3d26c58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_network\_andrick_packet">
+      <UniqueIdentifier>{ede28e79-658a-47a4-b1b4-a0bec712fd8c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -208,10 +211,10 @@
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_client.cpp">
-      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+      <Filter>Source Files\common\A3_DEMO\_andrick_network</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\andrick_server.cpp">
-      <Filter>Source Files\common\A3_DEMO\andrick_network</Filter>
+      <Filter>Source Files\common\A3_DEMO\_andrick_network</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Utils\andrick_common.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_util</Filter>
@@ -242,6 +245,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_minigame.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packethandler.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_network\_andrick_packet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -337,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_minigame.h">
       <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packethandler.h">
+      <Filter>Header Files\A3_DEMO\_andrick_network\_andrick_packet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

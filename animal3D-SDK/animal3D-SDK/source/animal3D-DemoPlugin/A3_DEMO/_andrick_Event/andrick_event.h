@@ -10,26 +10,46 @@ enum class EventDispatchType : char
 	NETWORK
 };
 
+enum class EventProcessingType : char
+{
+	SERVERSIDE,
+	CLIENTSIDE,
+	BOTH
+};
+
 struct Event
 {
-	Event(EventId id) : 
-		ID(id), dispatchType(EventDispatchType::UNDEFINED) {}
+	Event(EventId id, EventProcessingType processType = EventProcessingType::BOTH) : 
+		eventId(id),
+		processingType(processType),
+		dispatchType(EventDispatchType::UNDEFINED)
+	{}
 
 	virtual ~Event() = default;
 
-	virtual void execute() = 0;
+	virtual void execute() {};
 	virtual std::size_t allocatePacket(char*& out) = 0;
 
-	const EventId ID;
+	const EventId eventId;
+	EventProcessingType processingType;
 	EventDispatchType dispatchType;
+};
+
+//An event that gets fired when a client receives a connection accepted packet.
+struct ConnectionRequestAcceptedEvent : public Event
+{
+	ConnectionRequestAcceptedEvent(RakNet::SystemAddress serverAddress);
+	virtual ~ConnectionRequestAcceptedEvent() = default;
+
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	RakNet::SystemAddress serverAddress;
 };
 
 struct BasicEvent : public Event
 {
-	BasicEvent(EventId id) : Event(id) {};
+	BasicEvent(EventId id);
 	virtual ~BasicEvent() = default;
-
-	virtual void execute() override {};
 	virtual std::size_t allocatePacket(char*& out) override;
 };
 

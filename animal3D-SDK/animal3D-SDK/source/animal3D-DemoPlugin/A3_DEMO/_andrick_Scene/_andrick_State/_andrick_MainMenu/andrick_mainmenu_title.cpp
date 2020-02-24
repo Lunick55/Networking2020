@@ -3,19 +3,44 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
+#include <A3_DEMO/_andrick_Network/andrick_server.h>
+#include <A3_DEMO/_andrick_Network/andrick_client.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
 MainMenuTitle::MainMenuTitle(class Scene& parentScene) :
 	SceneState(parentScene, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU,
 		LIGHT_BLUE)
 {
-	mMenuOptions.push_back(MenuOption(a3key_escape, "Press 1 to host a server.", SceneId::EXIT, SceneStateId::EXIT_STATE));
-	mMenuOptions.push_back(MenuOption(a3key_1, "Press ESC to exit.", SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MAX_USERS));
+	mMenuOptions.push_back(MenuOption(a3key_escape, "Press ESC to exit.", SceneId::EXIT, SceneStateId::EXIT_STATE));
+	mMenuOptions.push_back(MenuOption(a3key_1, "Press 1 to host a server.", SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MAX_USERS, initializeServer));
 	mMenuOptions.push_back(MenuOption(a3key_2, "Press 2 to go to hell.", SceneId::MINIGAME, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MINIGAME));
 }
 
 void MainMenuTitle::enteringState()
 {
 	SceneState::enteringState();
+
+	if (gDemoState->mpServer)
+	{
+		gEventSystem.removeListener(gDemoState->mpServer);
+		gDemoState->mpServer.reset();
+	}
+
+	if (gDemoState->mpClient)
+	{
+		gEventSystem.removeListener(gDemoState->mpClient);
+		gDemoState->mpClient.reset();
+	}
+
+	if (gDemoState->mpPacketHandler->disconnect())
+	{
+		std::cout << "Successfully disconnected." << std::endl;
+		if (gDemoState->mpPacketHandler->shutdown())
+		{
+			std::cout << "Successfully shutdown RakNet." << std::endl;
+		}
+	}
 }
 
 void MainMenuTitle::processInput()

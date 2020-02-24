@@ -29,6 +29,7 @@ void SceneState::processInput()
 				return;
 			}
 
+			iter->execute();
 			mParentScene.switchToState(iter->sceneId, iter->stateId);
 		}
 	}
@@ -38,7 +39,7 @@ void SceneState::processInput()
 
 void SceneState::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
-	switch (evnt->ID)
+	switch (evnt->eventId)
 	{
 	case EventId::COMMAND:
 		handleCommandEvent(std::dynamic_pointer_cast<CommandEvent>(evnt));

@@ -4,7 +4,7 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 
-class SceneManager : public EventAgnosticListener
+class SceneManager : public EventListener
 {
 public:
 	SceneManager(std::shared_ptr<class Scene> defaultScene);

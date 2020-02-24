@@ -2,11 +2,10 @@
 #define ANDRICK_DEMOSTATE_H_
 
 #include <memory>
+#include <vector>
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <A3_DEMO/_andrick_Utils/andrick_common.h>
-#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packet.h>
 #include <animal3D/animal3D.h>
 #include <animal3D-A3DG/animal3D-A3DG.h>
 #include <animal3D-A3DM/animal3D-A3DM.h>
@@ -14,10 +13,6 @@
 #include "RakNet/MessageIdentifiers.h"
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/BitStream.h"
-
-//Refactor this
-#include <A3_DEMO/_andrick_Network/andrick_server.h>
-#include <A3_DEMO/_andrick_Network/andrick_client.h>
 
 struct a3_DemoState
 {
@@ -63,11 +58,13 @@ struct a3_DemoState
 
 	RakNet::RakPeerInterface* peer;
 	std::shared_ptr<class SceneManager> mpSceneManager;
-	std::shared_ptr<class Client> mpCurrentUser;
-	//std::shared_ptr<class Server> mpServer;
-	bool isServer = false; //HACK: ew gross
-	std::vector<RakNet::SystemAddress> mUserAddressList; // also gross
-	RakNet::SystemAddress serverAddress; //super gross
+	std::shared_ptr<class Client> mpClient;
+	std::shared_ptr<class Server> mpServer;
+	std::shared_ptr<class PacketHandler> mpPacketHandler;
+
+	//bool isServer = false; //HACK: ew gross
+	//std::vector<RakNet::SystemAddress> mUserAddressList; // also gross
+	//RakNet::SystemAddress serverAddress; //super gross
 
 	//New input in order this frame.
 	std::string newInput;
@@ -75,32 +72,32 @@ struct a3_DemoState
 	//---------------------------------------------------------------------
 	//Dan Networking Edit
 
-	a3ui16 port_inbound, port_outbound;
-	a3ui16 maxConnect_inbound, maxConnect_outbound;
+	//a3ui16 port_inbound, port_outbound;
+	//a3ui16 maxConnect_inbound, maxConnect_outbound;
 
 	// startup networking
-	a3i32 a3netStartup(a3ui16 port_inbound, a3ui16 port_outbound, a3ui16 maxConnect_inbound, a3ui16 maxConnect_outbound);
+	//a3i32 a3netStartup(a3ui16 port_inbound, a3ui16 port_outbound, a3ui16 maxConnect_inbound, a3ui16 maxConnect_outbound);
 
 	// shutdown networking
-	a3i32 a3netShutdown();
+	//a3i32 a3netShutdown();
 
 
 	// connect
-	a3i32 a3netConnect(a3netAddressStr const ip);
+	//a3i32 a3netConnect(a3netAddressStr const ip);
 
 	// disconnect
-	a3i32 a3netDisconnect();
+	//a3i32 a3netDisconnect();
 
 
 	// process inbound packets
-	a3i32 a3netProcessInbound();
+	//a3i32 a3netProcessInbound();
 
 	// process outbound packets
-	a3i32 a3netProcessOutbound();
+	//a3i32 a3netProcessOutbound();
 
-	void broadcastPacket(const char* packetData, std::size_t packetSize);
+	//void broadcastPacket(const char* packetData, std::size_t packetSize);
 
-	void sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress);
+	//void sendOncePacket(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress);
 };
 
 #endif // !ANDRICK_DEMOSTATE_H_

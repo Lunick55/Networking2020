@@ -4,15 +4,16 @@
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
 #include <A3_DEMO/_andrick_Network/andrick_client.h>
 
-class Server
+class Server : public EventListener
 {
 public:
-	Server() = default;
+	Server();
 	~Server() = default;
+
+	void processIncomingEvent(std::shared_ptr<struct Event> evnt) override;
 
 private:
 	static UserId sUserIdCounter;
-	RakNet::SystemAddress mServerAddress;
 	std::map<UserId, std::shared_ptr<Client>> mConnectedUserMap;
 };
 

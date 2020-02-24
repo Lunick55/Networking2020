@@ -5,6 +5,9 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
+#include <A3_DEMO/_andrick_Event/andrick_eventSystem.h>
+#include <A3_DEMO/_andrick_Network/andrick_server.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
 MainMenuServerMaxUsers::MainMenuServerMaxUsers(class Scene& parentScene) :
 	SceneState(parentScene, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MAX_USERS, DARK_GREY),
@@ -27,11 +30,17 @@ void MainMenuServerMaxUsers::enteringState()
 	a3ui16 const port_client = 60005;
 	a3ui16 const maxConnections_server = 16;
 	a3ui16 const maxConnections_client = 1;
-	if (gDemoState->a3netStartup(port_server, 0, maxConnections_server, 0) > 0)
+	//if (gDemoState->a3netStartup(port_server, 0, maxConnections_server, 0) > 0)
+	//{
+	//	gDemoState->isServer = true;
+	//	printf("\n Server spinning up... \n");
+	//}
+
+	if (gDemoState->mpPacketHandler->startup(maxConnections_server))
 	{
-		gDemoState->isServer = true;
 		printf("\n Server spinning up... \n");
 	}
+
 	//------------------------
 
 	SceneState::enteringState();
