@@ -17,8 +17,6 @@ MiniGameMain::MiniGameMain(class Scene& parentScene) :
 void MiniGameMain::enteringState()
 {
 	a3_DemoState::a3netAddressStr const ipAddress = "127.0.0.1";
-	a3ui16 const port_server = 60006;
-	a3ui16 const port_client = 60005;
 	a3ui16 const maxConnections_server = 16;
 	a3ui16 const maxConnections_client = 1;
 
@@ -35,6 +33,10 @@ void MiniGameMain::enteringState()
 		if (gDemoState->mpPacketHandler->connect(ipAddress))
 		{
 			std::cout << "Client spinning up..." << std::endl;
+		}
+		else
+		{
+			std::cout << "Failed to connect to server." << std::endl;
 		}
 	}
 

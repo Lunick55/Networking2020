@@ -177,7 +177,7 @@ extern "C"
 #endif
 	// C header here
 	extern void initializeServer();
-	extern void initializeClient(const UserId id, const std::string& name, AuthorityId authority);
+	extern void initializeClientPacketHandler();
 #ifdef __cplusplus
 }
 #endif

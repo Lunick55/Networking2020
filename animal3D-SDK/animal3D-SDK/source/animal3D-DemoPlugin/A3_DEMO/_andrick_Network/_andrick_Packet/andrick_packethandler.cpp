@@ -4,6 +4,7 @@
 PacketHandler::PacketHandler(bool isServer) :
 	mIsServer(isServer),
 	mMaxConnections(0),
+	mpPacket(nullptr),
 	mpPeer(nullptr)
 {
 
@@ -17,13 +18,15 @@ bool PacketHandler::startup(int maxConnections)
 
 		if (mpPeer)
 		{
-			mSocketDescriptor = RakNet::SocketDescriptor(sPORT, 0);
+			if (mIsServer)
+			{
+				mSocketDescriptor = RakNet::SocketDescriptor(sPORT, 0);
+			}
 
 			if (mpPeer->Startup(maxConnections, &mSocketDescriptor, 1) == RakNet::StartupResult::RAKNET_STARTED)
 			{
 				mpPeer->SetMaximumIncomingConnections(maxConnections);
 				mpPeer->SetOccasionalPing(true);
-
 				mMaxConnections = maxConnections;
 
 				if (mIsServer)
@@ -56,8 +59,8 @@ bool PacketHandler::connect(const char* ipAddress)
 {
 	if (mpPeer)
 	{
-		mpPeer->Connect(ipAddress, sPORT, 0, 0);
-		return true;
+		RakNet::ConnectionAttemptResult result = mpPeer->Connect(ipAddress, sPORT, 0, 0);
+		return (result == RakNet::ConnectionAttemptResult::CONNECTION_ATTEMPT_STARTED);
 	}
 
 	return false;
@@ -93,7 +96,7 @@ int PacketHandler::processInboundPackets()
 		RakNet::BitStream inBitStream(packet->data, packet->length, false);
 		inBitStream.Read(messageId);
 
-		std::shared_ptr<ConnectionRequestAcceptedEvent> evnt;
+		std::shared_ptr<Event> evnt;
 
 		switch (messageId)
 		{
@@ -108,11 +111,11 @@ int PacketHandler::processInboundPackets()
 				////////////////////
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
-				///This event should only ever get caught on the server.
-				evnt = std::make_shared<ConnectionRequestAcceptedEvent>(packet->systemAddress);
 				break;
 			}
 			case ID_NEW_INCOMING_CONNECTION:
+				///This event should only ever get caught on the server.
+				evnt = std::make_shared<ConnectionRequestAcceptedEvent>(packet->systemAddress);
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				break;

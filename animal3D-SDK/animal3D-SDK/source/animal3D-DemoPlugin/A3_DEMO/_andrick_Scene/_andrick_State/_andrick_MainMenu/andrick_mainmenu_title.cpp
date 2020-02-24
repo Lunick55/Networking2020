@@ -14,7 +14,7 @@ MainMenuTitle::MainMenuTitle(class Scene& parentScene) :
 {
 	mMenuOptions.push_back(MenuOption(a3key_escape, "Press ESC to exit.", SceneId::EXIT, SceneStateId::EXIT_STATE));
 	mMenuOptions.push_back(MenuOption(a3key_1, "Press 1 to host a server.", SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MAX_USERS, initializeServer));
-	mMenuOptions.push_back(MenuOption(a3key_2, "Press 2 to go to hell.", SceneId::MINIGAME, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MINIGAME));
+	mMenuOptions.push_back(MenuOption(a3key_2, "Press 2 to go to hell.", SceneId::MINIGAME, (SceneStateId)MainMenuScene::MenuSceneStateId::SERVER_MINIGAME, initializeClientPacketHandler));
 }
 
 void MainMenuTitle::enteringState()

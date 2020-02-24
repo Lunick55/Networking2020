@@ -20,15 +20,15 @@ extern "C"
 		gDemoState->mpServer = std::make_shared<Server>();
 		gEventSystem.addListener(gDemoState->mpServer, EventProcessingType::SERVERSIDE);
 		gDemoState->mpPacketHandler = std::make_shared<PacketHandler>(true);
-		std::cout << "Initializing server packet handler!" << std::endl;
+		std::cout << "Initializing server and server packet handler!" << std::endl;
 	}
 
-	void initializeClient(const UserId id, const std::string& name, AuthorityId authority)
+	void initializeClientPacketHandler()
 	{
-		gDemoState->mpClient = std::make_shared<Client>(id, name, authority);
-		gEventSystem.addListener(gDemoState->mpClient, EventProcessingType::CLIENTSIDE);
+		//gDemoState->mpClient = std::make_shared<Client>(id, name, authority);
+		//gEventSystem.addListener(gDemoState->mpClient, EventProcessingType::CLIENTSIDE);
 		gDemoState->mpPacketHandler = std::make_shared<PacketHandler>(false);
-		std::cout << "Initializing client packet handler!" << std::endl;
+		std::cout << "Initializing client packet handler! (Client is still null until it receives a connection accepted packet from server)" << std::endl;
 	}
 #ifdef __cplusplus
 }
