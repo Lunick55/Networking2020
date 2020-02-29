@@ -58,3 +58,8 @@ bool Server::getClientById(UserId userId, std::shared_ptr<Client>& out)
 
 	return false;
 }
+
+void Server::setMaxUsers(std::size_t maxUsers)
+{
+	mMaxUsers = maxUsers;
+}

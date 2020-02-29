@@ -6,7 +6,7 @@
 class MainMenuTitle : public SceneState
 {
 public:
-	MainMenuTitle(class Scene& parentScene);
+	MainMenuTitle(std::shared_ptr<Scene> parentScene);
 	virtual ~MainMenuTitle() = default;
 
 	virtual void enteringState() override;

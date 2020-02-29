@@ -1,13 +1,14 @@
-#ifndef MAINMENU_SERVERMAXUSERS_H_
-#define MAINMENU_SERVERMAXUSERS_H_
+#ifndef CLIENTBOIDS_JOINIP_H_
+#define CLIENTBOIDS_JOINIP_H_
 
 #include <A3_DEMO/_andrick_Scene/_andrick_State/andrick_scenestate.h>
+#include <string>
 
-class MainMenuServerMaxUsers : public SceneState
+class ClientBoidsJoinIP : public SceneState
 {
 public:
-	MainMenuServerMaxUsers(std::shared_ptr<Scene> parentScene);
-	virtual ~MainMenuServerMaxUsers() = default;
+	ClientBoidsJoinIP(std::shared_ptr<Scene> parentScene);
+	virtual ~ClientBoidsJoinIP() = default;
 
 	virtual void enteringState() override;
 	virtual void processInput() override;
@@ -19,7 +20,8 @@ public:
 
 private:
 	std::string mNormalText;
-	std::string mErrorText;
+	std::string mInvalidIPText;
+	std::string mFailedToConnectText;
 	std::string mOutputText;
 	Color mNormalTextColor;
 	Color mErrorTextColor;

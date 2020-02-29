@@ -8,10 +8,10 @@
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
-MiniGameMain::MiniGameMain(class Scene& parentScene) :
+MiniGameMain::MiniGameMain(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)::MiniGameScene::MiniGameSceneStateId::MINIGAME, RED)
 {
-	mMenuOptions.push_back(MenuOption(a3key_escape, "Press ESC to leave the server.", SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
+	mMenuOptions.push_back(MenuOption(a3key_escape, "Press ESC to leave the server.", nullptr, SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
 }
 
 void MiniGameMain::enteringState()

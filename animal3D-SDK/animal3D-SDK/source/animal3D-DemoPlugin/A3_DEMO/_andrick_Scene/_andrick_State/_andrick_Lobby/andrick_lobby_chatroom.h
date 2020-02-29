@@ -6,7 +6,7 @@
 class LobbyChatroom : public SceneState
 {
 public:
-	LobbyChatroom(class Scene& parentScene);
+	LobbyChatroom(std::shared_ptr<Scene> parentScene);
 	virtual ~LobbyChatroom() = default;
 
 	virtual void enteringState() override;

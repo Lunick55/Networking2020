@@ -29,32 +29,6 @@ bool SceneInputHandler::isCommand(const std::string& input)
 bool SceneInputHandler::processCommand(const std::string& input, std::shared_ptr<struct Command>& out)
 {
 	return Command::processCommand(input.substr(1), out);
-	//if (commandInput.compare(LIST_USERS_COMMAND) == 0)
-	//{
-	//	success = processListCommand();
-	//	return success;
-	//}
-	//std::size_t spaceIndex = input.find_first_of(' ');
-	//std::string commandWithSpace = input.substr(1, spaceIndex);
-	//std::string commandArgs = input.substr(commandWithSpace.size() + 1);
-	//commandInput = commandWithSpace.substr(0, commandWithSpace.size() - 1);
-	//if (commandInput.compare(WHISPER_COMMAND) == 0)
-	//{
-	//	success = WhisperCommand::createCommand(commandArgs, command);
-	//}
-	//else if (commandInput.compare(START_GAME_COMMAND) == 0)
-	//{
-	//	success = processStartGameCommand(commandArgs, outputResults);
-	//}
-	//else if (commandInput.compare(SELECT_PLAYERS_COMMAND) == 0)
-	//{
-	//	success = processSelectPlayersCommand(commandArgs, outputResults);
-	//}
-	//else if (commandInput.compare(PLAY_TURN_COMMAND) == 0)
-	//{
-	//	success = processPlayTictacCommand(commandArgs, outputResults);
-	//}
-	//return success;
 }
 
 std::shared_ptr<ChatLog> SceneInputHandler::getChatLog()
@@ -158,15 +132,58 @@ bool SceneInputHandler::validateUsername(std::string& input)
 		&& (input.find(',') == std::string::npos));
 }
 
+bool SceneInputHandler::validateIPAddress(const std::string& input, std::string& output)
+{
+	output = "";
+	std::vector<std::string> list = splitString(input, '.');
+
+	if (list.size() != 4)
+	{
+		return false;
+	}
+
+	for (std::string ipToken : list)
+	{
+		int num = 0;
+		if (!validateNumber(ipToken, num) || stoi(ipToken) > 255 || stoi(ipToken) < 0)
+		{
+			return false;
+		}
+	}
+
+	output = input;
+	return true;
+}
+
 bool SceneInputHandler::validateNumber(const std::string& input, int& number)
 {
 	try
 	{
-		number = std::stoi(mCurrentInput);
-		return true;
+		number = std::stoi(input);
 	}
 	catch (...)
 	{
 		return false;
 	}
+
+	return true;
+}
+
+std::vector<std::string> SceneInputHandler::splitString(const std::string& input, char delimiter)
+{
+	std::size_t index = 0;
+	std::vector<std::string> list;
+
+	std::size_t pos = input.find(delimiter);
+
+	while (pos != std::string::npos)
+	{
+		list.push_back(input.substr(index, pos - index));
+		index = ++pos;
+		pos = input.find(delimiter, pos);
+	}
+
+	list.push_back(input.substr(index, input.length()));
+
+	return list;
 }

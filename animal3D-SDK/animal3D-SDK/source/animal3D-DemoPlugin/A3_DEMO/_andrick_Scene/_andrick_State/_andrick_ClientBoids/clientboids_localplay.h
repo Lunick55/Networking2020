@@ -1,13 +1,13 @@
-#ifndef MAINMENU_SERVERMAXUSERS_H_
-#define MAINMENU_SERVERMAXUSERS_H_
+#ifndef CLIENTBOIDS_LOCALPLAY_H_
+#define CLIENTBOIDS_LOCALPLAY_H_
 
 #include <A3_DEMO/_andrick_Scene/_andrick_State/andrick_scenestate.h>
 
-class MainMenuServerMaxUsers : public SceneState
+class ClientBoidsLocalPlay : public SceneState
 {
 public:
-	MainMenuServerMaxUsers(std::shared_ptr<Scene> parentScene);
-	virtual ~MainMenuServerMaxUsers() = default;
+	ClientBoidsLocalPlay(std::shared_ptr<Scene> parentScene);
+	virtual ~ClientBoidsLocalPlay() = default;
 
 	virtual void enteringState() override;
 	virtual void processInput() override;
@@ -16,14 +16,6 @@ public:
 	virtual void queueOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
-
-private:
-	std::string mNormalText;
-	std::string mErrorText;
-	std::string mOutputText;
-	Color mNormalTextColor;
-	Color mErrorTextColor;
-	Color mOutputTextColor;
 };
 
 #endif

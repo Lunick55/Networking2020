@@ -30,6 +30,31 @@ extern "C"
 		gDemoState->mpPacketHandler = std::make_shared<PacketHandler>(false);
 		std::cout << "Initializing client packet handler!" << std::endl;
 	}
+
+	void shutdownRakNet()
+	{
+		if (gDemoState->mpServer)
+		{
+			gEventSystem.removeListener(gDemoState->mpServer);
+			gDemoState->mpServer.reset();
+		}
+
+		if (gDemoState->mpClient)
+		{
+			gEventSystem.removeListener(gDemoState->mpClient);
+			gDemoState->mpClient.reset();
+		}
+
+		if (gDemoState->mpPacketHandler->disconnect())
+		{
+			std::cout << "Successfully disconnected." << std::endl;
+			if (gDemoState->mpPacketHandler->shutdown())
+			{
+				std::cout << "Successfully shutdown RakNet." << std::endl;
+			}
+		}
+	}
+
 #ifdef __cplusplus
 }
 #endif

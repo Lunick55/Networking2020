@@ -39,6 +39,8 @@ public:
 
 	bool validateUsername(std::string& input);
 	bool validateNumber(const std::string& input, int& number);
+	bool validateIPAddress(const std::string& input, std::string& output);
+	std::vector<std::string> splitString(const std::string& input, char delimiter);
 
 private:
 	std::shared_ptr<class ChatLog> mpChatLog;

@@ -1,24 +1,22 @@
-#ifndef ANDRICK_SCENE_MAINMENU_H_
-#define ANDRICK_SCENE_MAINMENU_H_
+#ifndef ANDRICK_SCENE_SERVERBOIDS_H_
+#define ANDRICK_SCENE_SERVERBOIDS_H_
 
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
 
-class MainMenuScene : public Scene
+class ServerBoidsScene : public Scene
 {
 public:
-	const enum class MenuSceneStateId : char
+	const enum class ServerBoidsStateId : char
 	{
 		INVALID_STATE = (char)SceneStateId::INVALID_STATE,
-		TITLE_MENU,
-		SERVER_MAX_USERS,
-		SERVER_MINIGAME //HACK: testing some stuff real quick, getting familiar with scenes
+		CONTROL_PANEL,
+		SHUTDOWN_SERVER_CONFIRMATION
 	};
 
-	MainMenuScene();
-	virtual ~MainMenuScene() = default;
+	ServerBoidsScene();
+	virtual ~ServerBoidsScene() = default;
 
 protected:
-	virtual void enteringScene(const SceneStateId state);
 	//virtual void input() override;
 	//virtual void processIncomingEvent(std::shared_ptr<Event> evnt) override;
 	//virtual void update() override;

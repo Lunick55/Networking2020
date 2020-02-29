@@ -121,6 +121,8 @@ const enum class SceneId : char
 	INVALID_SCENE = -1,
 	EXIT,
 	MAIN_MENU,
+	SERVER_BOIDS,
+	CLIENT_BOIDS,
 	LOBBY,
 	MINIGAME,
 	//SelectRole,
@@ -182,6 +184,7 @@ extern "C"
 	// C header here
 	extern void initializeServer();
 	extern void initializeClient();
+	extern void shutdownRakNet();
 #ifdef __cplusplus
 }
 #endif

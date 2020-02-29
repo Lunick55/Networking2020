@@ -8,11 +8,11 @@
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 
-LobbyChatroom::LobbyChatroom(class Scene& parentScene) :
+LobbyChatroom::LobbyChatroom(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)LobbyScene::LobbySceneStateId::CHATROOM, DARK_GREY),
 	mChatHistory(10)
 {
-	mMenuOptions.push_back(MenuOption(a3key_escape, "Press ESC to leave the server.", SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
+	mMenuOptions.push_back(MenuOption(a3key_escape, "Press ESC to leave the server.", nullptr, SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
 }
 
 void LobbyChatroom::enteringState()

@@ -39,6 +39,8 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_miniGame.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_serverboids.h>
+#include <A3_DEMO/_andrick_Scene/andrick_scene_clientboids.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
 //HACK: Karim's testing trash. DELETE
@@ -269,16 +271,17 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		demoState->textModeCount = 3;	// 0=off, 1=controls, 2=data
 		
 		gDemoState = demoState;
-		
-		gDemoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
-		gDemoState->mpSceneManager->initScene(std::make_shared<LobbyScene>());
-		gDemoState->mpSceneManager->initScene(std::make_shared<MiniGameScene>());
-		gEventSystem.addListener(gDemoState->mpSceneManager, EventProcessingType::BOTH);
-		
 		gDemoState->mpServer = nullptr;
 		gDemoState->mpClient = nullptr;
 		gDemoState->mpPacketHandler = nullptr;
 
+		gDemoState->mpSceneManager = std::make_shared<SceneManager>(std::make_shared<MainMenuScene>());
+		gDemoState->mpSceneManager->initScene(std::make_shared<LobbyScene>());
+		gDemoState->mpSceneManager->initScene(std::make_shared<MiniGameScene>());
+		gDemoState->mpSceneManager->initScene(std::make_shared<ServerBoidsScene>());
+		gDemoState->mpSceneManager->initScene(std::make_shared<ClientBoidsScene>());
+		gEventSystem.addListener(gDemoState->mpSceneManager, EventProcessingType::BOTH);
+		
 		// enable asset streaming between loads
 		//	demoState->streaming = 1;
 
@@ -340,6 +343,8 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_unload(a3_DemoState* demoState, a3boolean h
 
 		// erase other stuff
 		a3trigFree();
+
+		shutdownRakNet();
 
 		//Networking Cleanup
 		if (demoState->peer)

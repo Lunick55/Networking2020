@@ -36,6 +36,13 @@ public:
 	void executeQueuedLocalEvents();
 	void sendQueuedNetworkEvents();
 
+	inline void shutdown()
+	{
+		mEventListeners.clear();
+		mQueuedLocalEvents = std::queue<std::shared_ptr<Event>>();
+		mQueuedNetworkEvents = std::queue<std::shared_ptr<SendableEvent>>();
+	}
+
 	static EventSystem& get()
 	{
 		static EventSystem instance;

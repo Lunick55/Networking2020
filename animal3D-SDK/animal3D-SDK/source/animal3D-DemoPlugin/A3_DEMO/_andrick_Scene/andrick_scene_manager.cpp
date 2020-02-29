@@ -1,13 +1,6 @@
-//#include "A3_DEMO/_andrick_Demostate/andrick_demostate.h"
-//#include "andrick_scene_manager.h"
-//#include "andrick_scene_selectrole.h"
-//#include "andrick_scene_lobby.h"
-
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_manager.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene.h>
-#include <A3_DEMO/_andrick_Scene/andrick_scene_lobby.h>
-#include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 
 SceneManager::SceneManager(std::shared_ptr<Scene> defaultScene) :
@@ -20,8 +13,8 @@ SceneManager::SceneManager(std::shared_ptr<Scene> defaultScene) :
 
 SceneManager::~SceneManager()
 {
-	//gEventSystem.removeListener(std::shared_ptr<SceneManager>(this));
 	mpCurrentScene = nullptr;
+	gEventSystem.shutdown();
 	mSceneMap.clear();
 }
 

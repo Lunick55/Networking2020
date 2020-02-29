@@ -1,13 +1,13 @@
-#ifndef MAINMENU_SERVERMAXUSERS_H_
-#define MAINMENU_SERVERMAXUSERS_H_
+#ifndef SERVERBOIDS_CONTROLPANEL_H_
+#define SERVREBOIDS_CONTROLPANEL_H_
 
 #include <A3_DEMO/_andrick_Scene/_andrick_State/andrick_scenestate.h>
 
-class MainMenuServerMaxUsers : public SceneState
+class ServerBoidsControlPanel : public SceneState
 {
 public:
-	MainMenuServerMaxUsers(std::shared_ptr<Scene> parentScene);
-	virtual ~MainMenuServerMaxUsers() = default;
+	ServerBoidsControlPanel(std::shared_ptr<Scene> parentScene);
+	virtual ~ServerBoidsControlPanel() = default;
 
 	virtual void enteringState() override;
 	virtual void processInput() override;
@@ -18,12 +18,8 @@ public:
 	virtual void exitingState() override;
 
 private:
-	std::string mNormalText;
-	std::string mErrorText;
-	std::string mOutputText;
-	Color mNormalTextColor;
-	Color mErrorTextColor;
-	Color mOutputTextColor;
+	unsigned int mChatHistory;
+	std::vector<std::shared_ptr<struct LogInfo>> mChatLogHistory;
 };
 
 #endif

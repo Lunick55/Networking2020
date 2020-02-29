@@ -6,7 +6,7 @@
 class MiniGameMain : public SceneState
 {
 public:
-	MiniGameMain(class Scene& parentScene);
+	MiniGameMain(std::shared_ptr<Scene> parentScene);
 	virtual ~MiniGameMain() = default;
 
 	virtual void enteringState() override;

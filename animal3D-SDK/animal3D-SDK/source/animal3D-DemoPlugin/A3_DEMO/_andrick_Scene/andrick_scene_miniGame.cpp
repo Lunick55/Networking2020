@@ -5,5 +5,5 @@
 
 MiniGameScene::MiniGameScene() : Scene(SceneId::MINIGAME)
 {
-	setDefaultState(std::make_shared<MiniGameMain>(*this));
+	setDefaultState(std::make_shared<MiniGameMain>(std::shared_ptr<MiniGameScene>(this)));
 }

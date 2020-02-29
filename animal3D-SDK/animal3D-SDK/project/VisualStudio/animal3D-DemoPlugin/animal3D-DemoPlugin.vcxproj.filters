@@ -133,6 +133,18 @@
     <Filter Include="Source Files\common\A3_DEMO\_andrick_network\_andrick_packet">
       <UniqueIdentifier>{ede28e79-658a-47a4-b1b4-a0bec712fd8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_serverboids">
+      <UniqueIdentifier>{9c3fe10b-547f-4f6d-9070-5083d2d59136}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_serverboids">
+      <UniqueIdentifier>{eba5e63b-5ea7-4ae3-b457-1b8fdecf6139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids">
+      <UniqueIdentifier>{b86931ad-d971-4c9b-a2a0-59f7fa8fdef8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids">
+      <UniqueIdentifier>{cc9db5e0-a2a5-48e1-a0d6-8bc5cf3ef5a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -249,6 +261,33 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packethandler.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_network\_andrick_packet</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_serverboids.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ServerBoids\andrick_serverboids_ctlpanel.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_serverboids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ServerBoids\andrick_serverboids_shutdown.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_serverboids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ServerBoids\andrick_scene_clientboids.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinip.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinusername.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_confirmdisconnect.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_localplay.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_clientworld.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -346,6 +385,33 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packethandler.h">
       <Filter>Header Files\A3_DEMO\_andrick_network\_andrick_packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\andrick_scene_serverboids.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ServerBoids\andrick_serverboids_shutdown.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_serverboids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ServerBoids\andrick_serverboids_ctlpanel.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_serverboids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\andrick_scene_clientboids.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinip.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinusername.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_confirmdisconnect.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_localplay.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_clientworld.h">
+      <Filter>Header Files\A3_DEMO\_andrick_scene\_andrick_state\_andrick_clientboids</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

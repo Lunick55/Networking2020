@@ -5,12 +5,14 @@
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
 #include <A3_DEMO/_andrick_Command/andrick_command.h>
+#include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_menuoption.h>
 
-SceneState::SceneState(Scene& parentScene, SceneStateId id, Color backgroundColor) :
-	mParentScene(parentScene),
+SceneState::SceneState(std::shared_ptr<Scene> parentScene, SceneStateId id, Color backgroundColor) :
+	mpParentScene(parentScene),
 	mID(id),
 	mpInputHandler(std::make_shared<SceneInputHandler>()),
-	mBackgroundColor(backgroundColor) {}
+	mBackgroundColor(backgroundColor)
+{}
 
 void SceneState::enteringState()
 {
@@ -30,7 +32,9 @@ void SceneState::processInput()
 			}
 
 			iter->execute();
-			mParentScene.switchToState(iter->sceneId, iter->stateId);
+
+			if (iter->sceneId.has_value() && iter->stateId.has_value())
+				mpParentScene->switchToState(iter->sceneId.value(), iter->stateId.value());
 		}
 	}
 
@@ -58,6 +62,9 @@ void SceneState::renderMenuOptions(Color color, TextAlign alignment, unsigned in
 {
 	for (auto iter = mMenuOptions.begin(); iter != mMenuOptions.end(); ++iter)
 	{
+		if (*iter == mEscapeOption)
+			continue;
+
 		gTextFormatter.drawText(iter->optionText, color, alignment, viewportPosition);
 		gTextFormatter.offsetLine(spacing);
 	}
@@ -100,4 +107,15 @@ void SceneState::handleCommandEvent(std::shared_ptr<CommandEvent> commandEvnt)
 	{
 		commandEvnt->execute();
 	}
+}
+
+void SceneState::setEscapeOption(struct MenuOption escapeOption)
+{
+	mEscapeOption = escapeOption;
+	mMenuOptions.push_back(mEscapeOption);
+}
+
+void SceneState::renderEscapeOption(int lineNumber, Color textColor, TextAlign alignment, a3vec3 position)
+{
+	gTextFormatter.drawText(mEscapeOption.optionText, textColor, alignment, position);
 }
