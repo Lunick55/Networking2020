@@ -4,7 +4,7 @@
 void Steering::update()
 {
 	Steering* pTemp = getSteering();
-	if (pTemp != NULL)
+	if (pTemp != 0)
 	{
 		mData = pTemp->getData();
 	}

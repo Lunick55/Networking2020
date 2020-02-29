@@ -1,19 +1,17 @@
 #pragma once
-
-#include <Trackable.h>
 #include "Steering.h"
 
 class FaceSteering : public Steering
 {
 public:
-	FaceSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
+	FaceSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
 
 	virtual Steering* getSteering();
-	Steering* getSteering(Vector2D diff);
+	Steering* getSteering(a3vec2 diff);
 
-	float mTargetAngle = 0.1;
-	float mSlowAngle = 0.5;
-	float mTimeToTarget = 0.1;
+	float mTargetAngle = 0.1f;
+	float mSlowAngle = 0.5f;
+	float mTimeToTarget = 0.1f;
 
 	float mTargetOrient;
 	float mRotation;

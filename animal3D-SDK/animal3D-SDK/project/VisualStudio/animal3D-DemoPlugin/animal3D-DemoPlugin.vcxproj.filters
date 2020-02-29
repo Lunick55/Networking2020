@@ -133,6 +133,18 @@
     <Filter Include="Source Files\common\A3_DEMO\_andrick_network\_andrick_packet">
       <UniqueIdentifier>{ede28e79-658a-47a4-b1b4-a0bec712fd8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_boids">
+      <UniqueIdentifier>{fc9dfa7b-a518-4e74-8b6a-676e8f3173f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\A3_DEMO\_andrick_boids\_andrick_steering">
+      <UniqueIdentifier>{1eb17378-28e5-4d6c-b643-602934f3ea63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_boids">
+      <UniqueIdentifier>{a80dbf07-08e6-4a15-b00c-ba899135caee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering">
+      <UniqueIdentifier>{0dc97656-33db-4aaf-8821-7dee3e795c4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -249,6 +261,48 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packethandler.cpp">
       <Filter>Source Files\common\A3_DEMO\_andrick_network\_andrick_packet</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\ArriveSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\CohesionSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\FaceSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\FlockingSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\GroupAlignSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\SeekSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\SeparationSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\Steering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\WanderSteering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_manager.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_physics.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_position.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_steering.cpp">
+      <Filter>Source Files\common\A3_DEMO\_andrick_boids</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\a3_dylib_config_export.h">
@@ -346,6 +400,48 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Network\_andrick_Packet\andrick_packethandler.h">
       <Filter>Header Files\A3_DEMO\_andrick_network\_andrick_packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\ArriveSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\CohesionSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\FaceSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\FlockingSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\GroupAlignSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\SeekSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\SeparationSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\Steering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\_andrick_steering\WanderSteering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids\_andrick_steering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_manager.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_physics.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_position.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_boids\andrick_boid_steering.h">
+      <Filter>Header Files\A3_DEMO\_andrick_boids</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

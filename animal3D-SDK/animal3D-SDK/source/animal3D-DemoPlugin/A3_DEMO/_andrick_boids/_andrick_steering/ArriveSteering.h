@@ -1,18 +1,17 @@
 #pragma once
-#include <Trackable.h>
 #include "Steering.h"
 
 class ArriveSteering : public Steering
 {
 public:
-	ArriveSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
+	ArriveSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
 
 	virtual Steering* getSteering();
 
-	Vector2D mTargetVelocity;
+	a3vec2 mTargetVelocity;
 	float mTargetSpeed;
-	float mStopRadius = 0.2;
-	float mSlowRadius = 150;
+	float mStopRadius = 0.2f;
+	float mSlowRadius = 150.0f;
 	float mTimeToTarget = 0.1f;
 
 };

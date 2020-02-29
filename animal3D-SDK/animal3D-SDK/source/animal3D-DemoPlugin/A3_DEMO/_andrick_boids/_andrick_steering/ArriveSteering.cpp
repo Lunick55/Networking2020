@@ -2,12 +2,11 @@
 
 #include "Steering.h"
 #include "ArriveSteering.h"
-#include "Game.h"
-#include "UnitManager.h"
-#include "Unit.h"
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-ArriveSteering::ArriveSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+ArriveSteering::ArriveSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
 	: Steering()
 {
 	if (shouldFlee)
@@ -25,49 +24,53 @@ ArriveSteering::ArriveSteering(const UnitID& ownerID, const Vector2D& targetLoc,
 
 Steering* ArriveSteering::getSteering()
 {
-	Vector2D diff;
-	Unit* pOwner = gpGame->getUnitManager()->getUnit(mOwnerID);
+	//TODO: get boid manager for all the comments with gpGame
+
+	a3vec2 diff;
+	Boid* pOwner = NULL;//gpGame->getUnitManager()->getUnit(mOwnerID); 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 	//are we seeking a location or a unit?
 
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Unit* pTarget = gpGame->getUnitManager()->getUnit(mTargetID);
+		Boid* pTarget = NULL;// gpGame->getUnitManager()->getUnit(mTargetID);
 		assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}
 	
-	diff = mTargetLoc - pOwner->getPositionComponent()->getPosition();
+	diff = mTargetLoc;// - pOwner->getPositionComponent()->getPosition();
+	a3real2Sub(diff.v, pOwner->getPositionComponent()->getPosition().v);
 
-	if (diff.getLength() < mStopRadius)
+	if (a3real2Length(diff.v) < mStopRadius)
 	{
-		data.acc = 0;
-		data.vel= 0;
+		data.acc = a3vec2_zero;
+		data.vel = a3vec2_zero;
 		this->mData = data;
 		return this;
 	}
 
-	if (diff.getLength() > mSlowRadius)
+	if (a3real2Length(diff.v) > mSlowRadius)
 	{
 		mTargetSpeed = pOwner->getMaxSpeed();
 	}
 	else
 	{
-		mTargetSpeed = pOwner->getMaxSpeed() * diff.getLength() / mSlowRadius;
+		mTargetSpeed = pOwner->getMaxSpeed() * a3real2Length(diff.v) / mSlowRadius;
 	}
 	
 	mTargetVelocity = diff;
-	mTargetVelocity.normalize();
-	mTargetVelocity *= mTargetSpeed;
+	a3real2Normalize(mTargetVelocity.v);
+	a3real2MulS(mTargetVelocity.v, mTargetSpeed);
 
-	data.acc = mTargetVelocity - data.vel; //pOwner->getPhysicsComponent()->getVelocity();
-	data.acc /= mTimeToTarget;
+	data.acc = mTargetVelocity;// - data.vel;
+	a3real2Sub(data.acc.v, data.vel.v);
+	a3real2DivS(data.acc.v, mTimeToTarget);
 
-	if (data.acc.getLength() > pOwner->getMaxAcc())
+	if (a3real2Length(diff.v) > pOwner->getMaxAcc())
 	{
-		data.acc.normalize();
-		data.acc *= pOwner->getMaxAcc();
+		a3real2Normalize(data.acc.v);
+		a3real2MulS(data.acc.v, pOwner->getMaxAcc());
 	}
 
 	this->mData = data;
