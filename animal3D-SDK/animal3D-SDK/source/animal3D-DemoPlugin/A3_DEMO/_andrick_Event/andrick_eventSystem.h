@@ -29,7 +29,7 @@ public:
 	
 	//Two separate functions to streamline event handling so the compiler
 	//can optimize the code path without if statements.
-	void queueNetworkEvent(std::shared_ptr<Event> networkEvent);
+	void queueNetworkEvent(std::shared_ptr<SendableEvent> networkEvent);
 	void queueLocalEvent(std::shared_ptr<Event> localEvent);
 
 	//Should only be called from a3_demo_callbacks
@@ -51,7 +51,7 @@ private:
 	std::queue<std::shared_ptr<Event>> mQueuedLocalEvents;
 
 	//Events to get sent over the network
-	std::queue<std::shared_ptr<Event>> mQueuedNetworkEvents;
+	std::queue<std::shared_ptr<SendableEvent>> mQueuedNetworkEvents;
 };
 
 //REFERENCE

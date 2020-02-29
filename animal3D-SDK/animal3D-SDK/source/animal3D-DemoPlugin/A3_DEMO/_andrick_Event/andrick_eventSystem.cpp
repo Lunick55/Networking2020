@@ -1,6 +1,7 @@
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
+#include <A3_DEMO/_andrick_Network/andrick_server.h>
 
 void EventSystem::addListener(EventId eventId, FuncPtr func)
 {	
@@ -67,7 +68,7 @@ void EventSystem::queueLocalEvent(std::shared_ptr<Event> eventData)
 	mQueuedLocalEvents.push(eventData);
 }
 
-void EventSystem::queueNetworkEvent(std::shared_ptr<Event> eventData)
+void EventSystem::queueNetworkEvent(std::shared_ptr<SendableEvent> eventData)
 {
 	eventData->dispatchType = EventDispatchType::NETWORK;
 	mQueuedNetworkEvents.push(eventData);
@@ -116,12 +117,31 @@ void EventSystem::sendQueuedNetworkEvents()
 {
 	while (!mQueuedNetworkEvents.empty())
 	{
-		std::shared_ptr<Event> eventData = mQueuedNetworkEvents.front();
+		std::shared_ptr<SendableEvent> eventData = mQueuedNetworkEvents.front();
 		mQueuedNetworkEvents.pop();
 
 		char* packetData;
 		std::size_t packetSize = eventData->allocatePacket(packetData);
-		gDemoState->mpPacketHandler->sendToOne(packetData, packetSize, gDemoState->mpPacketHandler->getServerAddress());
+
+		if (gDemoState->mpPacketHandler->isServer())
+		{
+			if (eventData->isBroadcast)
+			{
+				gDemoState->mpPacketHandler->broadcast(packetData, packetSize);
+			}
+			else
+			{
+				std::shared_ptr<Client> user = nullptr;
+				if (gDemoState->mpServer->getClientById(eventData->receiverId, user))
+				{
+					gDemoState->mpPacketHandler->sendToOne(packetData, packetSize, user->getAddress());
+				}
+			}
+		}
+		else
+		{
+			gDemoState->mpPacketHandler->sendToOne(packetData, packetSize, gDemoState->mpPacketHandler->getServerAddress());
+		}
 
 		free(packetData);
 	}

@@ -28,6 +28,8 @@
 
 #include "animal3D/animal3D.h"
 
+#include "a3_dylib_config_export.h"
+//A3DYLIBSYMBOL in front of functions to export/import functions to dll
 
 //-----------------------------------------------------------------------------
 
@@ -55,25 +57,24 @@ struct a3_NetworkingManager
 //-----------------------------------------------------------------------------
 
 	// startup networking
-a3i32 a3netStartup(a3_NetworkingManager* net, a3ui16 port_inbound, a3ui16 port_outbound, a3ui16 maxConnect_inbound, a3ui16 maxConnect_outbound);
+A3DYLIBSYMBOL a3i32 a3netStartup(a3_NetworkingManager* net, a3ui16 port_inbound, a3ui16 port_outbound, a3ui16 maxConnect_inbound, a3ui16 maxConnect_outbound);
 
 // shutdown networking
-a3i32 a3netShutdown(a3_NetworkingManager* net);
+A3DYLIBSYMBOL a3i32 a3netShutdown(a3_NetworkingManager* net);
 
 
 // connect
-a3i32 a3netConnect(a3_NetworkingManager* net, a3netAddressStr const ip);
+A3DYLIBSYMBOL a3i32 a3netConnect(a3_NetworkingManager* net, a3netAddressStr const ip);
 
 // disconnect
-a3i32 a3netDisconnect(a3_NetworkingManager* net);
+A3DYLIBSYMBOL a3i32 a3netDisconnect(a3_NetworkingManager* net);
 
 
 // process inbound packets
-a3i32 a3netProcessInbound(a3_NetworkingManager* net);
+A3DYLIBSYMBOL a3i32 a3netProcessInbound(a3_NetworkingManager* net);
 
 // process outbound packets
-a3i32 a3netProcessOutbound(a3_NetworkingManager* net);
-
+A3DYLIBSYMBOL a3i32 a3netProcessOutbound(a3_NetworkingManager* net);
 
 //-----------------------------------------------------------------------------
 

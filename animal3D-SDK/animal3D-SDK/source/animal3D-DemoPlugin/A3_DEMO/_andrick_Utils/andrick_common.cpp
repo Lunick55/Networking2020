@@ -20,12 +20,12 @@ extern "C"
 		gDemoState->mpServer = std::make_shared<Server>();
 		gEventSystem.addListener(gDemoState->mpServer, EventProcessingType::SERVERSIDE);
 		gDemoState->mpPacketHandler = std::make_shared<PacketHandler>(true);
-		std::cout << "Initializing server packet handler!" << std::endl;
+		std::cout << "Initializing server and server packet handler!" << std::endl;
 	}
 
-	void initializeClient(const UserId id, const std::string& name, AuthorityId authority)
+	void initializeClient()
 	{
-		gDemoState->mpClient = std::make_shared<Client>(id, name, authority);
+		gDemoState->mpClient = std::make_shared<Client>();
 		gEventSystem.addListener(gDemoState->mpClient, EventProcessingType::CLIENTSIDE);
 		gDemoState->mpPacketHandler = std::make_shared<PacketHandler>(false);
 		std::cout << "Initializing client packet handler!" << std::endl;

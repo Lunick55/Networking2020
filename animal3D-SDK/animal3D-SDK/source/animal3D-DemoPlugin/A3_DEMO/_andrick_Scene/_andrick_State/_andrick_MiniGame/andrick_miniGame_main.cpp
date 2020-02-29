@@ -17,8 +17,6 @@ MiniGameMain::MiniGameMain(class Scene& parentScene) :
 void MiniGameMain::enteringState()
 {
 	a3_DemoState::a3netAddressStr const ipAddress = "127.0.0.1";
-	a3ui16 const port_server = 60006;
-	a3ui16 const port_client = 60005;
 	a3ui16 const maxConnections_server = 16;
 	a3ui16 const maxConnections_client = 1;
 
@@ -36,6 +34,10 @@ void MiniGameMain::enteringState()
 		{
 			std::cout << "Client spinning up..." << std::endl;
 		}
+		else
+		{
+			std::cout << "Failed to connect to server." << std::endl;
+		}
 	}
 
 	//------------------------
@@ -50,8 +52,8 @@ void MiniGameMain::processInput()
 	//Handle Input
 	if (mpInputHandler->isKeyPressed(a3key_space))
 	{
-		std::shared_ptr<BasicEvent> evnt;
-		evnt = std::make_shared<BasicEvent>(EventId::INCREMENT_THE_SPACE);
+		std::shared_ptr<GenericEvent> evnt = nullptr;
+		evnt = std::make_shared<GenericEvent>(EventId::INCREMENT_THE_SPACE);
 		//gEventSystem.queueLocalEvent(evnt);
 		gEventSystem.queueNetworkEvent(evnt);
 		//TODO: !!! Make this NetworkEvent

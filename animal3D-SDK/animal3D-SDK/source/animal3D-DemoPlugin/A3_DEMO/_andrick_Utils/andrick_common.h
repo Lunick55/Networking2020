@@ -87,7 +87,9 @@ enum class CommandId : char
 enum class EventId : char
 {
 	INVALID_EVENT = -1,
+	NEW_INCOMING_CONNECTION,
 	CONNECTION_REQUEST_ACCEPTED,
+	CONNECTION_REQUEST_FAILED,
 	CHAT_MESSAGE,
 	INCREMENT_THE_SPACE,
 	COMMAND
@@ -145,6 +147,8 @@ enum PacketEventId : unsigned char
 	andrick_ID_DELIVER_PUBLIC_MESSAGE,			//Serverside command
 	andrick_ID_DELIVER_PRIVATE_MESSAGE,			//Serverside command
 
+	andrick_ID_CONNECTION_REQUEST_ACCEPTED,
+	andrick_ID_CONNECTION_ATTEMPT_FAILED,
 	andrick_ID_REQUEST_JOIN_SERVER,				//Client asks server to join
 	andrick_ID_JOIN_ACCEPTED,					//Server sends a welcome message to joined user
 	andrick_ID_USER_JOINED_SERVER,				//Server notifies everyone a user joined
@@ -177,7 +181,7 @@ extern "C"
 #endif
 	// C header here
 	extern void initializeServer();
-	extern void initializeClient(const UserId id, const std::string& name, AuthorityId authority);
+	extern void initializeClient();
 #ifdef __cplusplus
 }
 #endif

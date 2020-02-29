@@ -2,80 +2,100 @@
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packet.h>
 #include <A3_DEMO/_andrick_Command/andrick_command.h>
 #include <A3_DEMO/_andrick_Network/andrick_client.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Network/andrick_server.h>
+#include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
-/// ConnectionRequestAcceptedEvent Start
+#pragma region ConnectionRequestAcceptedEvent
+ConnectionRequestAcceptedEvent::ConnectionRequestAcceptedEvent(RakNet::SystemAddress serverAddress, UserId newUserId,
+	bool isBroadcast, UserId receiverId) :
+	SendableEvent(EventId::CONNECTION_REQUEST_ACCEPTED, EventProcessingType::CLIENTSIDE, isBroadcast, receiverId),
+	serverAddress(serverAddress),
+	newUserId(newUserId) {}
 
-ConnectionRequestAcceptedEvent::ConnectionRequestAcceptedEvent(RakNet::SystemAddress serverAddress) :
-	Event(EventId::CONNECTION_REQUEST_ACCEPTED, EventProcessingType::SERVERSIDE),
-	serverAddress(serverAddress)
-{}
+void ConnectionRequestAcceptedEvent::execute()
+{
+	gDemoState->mpPacketHandler->setServerAddress(serverAddress);
+	gDemoState->mpClient->setUserId(newUserId);
+	std::cout << "Our connection request was accepted! UserId: " << std::to_string(newUserId) << std::endl;
+}
 
 std::size_t ConnectionRequestAcceptedEvent::allocatePacket(char*& out)
 {
-	//Get amount of memory we need to allocate
-	std::size_t packetSize = sizeof(ConnectionRequestAcceptedEvent);
-
-	//Create that memory dynamically and copy it to our out variable (whoever calls this function is required to free this)
+	std::size_t packetSize = sizeof(ConnectionRequestAcceptedPacket);
 	out = (char*)malloc(packetSize);
-	memcpy(out, (char*)&ConnectionRequestAcceptedEvent(serverAddress), packetSize);
-
-	//return the packet size
+	memcpy(out, (char*)&ConnectionRequestAcceptedPacket(newUserId), packetSize);
 	return packetSize;
 }
+#pragma endregion
 
-/// ConnectionRequestAcceptedEvent End
-
-/// BasicEvent Start
-
-BasicEvent::BasicEvent(EventId id) :
-	Event(id, EventProcessingType::BOTH)
-{}
-
-std::size_t BasicEvent::allocatePacket(char*& out)
+#pragma region ConnectionRequestFailedEvent
+void ConnectionRequestFailedEvent::execute()
 {
-	//Get amount of memory we need to allocate
-	std::size_t packetSize = sizeof(BasicEventPacket);
+	std::cout << "Our connection request failed:\n\t" << errorMessage << std::endl;
+}
 
-	//Create that memory dynamically and copy it to our out variable (whoever calls this function is required to free this)
+std::size_t ConnectionRequestFailedEvent::allocatePacket(char*& out)
+{
+	std::size_t packetSize = sizeof(ConnectionRequestFailedPacket);
+	out = (char*)malloc(packetSize);
+	memcpy(out, (char*)&ConnectionRequestFailedPacket(errorMessage), packetSize);
+	return packetSize;
+}
+#pragma endregion
+
+#pragma region NewIncomingConnectionEvent
+void NewIncomingConnectionEvent::execute()
+{
+	std::cout << "New incoming connection..." << std::endl;
+
+	//Check if we have room.
+	UserId userId;
+	std::string errorMessage;
+
+	std::shared_ptr<SendableEvent> evnt;
+
+	//Send an accepted/failed event to the client
+	if (gDemoState->mpServer->processNewIncomingUser(clientAddress, userId, errorMessage))
+		evnt = std::make_shared<ConnectionRequestAcceptedEvent>(gDemoState->mpPacketHandler->getServerAddress(), userId, false, userId);
+	else
+		evnt = std::make_shared<ConnectionRequestFailedEvent>(errorMessage, false, userId);
+
+	gEventSystem.queueNetworkEvent(evnt);
+}
+#pragma endregion
+
+#pragma region GenericEvent
+std::size_t GenericEvent::allocatePacket(char*& out)
+{
+	std::size_t packetSize = sizeof(BasicEventPacket);
 	out = (char*)malloc(packetSize);
 	memcpy(out, (char*)&BasicEventPacket(eventId), packetSize);
-
-	//return the packet size
 	return packetSize;
 }
+#pragma endregion
 
-/// BasicEvent End
+#pragma region CommandEvent
+CommandEvent::CommandEvent(std::shared_ptr<Command> command, bool isBroadcast, UserId receiverId) :
+	SendableEvent(EventId::COMMAND, EventProcessingType::BOTH, isBroadcast, receiverId),
+	command(command) {}
 
-/// CommandEvent Start
-
-CommandEvent::CommandEvent(std::shared_ptr<Command> command) :
-	Event(EventId::COMMAND, EventProcessingType::BOTH),
-	command(command) 
-{}
-
-//Used on the client to execute the command.
-void CommandEvent::execute()
-{
-	command->runCommand();
+void CommandEvent::execute() 
+{ 
+	command->runCommand(); 
 }
+#pragma endregion
 
-/// CommandEvent End
-
-/// WhisperCommandEvent Start
-
+#pragma region WhisperCommandEvent
 WhisperCommandEvent::WhisperCommandEvent(std::shared_ptr<WhisperCommand> command) :
-	CommandEvent(command) 
-{}
+	CommandEvent(command, false, command->mpReciever->getId()) {}
 
 std::size_t WhisperCommandEvent::allocatePacket(char*& out)
 {
 	std::shared_ptr<WhisperCommand> whisperCommandData = std::dynamic_pointer_cast<WhisperCommand>(command);
 	std::size_t packetSize = sizeof(WhisperPacket);
-
 	out = (char*)malloc(packetSize);
 	memcpy(out, (char*)&WhisperPacket(whisperCommandData->mpSender->getId(), whisperCommandData->mpReciever->getId(), whisperCommandData->mMessage.c_str()), packetSize);
-
 	return packetSize;
 }
-
-/// WhisperCommandEvent End
+#pragma endregion

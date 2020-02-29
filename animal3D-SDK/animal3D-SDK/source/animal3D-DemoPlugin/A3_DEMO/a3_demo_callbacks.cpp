@@ -149,6 +149,7 @@ extern "C"
 	A3DYLIBSYMBOL void a3demoCB_mouseWheel(a3_DemoState *demoState, a3i32 delta, a3i32 cursorX, a3i32 cursorY);
 	A3DYLIBSYMBOL void a3demoCB_mouseMove(a3_DemoState *demoState, a3i32 cursorX, a3i32 cursorY);
 	A3DYLIBSYMBOL void a3demoCB_mouseLeave(a3_DemoState *demoState);
+	A3DYLIBSYMBOL a3i32 foo(a3i32 bar);
 
 #ifdef __cplusplus
 }
@@ -156,6 +157,11 @@ extern "C"
 
 //-----------------------------------------------------------------------------
 // callback implementations
+
+A3DYLIBSYMBOL a3i32 foo(a3i32 bar)
+{
+	return (bar + 1);
+}
 
 // window idles
 A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)

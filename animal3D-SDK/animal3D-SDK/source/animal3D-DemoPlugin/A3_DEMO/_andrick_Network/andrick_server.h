@@ -11,6 +11,9 @@ public:
 	~Server() = default;
 
 	void processIncomingEvent(std::shared_ptr<struct Event> evnt) override;
+	bool processNewIncomingUser(RakNet::SystemAddress clientAddress, UserId& newUserId, std::string& errorMessage);
+
+	bool getClientById(UserId userId, std::shared_ptr<Client>& out);
 
 private:
 	static UserId sUserIdCounter;

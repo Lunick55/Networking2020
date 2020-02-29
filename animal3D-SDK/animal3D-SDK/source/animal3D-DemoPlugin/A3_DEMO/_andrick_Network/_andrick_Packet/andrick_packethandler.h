@@ -9,7 +9,8 @@ public:
 	PacketHandler(bool isServer);
 	virtual ~PacketHandler() = default;
 
-	inline bool isInitialized() const { return mpPeer != nullptr; };
+	inline bool isInitialized() const { return mpPeer != nullptr; }
+	inline bool isServer() const { return mIsServer; }
 
 	bool startup(int maxConnections);
 	bool shutdown();
@@ -19,14 +20,16 @@ public:
 	bool broadcast(const char* packetData, std::size_t packetSize) const;
 	bool sendToOne(const char* packetData, std::size_t packetSize, RakNet::SystemAddress ipAddress) const;
 
-	const RakNet::SystemAddress& getServerAddress() const { return mServerAddress; };
+	void setServerAddress(const RakNet::SystemAddress& address) { mServerAddress = address; }
+	const RakNet::SystemAddress& getServerAddress() const { return mServerAddress; }
+
+	const std::size_t getMaxConnections() const { return mMaxConnections; }
 
 private:
 	bool mIsServer;
-	int mMaxConnections;
+	std::size_t mMaxConnections;
 	RakNet::SystemAddress mServerAddress;
 
-	RakNet::Packet* mpPacket;
 	RakNet::RakPeerInterface* mpPeer;
 	RakNet::SocketDescriptor mSocketDescriptor;
 };
