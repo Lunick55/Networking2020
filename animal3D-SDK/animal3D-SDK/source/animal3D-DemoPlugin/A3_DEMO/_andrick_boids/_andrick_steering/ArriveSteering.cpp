@@ -1,4 +1,4 @@
-#include <cassert>
+//#include <cassert>
 
 #include "Steering.h"
 #include "ArriveSteering.h"
@@ -35,7 +35,7 @@ Steering* ArriveSteering::getSteering()
 	{
 		//seeking unit
 		Boid* pTarget = NULL;// gpGame->getUnitManager()->getUnit(mTargetID);
-		assert(pTarget != NULL);
+		//assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}
 	
