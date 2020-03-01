@@ -2,12 +2,12 @@
 
 #include "Steering.h"
 #include "SeparationSteering.h"
-#include "Game.h"
-#include "UnitManager.h"
-#include "Unit.h"
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-SeparationSteering::SeparationSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+
+SeparationSteering::SeparationSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
 	: Steering(), mSeekSteering(SeekSteering(ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
@@ -25,26 +25,27 @@ SeparationSteering::SeparationSteering(const UnitID& ownerID, const Vector2D& ta
 
 Steering* SeparationSteering::getSteering()
 {
-	Vector2D diff;
-	Unit* pOwner = gpGame->getUnitManager()->getUnit(mOwnerID);
+	a3vec2 diff;
+	Boid* pOwner = NULL;//TODO: manager pls gpGame->getUnitManager()->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
-	Vector2D positionVector;
+	a3vec2 positionVector;
 	int neighborCount = 0;
-	mNeighborRadius = gpGame->getSeparationRadius();
+	mNeighborRadius = 1; //TODO: manager values gpGame->getSeparationRadius();
 
-	std::map<UnitID, Unit*> unitMap = gpGame->getUnitManager()->getMap();
+	std::map<UnitID, Boid*> unitMap;//TODO: gotta get the map = gpGame->getUnitManager()->getMap();
 
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{
 		if (it->second != pOwner)
 		{
-			Vector2D unitPos = it->second->getPositionComponent()->getPosition();
-			diff = unitPos - pOwner->getPositionComponent()->getPosition();
-			if (diff.getLength() < mNeighborRadius)
+			a3vec2 unitPos = it->second->getPositionComponent()->getPosition();
+			a3real2Diff(diff.v, unitPos.v, pOwner->getPositionComponent()->getPosition().v);
+			if (a3real2Length(diff.v) < mNeighborRadius)
 			{
-				positionVector += it->second->getPositionComponent()->getPosition();
+				
+				a3real2Add(positionVector.v, it->second->getPositionComponent()->getPosition().v);
 				neighborCount++;
 			}
 		}
@@ -55,21 +56,20 @@ Steering* SeparationSteering::getSteering()
 		//set the values
 		data.rotAcc = 0;
 		data.rotVel = 0;
-		data.acc = 0;
-		data.vel = 0;
+		data.acc = a3vec2_zero;
+		data.vel = a3vec2_zero;
 		this->mData = data;
 		return this;
 	}
-	positionVector /= neighborCount;
-
+	a3real2DivS(positionVector.v, (float)neighborCount);
 
 	mSeekSteering.setTargetLoc(positionVector);
 	mSeekSteering.getSteering();
 
 	data.rotAcc = 0;
 	data.rotVel = 0;
-	data.acc = mSeekSteering.getData().acc * -1;
-	
+	a3real2ProductS(data.acc.v, mSeekSteering.getData().acc.v, -1.0f);
+
 	this->mData = data;
 	return this;
 }

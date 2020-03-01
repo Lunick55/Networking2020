@@ -2,12 +2,12 @@
 
 #include "Steering.h"
 #include "WanderSteering.h"
-#include "Game.h"
-#include "UnitManager.h"
-#include "Unit.h"
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid.h>
+#include <animal3D-A3DM/a3math/a3random.h>
 
 
-WanderSteering::WanderSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+WanderSteering::WanderSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
 	: mWanderOrientation(0), Steering(), mFaceSteering(FaceSteering(ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
@@ -25,22 +25,23 @@ WanderSteering::WanderSteering(const UnitID& ownerID, const Vector2D& targetLoc,
 
 Steering* WanderSteering::getSteering()
 {
-	Vector2D diff;
-	Unit* pOwner = gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = NULL; //TODO: game manager gpGame->getUnitManager()->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	
 	//update wander orientation
-	mWanderOrientation += (genRandomBinomial() * wanderRate);
-
+	mWanderOrientation += (a3random() * wanderRate);
 	//calculate combined target Orient
 	float targetOrientation;
 	targetOrientation = mWanderOrientation + (pOwner->getFacing() - (PI / 2));
 
+	a3vec2 product;
+	a3real2ProductS(product.v, asVector(pOwner->getFacing() - (PI / 2)).v, mWanderOffset);
 	//calculate center of wander cirlce
-	mTarget = pOwner->getPositionComponent()->getPosition() + (asVector(pOwner->getFacing() - (PI / 2)) * mWanderOffset);
+	a3real2Sum(mTarget.v, pOwner->getPositionComponent()->getPosition().v, product.v);
 
 	//calculate target location
-	mTarget += (asVector(targetOrientation) * mWanderRadius);
+	a3real2ProductS(product.v, asVector(targetOrientation).v, mWanderRadius);
+	a3real2Add(mTarget.v, product.v);
 
 	//do a facing delegate to FACE using target
 	mFaceSteering.setTargetLoc(mTarget);
@@ -50,20 +51,18 @@ Steering* WanderSteering::getSteering()
 
 	data.rotAcc = tempFace->getData().rotAcc;
 	
-	data.acc = asVector(pOwner->getFacing() - (PI / 2)) * pOwner->getMaxAcc();
+	a3real2ProductS(data.acc.v, asVector(pOwner->getFacing() - (PI / 2)).v, pOwner->getMaxAcc());
 
 	this->mData = data;
 	return this;
 }
 
-Vector2D WanderSteering::asVector(float num)
+a3vec2 WanderSteering::asVector(float num)
 {
-	Vector2D temp;
-	float x = cos(num);
-	float y = sin(num);
+	a3vec2 temp;
+	float x = (float)cos(num);
+	float y = (float)sin(num);
 
-	temp.setX(x);
-	temp.setY(y);
-
+	a3real2Set(temp.v, x, y);
 	return temp;
 }

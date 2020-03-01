@@ -2,12 +2,11 @@
 
 #include "Steering.h"
 #include "FaceSteering.h"
-#include "Game.h"
-#include "UnitManager.h"
-#include "Unit.h"
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-FaceSteering::FaceSteering(const UnitID& ownerID, const Vector2D& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+FaceSteering::FaceSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
 	: Steering()
 {
 	if (shouldFlee)
@@ -25,15 +24,16 @@ FaceSteering::FaceSteering(const UnitID& ownerID, const Vector2D& targetLoc, con
 
 Steering* FaceSteering::getSteering()
 {
-	Vector2D diff;
-	Unit* pOwner = gpGame->getUnitManager()->getUnit(mOwnerID);
+	a3vec2 diff;
+	Boid* pOwner = NULL;//TODO: that game manager thing //gpGame->getUnitManager()->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 
-	diff = mTargetLoc - pOwner->getPositionComponent()->getPosition();
+	//diff = mTargetLoc - pOwner->getPositionComponent()->getPosition();
+	a3real2Diff(diff.v, mTargetLoc.v, pOwner->getPositionComponent()->getPosition().v);
 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
-	if (diff.getLength() == 0)
+	if (a3real2Length(diff.v) == 0)
 	{
 		//Do nothing?
 		data.rotAcc = 0;
@@ -42,9 +42,9 @@ Steering* FaceSteering::getSteering()
 		return this;
 	}
 
-	mTargetOrient = atan2(diff.getY(), diff.getX()) + (PI / 2);
+	mTargetOrient = (float)atan2(diff.x, diff.y) + (PI / 2);
 	mRotation = mTargetOrient - pOwner->getFacing();
-	mRotation = fmod(mRotation, (2 * PI));
+	mRotation = (float)fmod(mRotation, (2 * PI));
 	if (mRotation > PI)
 	{
 		mRotation -= PI;
@@ -89,15 +89,15 @@ Steering* FaceSteering::getSteering()
 		data.rotAcc *= data.maxRotAcc;
 	}
 
-	data.acc = 0;
+	data.acc = a3vec2_zero;
 	this->mData = data;
 	
 	return this;
 }
 
-Steering* FaceSteering::getSteering(Vector2D diff)
+Steering* FaceSteering::getSteering(a3vec2 diff)
 {
-	Unit* pOwner = gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = NULL; //TODO: manager. You know // gpGame->getUnitManager()->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
@@ -111,9 +111,9 @@ Steering* FaceSteering::getSteering(Vector2D diff)
 	//	return this;
 	//}
 
-	mTargetOrient = atan2(diff.getY(), diff.getX()) + (PI / 2);
+	mTargetOrient = (float)atan2(diff.y, diff.x) + (PI / 2);
 	mRotation = mTargetOrient - (pOwner->getFacing());
-	mRotation = fmod(mRotation, (2 * PI));
+	mRotation = (float)fmod(mRotation, (2 * PI));
 	if (mRotation > PI)
 	{
 		//mRotation -= PI;
@@ -157,7 +157,7 @@ Steering* FaceSteering::getSteering(Vector2D diff)
 		data.rotAcc *= data.maxRotAcc;
 	}
 
-	data.acc = 0;
+	data.acc = a3vec2_zero;
 	this->mData = data;
 
 	return this;
