@@ -11,7 +11,14 @@
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 
 ClientBoidsJoinUsername::ClientBoidsJoinUsername(std::shared_ptr<Scene> parentScene) :
-	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::JOIN_USERNAME, DARK_GREY)
+	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::JOIN_USERNAME, DARK_GREY),
+	mNormalText("Please enter a username you'd like to use."),
+	mInvalidUsernameText("Please enter a username > 0 and < " + std::to_string(sMAX_USERNAME_LENGTH) + " chars and with no spaces or commas."),
+	mUsernameTakenText("That username is already taken. Please pick a different one."),
+	mOutputText(mNormalText),
+	mNormalTextColor(WHITE),
+	mErrorTextColor(RED),
+	mOutputTextColor(mNormalTextColor)
 {
 	setEscapeOption(MenuOption(a3key_escape, "<-- [ESC to main menu]", nullptr, SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
 }
@@ -24,6 +31,29 @@ void ClientBoidsJoinUsername::enteringState()
 void ClientBoidsJoinUsername::processInput()
 {
 	SceneState::processInput();
+
+	if (mpInputHandler->isKeyPressed(a3key_enter))
+	{
+		if (!mpInputHandler->validateUsername(mpInputHandler->getCurrentInput()))
+		{
+			mOutputText = mInvalidUsernameText;
+			mOutputTextColor = mErrorTextColor;
+		}
+		else
+		{
+			if (/*Username is already taken*/0)
+			{
+				mOutputText = mUsernameTakenText;
+				mOutputTextColor = mErrorTextColor;
+			}
+			else
+			{
+				mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD);
+			}
+		}
+
+		mpInputHandler->clearCurrentInput();
+	}
 }
 
 void ClientBoidsJoinUsername::processIncomingEvent(std::shared_ptr<Event> evnt)
@@ -43,16 +73,17 @@ void ClientBoidsJoinUsername::queueOutgoingEvents()
 
 void ClientBoidsJoinUsername::render()
 {
-	SceneState::render();
-	renderEscapeOption();
-
 	gTextFormatter.setLine(1);
-	gTextFormatter.drawText("Client boids join username.", WHITE, TextAlign::CENTER_X);
-	gTextFormatter.offsetLine(2);
-	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::LEFT);
-	gTextFormatter.offsetLine(6);
+	gTextFormatter.setAlignment(TextAlign::CENTER_X);
 
+	gTextFormatter.drawText("Welcome to the Client Boids Scene!", WHITE);
+	gTextFormatter.offsetLine(6);
 	renderMenuOptions(WHITE, TextAlign::CENTER_X);
+	gTextFormatter.offsetLine(2);
+	gTextFormatter.drawText(mOutputText, mOutputTextColor);
+
+	gTextFormatter.offsetLine(5);
+	gTextFormatter.drawText(mpInputHandler->getCurrentInput(), mNormalTextColor);
 }
 
 void ClientBoidsJoinUsername::exitingState()

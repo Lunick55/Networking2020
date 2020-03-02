@@ -27,12 +27,18 @@ public:
 	const AuthorityId& getAuthority() const;
 	const RakNet::SystemAddress& getAddress() const { return mAddress; };
 
+	inline void setServersMaxUserCount(std::size_t maxUsers) { mServersMaxUserCount = maxUsers; };
+	inline std::size_t getMaxUserCount() const { return mServersMaxUserCount; };
+	inline std::size_t getConnectedUserCount() const { return mClientMap.size(); };
+
 private:
 	bool mIsConnected;
 	UserId mUserId;
 	std::string mUsername;
 	AuthorityId mAuthority;
 	RakNet::SystemAddress mAddress;
+
+	std::size_t mServersMaxUserCount;
 	std::map<UserId, std::shared_ptr<Client>> mClientMap;
 };
 

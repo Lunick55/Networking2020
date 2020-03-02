@@ -13,7 +13,7 @@
 ClientBoidsConfirmDisconnect::ClientBoidsConfirmDisconnect(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CONFIRM_DISCONNECT, RED)
 {
-	mMenuOptions.push_back(MenuOption(a3key_escape, "Press [Enter] to disconnect.", nullptr, SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
+	mMenuOptions.push_back(MenuOption(a3key_enter, "Press [Enter] to disconnect.", nullptr, SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
 	mMenuOptions.push_back(MenuOption(a3key_escape, "Press [ESC] cancel.", nullptr, SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD));
 }
 
@@ -49,8 +49,6 @@ void ClientBoidsConfirmDisconnect::render()
 
 	gTextFormatter.setLine(1);
 	gTextFormatter.drawText("Are you sure you want to disconnect from the server?", WHITE, TextAlign::CENTER_X);
-	gTextFormatter.offsetLine(2);
-	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::LEFT);
 	gTextFormatter.offsetLine(6);
 
 	renderMenuOptions(WHITE, TextAlign::CENTER_X);

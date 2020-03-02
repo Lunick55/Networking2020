@@ -16,6 +16,10 @@ public:
 	virtual void queueOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
+
+private:
+	unsigned int mChatHistory;
+	std::vector<std::shared_ptr<struct LogInfo>> mChatLogHistory;
 };
 
 #endif

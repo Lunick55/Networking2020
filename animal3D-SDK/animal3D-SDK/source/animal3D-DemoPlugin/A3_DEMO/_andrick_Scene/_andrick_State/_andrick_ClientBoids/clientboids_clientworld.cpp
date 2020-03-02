@@ -11,8 +11,12 @@
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 
 ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScene) :
-	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, DARK_GREY)
+	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, LIGHT_BLUE),
+	mChatHistory(10)
 {
+	mMenuOptions.push_back(MenuOption(a3key_1, "Press [1] for Data Push."));
+	mMenuOptions.push_back(MenuOption(a3key_2, "Press [2] for Data Sharing."));
+	mMenuOptions.push_back(MenuOption(a3key_3, "Press [3] for Data Couple."));
 	setEscapeOption(MenuOption(a3key_escape, "<-- [ESC to disconnect]", nullptr, SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CONFIRM_DISCONNECT));
 }
 
@@ -47,12 +51,22 @@ void ClientBoidsClientWorld::render()
 	renderEscapeOption();
 
 	gTextFormatter.setLine(1);
-	gTextFormatter.drawText("Client boids client world.", WHITE, TextAlign::CENTER_X);
-	gTextFormatter.offsetLine(2);
-	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::LEFT);
-	gTextFormatter.offsetLine(6);
+	gTextFormatter.drawText("Welcome to the Boids Server!", WHITE, TextAlign::CENTER_X);
 
-	renderMenuOptions(WHITE, TextAlign::CENTER_X);
+	gTextFormatter.offsetLine(2);
+	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::CENTER_X);
+
+	gTextFormatter.setLine(5);
+	renderMenuOptions(WHITE, TextAlign::LEFT);
+
+	gTextFormatter.setLine(4);
+	gTextFormatter.drawText(
+		std::to_string(gDemoState->mpClient->getConnectedUserCount()) + "/" +
+		std::to_string(gDemoState->mpClient->getMaxUserCount()) + " Clients Online",
+		WHITE, TextAlign::RIGHT);
+
+	gTextFormatter.offsetLine(2);
+	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
 }
 
 void ClientBoidsClientWorld::exitingState()

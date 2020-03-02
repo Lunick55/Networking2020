@@ -5,7 +5,9 @@
 Client::Client() :
 	mIsConnected(false),
 	mAuthority(AuthorityId::NORMAL),
-	mUserId(-1)
+	mUserId(-1),
+	mServersMaxUserCount(0),
+	mClientMap({})
 {}
 
 void Client::setUserId(const UserId id)

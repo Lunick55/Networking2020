@@ -15,8 +15,9 @@ public:
 
 	bool getClientById(UserId userId, std::shared_ptr<Client>& out);
 
-	void setMaxUsers(std::size_t maxUsers);
-	std::size_t getMaxUsers() const { return mMaxUsers; };
+	inline void setMaxUsers(std::size_t maxUsers) { mMaxUsers = maxUsers; };
+	inline std::size_t getMaxUserCount() const { return mMaxUsers; };
+	inline std::size_t getConnectedUserCount() const { return mConnectedUserMap.size(); };
 
 private:
 	std::size_t mMaxUsers;

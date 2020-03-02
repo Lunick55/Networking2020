@@ -5,7 +5,9 @@
 
 UserId Server::sUserIdCounter = 0;
 
-Server::Server()
+Server::Server() :
+	mMaxUsers(0),
+	mConnectedUserMap({})
 {
 
 }
@@ -57,9 +59,4 @@ bool Server::getClientById(UserId userId, std::shared_ptr<Client>& out)
 	}
 
 	return false;
-}
-
-void Server::setMaxUsers(std::size_t maxUsers)
-{
-	mMaxUsers = maxUsers;
 }

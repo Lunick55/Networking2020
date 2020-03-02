@@ -16,6 +16,15 @@ public:
 	virtual void queueOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
+
+private:
+	std::string mNormalText;
+	std::string mInvalidUsernameText;
+	std::string mUsernameTakenText;
+	std::string mOutputText;
+	Color mNormalTextColor;
+	Color mErrorTextColor;
+	Color mOutputTextColor;
 };
 
 #endif

@@ -12,8 +12,7 @@
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_chatlog.h>
 
 ServerBoidsControlPanel::ServerBoidsControlPanel(std::shared_ptr<Scene> parentScene) :
-	SceneState(parentScene, (SceneStateId)ServerBoidsScene::ServerBoidsStateId::CONTROL_PANEL,
-		DARK_GREY),
+	SceneState(parentScene, (SceneStateId)ServerBoidsScene::ServerBoidsStateId::CONTROL_PANEL, DARK_GREY),
 	mChatHistory(10)
 {
 	mMenuOptions.push_back(MenuOption(a3key_1, "Press [1] for Data Push."));
@@ -24,7 +23,7 @@ ServerBoidsControlPanel::ServerBoidsControlPanel(std::shared_ptr<Scene> parentSc
 
 void ServerBoidsControlPanel::enteringState()
 {
-	if (gDemoState->mpPacketHandler->startup(gDemoState->mpServer->getMaxUsers()))
+	if (gDemoState->mpPacketHandler->startup(gDemoState->mpServer->getMaxUserCount()))
 	{
 		printf("\nServer spinning up... \n");
 	}
@@ -77,11 +76,21 @@ void ServerBoidsControlPanel::render()
 
 	gTextFormatter.setLine(1);
 	gTextFormatter.drawText("Welcome to your server!", WHITE, TextAlign::CENTER_X);
+	
 	gTextFormatter.offsetLine(2);
-	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::LEFT);
-	gTextFormatter.offsetLine(6);
+	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::CENTER_X);
+	
+	gTextFormatter.setLine(9);
+	renderMenuOptions(WHITE, TextAlign::LEFT);
+	
+	gTextFormatter.setLine(7);
+	gTextFormatter.drawText(
+		std::to_string(gDemoState->mpServer->getConnectedUserCount()) + "/" + 
+		std::to_string(gDemoState->mpServer->getMaxUserCount()) + " Clients Online", 
+		WHITE, TextAlign::RIGHT);
 
-	renderMenuOptions(WHITE, TextAlign::CENTER_X);
+	gTextFormatter.offsetLine(2);
+	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
 }
 
 void ServerBoidsControlPanel::exitingState()

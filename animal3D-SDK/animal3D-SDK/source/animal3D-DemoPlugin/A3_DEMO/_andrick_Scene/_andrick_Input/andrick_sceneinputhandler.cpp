@@ -124,7 +124,7 @@ void SceneInputHandler::handleTyping(std::string& input)
 	input += gDemoState->newInput;
 }
 
-bool SceneInputHandler::validateUsername(std::string& input)
+bool SceneInputHandler::validateUsername(const std::string& input) const
 {
 	return (input.length() <= sMAX_USERNAME_LENGTH
 		&& (input.length() >= 1)
