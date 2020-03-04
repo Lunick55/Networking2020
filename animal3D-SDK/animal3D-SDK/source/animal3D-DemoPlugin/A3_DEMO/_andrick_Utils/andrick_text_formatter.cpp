@@ -2,10 +2,10 @@
 #include "../_andrick_Demostate/andrick_demostate.h"
 #include "A3_DEMO/_andrick_Utils/andrick_common.h"
 
-const float TextFormatter::SCREEN_LEFT = -0.98f;
-const float TextFormatter::SCREEN_RIGHT = 0.98f;
-const float TextFormatter::SCREEN_TOP = 0.98f;
-const float TextFormatter::SCREEN_BOTTOM = -0.98f;
+const float TextFormatter::SCREEN_LEFT = -0.96f;
+const float TextFormatter::SCREEN_RIGHT = 0.96f;
+const float TextFormatter::SCREEN_TOP = 0.96f;
+const float TextFormatter::SCREEN_BOTTOM = -0.96f;
 const float TextFormatter::SCREEN_CENTER = 0.0f;
 const float TextFormatter::LINE_HEIGHT = 0.08f;
 const float TextFormatter::LETTER_SIZE = 0.023f;
@@ -123,7 +123,7 @@ a3vec3 TextFormatter::calculatePosition(const std::string string, TextAlign alig
 
 float TextFormatter::calculateLineHeight(int line)
 {
-	float lineHeight = 1.0f - LINE_HEIGHT;
+	float lineHeight = 1.0f - LINE_HEIGHT - (1.0f - SCREEN_TOP);
 	lineHeight -= mCurrentLine * LINE_HEIGHT;
 	return lineHeight;
 }

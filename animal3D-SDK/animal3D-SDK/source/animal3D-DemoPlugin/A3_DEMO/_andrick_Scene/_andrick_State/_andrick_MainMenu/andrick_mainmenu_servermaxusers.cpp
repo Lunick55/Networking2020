@@ -18,7 +18,7 @@ MainMenuServerMaxUsers::MainMenuServerMaxUsers(std::shared_ptr<Scene> parentScen
 	mErrorTextColor(RED),
 	mOutputTextColor(mNormalTextColor)
 {
-	setEscapeOption(MenuOption(a3key_escape, "<-- [ESC to Main Menu]", nullptr, SceneId::EXIT, SceneStateId::EXIT_STATE));
+	setEscapeOption(MenuOption(a3key_escape, "<-- [ESC to Main Menu]", nullptr, SceneId::MAIN_MENU, (SceneStateId)MainMenuScene::MenuSceneStateId::TITLE_MENU));
 }
 
 void MainMenuServerMaxUsers::enteringState()

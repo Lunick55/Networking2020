@@ -227,7 +227,7 @@ struct WhisperPacket
 #pragma pack(pop)
 
 #pragma pack(push, 1)
-struct BasicEventPacket
+struct GenericEventPacket
 {
 	PacketEventId packetId;
 	//UserId senderId;
@@ -235,8 +235,8 @@ struct BasicEventPacket
 
 	EventId ID;
 
-	BasicEventPacket(EventId id)://(UserId sender, UserId reciever, EventId id) :
-		packetId(andrick_ID_BASIC_EVENT),
+	GenericEventPacket(EventId id)://(UserId sender, UserId reciever, EventId id) :
+		packetId(andrick_ID_GENERIC_EVENT),
 		//senderId(sender),
 		//recieverId(reciever),
 		ID(id)

@@ -118,32 +118,48 @@ int PacketHandler::processInboundPackets()
 			evnt = std::make_shared<NewIncomingConnectionEvent>(packet->systemAddress);
 			break;
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
+			std::cout << "ID_NO_FREE_INCOMING_CONNECTIONS" << std::endl;
 			break;
 		case ID_DISCONNECTION_NOTIFICATION:
+			std::cout << "ID_DISCONNECTION_NOTIFICATION" << std::endl;
 			break;
 		case ID_CONNECTION_LOST:
+			std::cout << "ID_CONNECTION_LOST" << std::endl;
 			break;
 		case ID_REMOTE_DISCONNECTION_NOTIFICATION:
+			std::cout << "ID_REMOTE_DISCONNECTION_NOTIFICATION" << std::endl;
 			break;
 		case ID_REMOTE_CONNECTION_LOST:
+			std::cout << "ID_REMOTE_CONNECTION_LOST" << std::endl;
 			break;
 		case ID_REMOTE_NEW_INCOMING_CONNECTION:
+			std::cout << "ID_REMOTE_NEW_INCOMING_CONNECTION" << std::endl;
 			break;
 
 			////////////////////
 			// CUSTOM PACKETS //
 			////////////////////
 
-		case andrick_ID_REQUEST_JOIN_SERVER:///Client -> Server
+		case andrick_ID_CONNECTION_ATTEMPT_FAILED:///Server sends this to Client - Server rejected us for some reason
+		{
+			ConnectionRequestFailedPacket* requestFailedPacket = (ConnectionRequestFailedPacket*)packet->data;
+			evnt = std::make_shared<ConnectionRequestFailedEvent>(requestFailedPacket->errorMessage);
+			break;
+		}
+		case andrick_ID_REQUEST_JOIN_SERVER:///Client sends this to Server
+			std::cout << "andrick_ID_REQUEST_JOIN_SERVER" << std::endl;
 			break;
 
-		case andrick_ID_JOIN_ACCEPTED:
+		case andrick_ID_JOIN_ACCEPTED:///Server sends this to Joining Client
+			std::cout << "andrick_ID_JOIN_ACCEPTED" << std::endl;
 			break;
 
-		case andrick_ID_USER_JOINED_SERVER:
+		case andrick_ID_USER_JOINED_SERVER:///Server sends this to existing Clients
+			std::cout << "andrick_ID_USER_JOINED_SERVER" << std::endl;
 			break;
 
-		case andrick_ID_BASIC_EVENT:
+		case andrick_ID_GENERIC_EVENT:
+			std::cout << "andrick_ID_GENERIC_EVENT" << std::endl;
 			break;
 
 			/////////////////////

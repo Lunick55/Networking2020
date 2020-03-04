@@ -68,9 +68,9 @@ void NewIncomingConnectionEvent::execute()
 #pragma region GenericEvent
 std::size_t GenericEvent::allocatePacket(char*& out)
 {
-	std::size_t packetSize = sizeof(BasicEventPacket);
+	std::size_t packetSize = sizeof(GenericEventPacket);
 	out = (char*)malloc(packetSize);
-	memcpy(out, (char*)&BasicEventPacket(eventId), packetSize);
+	memcpy(out, (char*)&GenericEventPacket(eventId), packetSize);
 	return packetSize;
 }
 #pragma endregion

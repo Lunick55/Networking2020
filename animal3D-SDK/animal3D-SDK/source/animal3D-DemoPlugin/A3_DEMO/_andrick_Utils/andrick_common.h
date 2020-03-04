@@ -165,7 +165,7 @@ enum PacketEventId : unsigned char
 
 	andrick_ID_WHISPER_COMMAND,
 
-	andrick_ID_BASIC_EVENT,
+	andrick_ID_GENERIC_EVENT,
 
 	andrick_ID_UPDATE_TICTAC_STATE,
 

@@ -267,6 +267,7 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\andrick_scenestate.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_clientworld.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_confirmdisconnect.cpp" />
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_connectloadscreen.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinip.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinusername.cpp" />
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_localplay.cpp" />
@@ -348,6 +349,7 @@
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\andrick_scene_clientboids.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_clientworld.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_confirmdisconnect.h" />
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_connectloadscreen.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinip.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_joinusername.h" />
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\_andrick_Scene\_andrick_State\_andrick_ClientBoids\clientboids_localplay.h" />

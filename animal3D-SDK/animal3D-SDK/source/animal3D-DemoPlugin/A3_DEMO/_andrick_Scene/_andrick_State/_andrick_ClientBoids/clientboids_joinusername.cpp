@@ -41,15 +41,16 @@ void ClientBoidsJoinUsername::processInput()
 		}
 		else
 		{
-			if (/*Username is already taken*/0)
-			{
-				mOutputText = mUsernameTakenText;
-				mOutputTextColor = mErrorTextColor;
-			}
-			else
-			{
-				mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD);
-			}
+			//if (/*Username is already taken*/0)
+			//{
+			//	mOutputText = mUsernameTakenText;
+			//	mOutputTextColor = mErrorTextColor;
+			//}
+			//else
+			//{
+			gDemoState->mpClient->setUsername(mpInputHandler->getCurrentInput());
+			mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CONNECT_LOAD_STATE);
+			//}
 		}
 
 		mpInputHandler->clearCurrentInput();
@@ -89,4 +90,6 @@ void ClientBoidsJoinUsername::render()
 void ClientBoidsJoinUsername::exitingState()
 {
 	SceneState::exitingState();
+	mOutputText = mNormalText;
+	mOutputTextColor = mNormalTextColor;
 }

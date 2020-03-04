@@ -45,12 +45,15 @@ extern "C"
 			gDemoState->mpClient.reset();
 		}
 
-		if (gDemoState->mpPacketHandler->disconnect())
+		if (gDemoState->mpPacketHandler)
 		{
-			std::cout << "Successfully disconnected." << std::endl;
-			if (gDemoState->mpPacketHandler->shutdown())
+			if (gDemoState->mpPacketHandler->disconnect())
 			{
-				std::cout << "Successfully shutdown RakNet." << std::endl;
+				std::cout << "Successfully disconnected." << std::endl;
+				if (gDemoState->mpPacketHandler->shutdown())
+				{
+					std::cout << "Successfully shutdown RakNet." << std::endl;
+				}
 			}
 		}
 	}
