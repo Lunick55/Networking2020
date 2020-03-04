@@ -25,7 +25,7 @@ WanderSteering::WanderSteering(const UnitID& ownerID, const a3vec2& targetLoc, c
 
 Steering* WanderSteering::getSteering()
 {
-	Boid* pOwner = NULL; //TODO: game manager gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	
 	//update wander orientation

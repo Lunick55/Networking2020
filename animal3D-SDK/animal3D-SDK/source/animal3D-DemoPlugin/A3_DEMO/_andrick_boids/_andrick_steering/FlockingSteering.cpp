@@ -23,20 +23,19 @@ FlockingSteering::FlockingSteering(const UnitID& ownerID, const a3vec2& targetLo
 
 Steering* FlockingSteering::getSteering()
 {
-	//TODO: get the stuff from gpGame
 	//a3vec2 diff;
-	Boid* pOwner = NULL;// gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
-	mWeightCohesion = 0.8f;//gpGame->getCohesionWeight();//0.8f;
-	mWeightSeparation = 1.0f;//gpGame->getSeparationWeight();//1.0f;
-	mWeightGroupAlign = 1.0f;//gpGame->getGroupAlignWeight();//1.0f;
+	mWeightCohesion = gDemoState->mCohesionWeight;
+	mWeightSeparation = gDemoState->mSeparationWeight;
+	mWeightGroupAlign = gDemoState->mGroupAlignWeight;
 
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Boid* pTarget = NULL;// gpGame->getUnitManager()->getUnit(mTargetID);
+		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mTargetID);
 		//assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}
@@ -48,7 +47,10 @@ Steering* FlockingSteering::getSteering()
 
 	//finish making dans fucking vectors work
 	//UNDONE: data.acc = (mCohesion.getData().acc * mWeightCohesion) + (mSeparation.getData().acc * mWeightSeparation) + (mGroupAlign.getData().acc * mWeightGroupAlign) + (mWander.getData().acc);
-	data.rotAcc = (mCohesion.getData().rotAcc * mWeightCohesion) + (mSeparation.getData().rotAcc * mWeightSeparation) + (mGroupAlign.getData().rotAcc * mWeightGroupAlign) + (mWander.getData().rotAcc);
+	data.rotAcc = (mCohesion.getData().rotAcc * mWeightCohesion) +
+		(mSeparation.getData().rotAcc * mWeightSeparation) + 
+		(mGroupAlign.getData().rotAcc * mWeightGroupAlign) + 
+		(mWander.getData().rotAcc);
 
 	this->mData = data;
 	return this;

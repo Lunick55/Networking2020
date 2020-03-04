@@ -23,17 +23,16 @@ CohesionSteering::CohesionSteering(const UnitID& ownerID, const a3vec2& targetLo
 
 Steering* CohesionSteering::getSteering()
 {
-	//TODO: unit manager finder
 	a3vec2 diff;
-	Boid* pOwner = NULL;//gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
 	a3vec2 positionVector;
 	int neighborCount = 0;
-	mNeighborRadius = 1.0f;//gpGame->getCohesionRadius(); //TODO: Get that radius from global
+	mNeighborRadius = gDemoState->mCohesionRadius;
 
-	std::map<UnitID, Boid*> unitMap;// gpGame->getUnitManager()->getMap();
+	std::map<UnitID, Boid*> unitMap = gDemoState->mpBoidManager->getMap();
 
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{

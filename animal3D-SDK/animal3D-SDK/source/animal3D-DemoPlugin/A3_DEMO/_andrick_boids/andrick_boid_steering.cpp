@@ -9,7 +9,7 @@
 #include <A3_DEMO/_andrick_boids/_andrick_steering/FlockingSteering.h>
 
 BoidSteering::BoidSteering()
-	: mpSteering(NULL)
+	: mpSteering(nullptr)
 {
 }
 
@@ -20,7 +20,7 @@ BoidSteering::~BoidSteering()
 
 void BoidSteering::applySteering(BoidPhysics& physicsComponent)
 {
-	if (mpSteering != NULL)
+	if (mpSteering != nullptr)
 	{
 		//allow Steering to run
 		mpSteering->update();
@@ -103,7 +103,7 @@ void BoidSteering::setData(const SteeringData& data)
 	}
 	default:
 	{
-
+		
 	}
 	};
 }

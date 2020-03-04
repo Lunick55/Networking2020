@@ -6,6 +6,8 @@
 
 #include <animal3D-A3DM/a3math/a3vector.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid_physics.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <Bits.h>
 //#include "defines.h"
 

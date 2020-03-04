@@ -25,13 +25,13 @@ SeekSteering::SeekSteering(const UnitID& ownerID, const a3vec2& targetLoc, const
 Steering* SeekSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = NULL; //TODO: gamekkmanager// = gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Boid* pTarget = NULL;//TODO: mmmmanager gpGame->getUnitManager()->getUnit(mTargetID);
+		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mTargetID);
 		assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}

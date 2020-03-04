@@ -25,7 +25,7 @@ FaceSteering::FaceSteering(const UnitID& ownerID, const a3vec2& targetLoc, const
 Steering* FaceSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = NULL;//TODO: that game manager thing //gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 
 	//diff = mTargetLoc - pOwner->getPositionComponent()->getPosition();
@@ -97,7 +97,7 @@ Steering* FaceSteering::getSteering()
 
 Steering* FaceSteering::getSteering(a3vec2 diff)
 {
-	Boid* pOwner = NULL; //TODO: manager. You know // gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();

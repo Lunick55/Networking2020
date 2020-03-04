@@ -26,15 +26,15 @@ SeparationSteering::SeparationSteering(const UnitID& ownerID, const a3vec2& targ
 Steering* SeparationSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = NULL;//TODO: manager pls gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
 	a3vec2 positionVector;
 	int neighborCount = 0;
-	mNeighborRadius = 1; //TODO: manager values gpGame->getSeparationRadius();
+	mNeighborRadius = gDemoState->mSeparationRadius;
 
-	std::map<UnitID, Boid*> unitMap;//TODO: gotta get the map = gpGame->getUnitManager()->getMap();
+	std::map<UnitID, Boid*> unitMap = gDemoState->mpBoidManager->getMap();
 
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{

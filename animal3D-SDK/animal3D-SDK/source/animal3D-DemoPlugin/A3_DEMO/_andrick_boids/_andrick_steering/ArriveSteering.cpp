@@ -27,14 +27,14 @@ Steering* ArriveSteering::getSteering()
 	//TODO: get boid manager for all the comments with gpGame
 
 	a3vec2 diff;
-	Boid* pOwner = NULL;//gpGame->getUnitManager()->getUnit(mOwnerID); 
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID); 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 	//are we seeking a location or a unit?
 
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Boid* pTarget = NULL;// gpGame->getUnitManager()->getUnit(mTargetID);
+		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mTargetID);
 		//assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}

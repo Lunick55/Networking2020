@@ -25,15 +25,15 @@ GroupAlignSteering::GroupAlignSteering(const UnitID& ownerID, const a3vec2& targ
 Steering* GroupAlignSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = NULL; //TODO: the manager reference //gpGame->getUnitManager()->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
-	mNeighborRadius = 1;//TODO: the manager reference // gpGame->getGroupAlignRadius();
+	mNeighborRadius = gDemoState->mGroupAlignRadius;
 
 	a3vec2 directionVector = a3vec2_zero;
 	int neighborCount = 0;
 
-	std::map<UnitID, Boid*> unitMap; //TODO: get map gpGame->getUnitManager()->getMap();
+	std::map<UnitID, Boid*> unitMap = gDemoState->mpBoidManager->getMap();
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{
 		if (it->second != pOwner)

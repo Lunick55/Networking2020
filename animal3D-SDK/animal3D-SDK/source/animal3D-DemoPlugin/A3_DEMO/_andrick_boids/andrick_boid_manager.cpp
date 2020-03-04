@@ -58,9 +58,8 @@ Boid* BoidManager::createPlayerUnit(const Sprite& sprite, bool shouldWrap /*= tr
 
 Boid* BoidManager::createRandomUnit(const Sprite& sprite)
 {
-	//TODO: figure out that damn SCREEN SIZE
-	int posX = 0;//rand() % gpGame->getGraphicsSystem()->getWidth();
-	int posY = 0;//rand() % gpGame->getGraphicsSystem()->getHeight();
+	int posX = rand() % gDemoState->windowWidth;
+	int posY =  rand() % gDemoState->windowHeight;
 	//int velX = rand() % 50 - 25;
 	//int velY = rand() % 40 - 20;
 
@@ -69,8 +68,9 @@ Boid* BoidManager::createRandomUnit(const Sprite& sprite)
 	Boid* pUnit = createUnit(sprite, true, PositionData(tempPos, 0));
 	if (pUnit != NULL)
 	{
-		//TODO: figure out SCREEN SIZE
-		//pUnit->setSteering(Steering::FLOCKING, a3vec2(gpGame->getGraphicsSystem()->getWidth() / 2, rand() % gpGame->getGraphicsSystem()->getHeight() / 2));
+		a3vec2 vec;
+		a3real2Set(vec.v, (a3real)(gDemoState->windowWidth / 2), (a3real)(rand() % gDemoState->windowWidth / 2));
+		pUnit->setSteering(Steering::FLOCKING, vec);
 		int temp = rand() % 360;
 		temp = (int)(temp * (PI / 180));
 		pUnit->getPositionComponent()->setFacing((float)temp);

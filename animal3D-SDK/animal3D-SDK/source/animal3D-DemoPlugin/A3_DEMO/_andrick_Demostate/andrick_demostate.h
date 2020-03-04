@@ -61,6 +61,13 @@ struct a3_DemoState
 	std::shared_ptr<class Client> mpClient;
 	std::shared_ptr<class Server> mpServer;
 	std::shared_ptr<class PacketHandler> mpPacketHandler;
+	std::shared_ptr<class BoidManager> mpBoidManager;
+	float mCohesionRadius = 1.0f;
+	float mSeparationRadius = 1.0f;
+	float mGroupAlignRadius = 1.0f;
+	float mCohesionWeight = 0.8f;
+	float mSeparationWeight = 1.0f;
+	float mGroupAlignWeight = 1.0f;
 
 	//bool isServer = false; //HACK: ew gross
 	//std::vector<RakNet::SystemAddress> mUserAddressList; // also gross
