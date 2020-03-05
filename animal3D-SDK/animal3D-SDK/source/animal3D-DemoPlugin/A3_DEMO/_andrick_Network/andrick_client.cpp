@@ -2,8 +2,8 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
-Client::Client() :
-	mIsConnected(false),
+Client::Client(bool isRemote) :
+	mIsRemoteUser(isRemote),
 	mAuthority(AuthorityId::NORMAL),
 	mUserId(-1),
 	mServersMaxUserCount(0),
@@ -46,18 +46,18 @@ void Client::processIncomingEvent(std::shared_ptr<struct Event> evnt)
 
 	switch (evnt->eventId)
 	{
-	case EventId::CONNECTION_REQUEST_ACCEPTED:
-	{
-		evnt->execute();
-		break;
-	}
-	case EventId::CONNECTION_REQUEST_FAILED:
-	{
-		evnt->execute();
-		break;
-	}
-	default:
-		break;
+		case EventId::CONNECTION_NEW_USER_JOINED:
+		{
+			evnt->execute();
+			break;
+		}
+		case EventId::USER_DISCONNECTED:
+		{
+			evnt->execute();
+			break;
+		}
+		default:
+			break;
 	}
 }
 
@@ -77,4 +77,13 @@ bool Client::getClientFromUsername(const std::string& username, std::shared_ptr<
 	}
 
 	return success;
+}
+
+void Client::initNewUser(const UserId id, const std::string& username)
+{
+	std::shared_ptr<Client> newUser = std::make_shared<Client>(true);
+	newUser->setUserId(id);
+	newUser->setUsername(username);
+	newUser->setAuthority(AuthorityId::NORMAL);///TODO: Send this over the network.
+	mClientMap.insert({ id, newUser });
 }

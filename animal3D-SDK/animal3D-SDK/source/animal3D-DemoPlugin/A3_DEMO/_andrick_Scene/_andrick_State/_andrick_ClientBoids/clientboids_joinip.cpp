@@ -47,7 +47,7 @@ void ClientBoidsJoinIP::processInput()
 				if (gDemoState->mpPacketHandler->connect(ipAddress.c_str()))
 				{
 					std::cout << "Client spinning up..." << std::endl;
-					mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::JOIN_USERNAME);
+					mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CONNECT_LOAD_STATE);
 				}
 				else
 				{

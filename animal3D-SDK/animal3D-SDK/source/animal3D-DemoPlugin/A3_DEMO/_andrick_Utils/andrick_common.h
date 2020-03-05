@@ -87,11 +87,17 @@ enum class CommandId : char
 enum class EventId : char
 {
 	INVALID_EVENT = -1,
-	NEW_INCOMING_CONNECTION,
-	CONNECTION_REQUEST_ACCEPTED,
-	CONNECTION_REQUEST_FAILED,
+	NEW_INCOMING_CONNECTION,///Client -> Server - see if we can get inital connection
+	CONNECTION_REQUEST_ACCEPTED,///Server -> Client - server got the connection and you can join
+	CONNECTION_REQUEST_FAILED,///Server -> Client - server got the connection but it's full so bye
+	CONNECTION_REQUEST_JOIN,///Client -> Server - client asks if it can join with andrick specific data (username, authority, etc)
+	CONNECTION_JOIN_ACCEPTED,///Server -> Client - Everything is good, you can enter the server
+	CONNECTION_JOIN_FAILED,///Server -> Client - Disconnect a user
+	CONNECTION_NEW_USER_JOINED,///Server -> All Clients - A new user joined the server
+	USER_DISCONNECTED,///Disconnected Client -> Server. Server -> All Clients - A client left the server
 	CHAT_MESSAGE,
 	INCREMENT_THE_SPACE,
+	GENERIC_EVENT,
 	COMMAND
 };
 
@@ -153,9 +159,10 @@ enum PacketEventId : unsigned char
 	andrick_ID_CONNECTION_ATTEMPT_FAILED,
 	andrick_ID_REQUEST_JOIN_SERVER,				//Client asks server to join
 	andrick_ID_JOIN_ACCEPTED,					//Server sends a welcome message to joined user
+	andrick_ID_JOIN_FAILED,						//Server sends this to client, client disconnects
 	andrick_ID_USER_JOINED_SERVER,				//Server notifies everyone a user joined
 
-	andrick_ID_USER_LEFT_SERVER,
+	andrick_ID_USER_DISCONNECTED,
 	andrick_ID_SERVER_CLOSING,
 
 	////////////////////////
@@ -165,11 +172,19 @@ enum PacketEventId : unsigned char
 
 	andrick_ID_WHISPER_COMMAND,
 
-	andrick_ID_GENERIC_EVENT,
 
-	andrick_ID_UPDATE_TICTAC_STATE,
+	//////////////////////////
+	// GENERIC EVENT TYPES
+	//////////////////////////
+
+	andrick_ID_GENERIC_DATA_PUSH_EVENT,
+	andrick_ID_GENERIC_DATA_SHARE_EVENT,
+	andrick_ID_GENERIC_DATA_COUPLE_EVENT,
+
+	//////////////////////////
 
 	andrick_ID_SERVER_TRAVEL,
+	andrick_ID_UPDATE_TICTAC_STATE,
 	andrick_ID_SETUP_TICTAC_GAME,
 	andrick_ID_UPDATE_BATTLE_STATE,
 	andrick_ID_SETUP_BATTLE_GAME,

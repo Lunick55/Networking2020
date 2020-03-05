@@ -39,6 +39,7 @@ void ClientBoidsConnectLoadScreen::processIncomingEvent(std::shared_ptr<Event> e
 	{
 	case EventId::CONNECTION_REQUEST_FAILED:
 	{
+		evnt->execute();
 		mOutputText = std::reinterpret_pointer_cast<ConnectionRequestFailedEvent>(evnt)->errorMessage;
 		mOutputTextColor = mErrorTextColor;
 		mShouldUpdate = false;
@@ -46,7 +47,22 @@ void ClientBoidsConnectLoadScreen::processIncomingEvent(std::shared_ptr<Event> e
 	}
 	case EventId::CONNECTION_REQUEST_ACCEPTED:
 	{
+		evnt->execute();
+		mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::JOIN_USERNAME);
+		break;
+	}
+	case EventId::CONNECTION_JOIN_ACCEPTED:
+	{
+		evnt->execute();
 		mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD);
+		break;
+	}
+	case EventId::CONNECTION_JOIN_FAILED:
+	{
+		evnt->execute();
+		mOutputText = std::reinterpret_pointer_cast<ConnectionJoinFailedEvent>(evnt)->errorMessage;
+		mOutputTextColor = mErrorTextColor;
+		mShouldUpdate = false;
 		break;
 	}
 	default:
@@ -107,11 +123,10 @@ void ClientBoidsConnectLoadScreen::render()
 void ClientBoidsConnectLoadScreen::exitingState()
 {
 	SceneState::exitingState();
+	mShouldUpdate = true;
 	mOutputText = mLoadText;
 	mOutputTextColor = mNormalTextColor;
-
 	mTimeoutUpdateCounter = 0.0f;
-
 	mDotUpdateCounter = 0.0f;
 	mDotText.clear();
 }

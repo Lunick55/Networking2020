@@ -53,6 +53,17 @@ struct SendableEvent : public Event
 	UserId receiverId;
 };
 
+struct NewIncomingConnectionEvent : public Event
+{
+	inline NewIncomingConnectionEvent(RakNet::SystemAddress clientAddress) :
+		Event(EventId::NEW_INCOMING_CONNECTION, EventProcessingType::SERVERSIDE),
+		clientAddress(clientAddress) {}
+	virtual ~NewIncomingConnectionEvent() = default;
+	virtual void execute() override;
+
+	RakNet::SystemAddress clientAddress;
+};
+
 //An event that gets fired when a client receives a connection accepted packet.
 struct ConnectionRequestAcceptedEvent : public SendableEvent
 {
@@ -69,36 +80,80 @@ struct ConnectionRequestAcceptedEvent : public SendableEvent
 
 struct ConnectionRequestFailedEvent : public SendableEvent
 {
-	inline ConnectionRequestFailedEvent(const std::string& errorMessage, 
-		bool isBroadcast = false, UserId receiverId = -1) :
-		SendableEvent(EventId::CONNECTION_REQUEST_FAILED, EventProcessingType::CLIENTSIDE, isBroadcast, receiverId),
+	inline ConnectionRequestFailedEvent(RakNet::SystemAddress clientAddress, const std::string& errorMessage) :
+		SendableEvent(EventId::CONNECTION_REQUEST_FAILED, EventProcessingType::CLIENTSIDE),
 		errorMessage(errorMessage) {}
 
 	virtual ~ConnectionRequestFailedEvent() = default;
 	virtual void execute() override;
 	virtual std::size_t allocatePacket(char*& out) override;
 
+	RakNet::SystemAddress clientAddress;
 	std::string errorMessage;
 };
 
-struct NewIncomingConnectionEvent : public Event
+struct ConnectionRequestJoinEvent : public SendableEvent
 {
-	inline NewIncomingConnectionEvent(RakNet::SystemAddress clientAddress) :
-		Event(EventId::NEW_INCOMING_CONNECTION, EventProcessingType::SERVERSIDE),
-		clientAddress(clientAddress) {}
-	virtual ~NewIncomingConnectionEvent() = default;
-	virtual void execute() override;
+	ConnectionRequestJoinEvent(UserId userId, const std::string& username,
+		bool isBroadcast = false, UserId receiverId = -1);
 
-	RakNet::SystemAddress clientAddress;
+	virtual ~ConnectionRequestJoinEvent() = default;
+	virtual void execute() override;
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	UserId mUserId;
+	std::string mUsername;
+};
+
+struct ConnectionJoinAcceptedEvent : public SendableEvent
+{
+	ConnectionJoinAcceptedEvent(const std::string& username, std::size_t maxUserCount, std::size_t connectedUserCount,
+		bool isBroadcast = false, UserId receiverId = -1);
+
+	virtual ~ConnectionJoinAcceptedEvent() = default;
+	virtual void execute() override;
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	std::string mUsername;
+	std::size_t mMaxUserCount;
+	std::size_t mConnectedUserCount;
+};
+
+struct ConnectionJoinFailedEvent : public SendableEvent
+{
+	ConnectionJoinFailedEvent(UserId userId, const std::string& errorMessage);
+
+	virtual ~ConnectionJoinFailedEvent() = default;
+	virtual void execute() override;
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	UserId userId;
+	std::string errorMessage;
+};
+
+struct ConnectionNewUserJoinedEvent : public SendableEvent
+{
+	ConnectionNewUserJoinedEvent(UserId user, const std::string& username,
+		bool isBroadcast = true, UserId receiverId = -1);
+
+	virtual ~ConnectionNewUserJoinedEvent() = default;
+	virtual void execute() override;
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	UserId mUserId;
+	std::string mUsername;
 };
 
 struct GenericEvent : public SendableEvent
 {
-	inline GenericEvent(EventId id, 
-		bool isBroadcast = false, UserId receiverId = -1) :
-		SendableEvent(id, EventProcessingType::BOTH, isBroadcast, receiverId) {}
+	inline GenericEvent(PacketEventId packetId, UserId userId = -1, bool isBroadcast = false, UserId receiverId = -1) :
+		SendableEvent(EventId::GENERIC_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
+		packetId(packetId), userId(userId) {}
 	virtual ~GenericEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
+
+	UserId userId;
+	PacketEventId packetId;
 };
 
 struct CommandEvent : public SendableEvent
@@ -116,6 +171,17 @@ struct WhisperCommandEvent : public CommandEvent
 	WhisperCommandEvent(std::shared_ptr<struct WhisperCommand> command);
 	virtual ~WhisperCommandEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
+};
+
+struct UserDisconnectedEvent : public SendableEvent
+{
+	UserDisconnectedEvent(UserId userId);
+
+	virtual ~UserDisconnectedEvent() = default;
+	virtual void execute() override;
+	virtual std::size_t allocatePacket(char*& out) override;
+
+	UserId userId;
 };
 
 #endif

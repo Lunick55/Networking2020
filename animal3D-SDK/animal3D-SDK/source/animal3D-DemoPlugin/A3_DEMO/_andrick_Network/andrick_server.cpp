@@ -17,9 +17,27 @@ void Server::processIncomingEvent(std::shared_ptr<struct Event> evnt)
 	switch (evnt->eventId)
 	{
 	case EventId::NEW_INCOMING_CONNECTION:
+	{
 		std::cout << "A new user is attempting to connect!" << std::endl;
 		evnt->execute();
 		break;
+	}
+	case EventId::CONNECTION_REQUEST_JOIN:
+	{
+		std::cout << "A new user is requesting to join the server!" << std::endl;
+		evnt->execute();
+		break;
+	}
+	case EventId::CONNECTION_JOIN_FAILED:
+	{
+		evnt->execute();
+		break;
+	}
+	case EventId::USER_DISCONNECTED:
+	{
+		evnt->execute();
+		break;
+	}
 	default:
 		break;
 	}
@@ -29,14 +47,13 @@ bool Server::processNewIncomingUser(RakNet::SystemAddress clientAddress, UserId&
 {
 	if (mConnectedUserMap.size() < gDemoState->mpPacketHandler->getMaxConnections())
 	{
-		std::shared_ptr<Client> newUser = std::make_shared<Client>();
+		std::shared_ptr<Client> newUser = std::make_shared<Client>(true);
 		newUser->setAddress(clientAddress);
 		newUser->setUserId(sUserIdCounter++);
 		newUserId = newUser->getId();
-		newUser->setUserId(newUserId);
 		newUser->setUsername("Noob" + std::to_string(newUserId));
 		newUser->setAuthority(AuthorityId::NORMAL);
-		mConnectedUserMap.insert({ newUserId, newUser });
+		mConnectedUserMap.insert({ newUser->getId(), newUser });
 		std::cout << "Adding new user to server map: " << newUser->getUsername() << std::endl;
 		return true;
 	}
@@ -56,6 +73,35 @@ bool Server::getClientById(UserId userId, std::shared_ptr<Client>& out)
 	{
 		out = iter->second;
 		return true;
+	}
+
+	return false;
+}
+
+bool Server::isUsernameTaken(const std::string& username)
+{
+	for (auto iter = mConnectedUserMap.begin(); iter != mConnectedUserMap.end(); ++iter)
+	{
+		if (iter->second->getUsername().compare(username) == 0)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Server::disconnectClient(const UserId& id)
+{
+	if (gDemoState->mpPacketHandler && gDemoState->mpPacketHandler->mpPeer)
+	{
+		std::shared_ptr<Client> out;
+		if (gDemoState->mpServer->getClientById(id, out))
+		{
+			gDemoState->mpPacketHandler->mpPeer->CloseConnection(out->getAddress(), true);
+			mConnectedUserMap.erase(out->getId());
+			return true;
+		}
 	}
 
 	return false;

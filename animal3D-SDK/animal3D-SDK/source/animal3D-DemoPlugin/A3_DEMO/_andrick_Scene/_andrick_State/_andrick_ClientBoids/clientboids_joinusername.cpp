@@ -41,16 +41,10 @@ void ClientBoidsJoinUsername::processInput()
 		}
 		else
 		{
-			//if (/*Username is already taken*/0)
-			//{
-			//	mOutputText = mUsernameTakenText;
-			//	mOutputTextColor = mErrorTextColor;
-			//}
-			//else
-			//{
-			gDemoState->mpClient->setUsername(mpInputHandler->getCurrentInput());
+			std::string username = mpInputHandler->getCurrentInput();
+			username.erase(std::remove(username.begin(), username.end(), '\r'), username.end());
+			gEventSystem.queueNetworkEvent(std::make_shared<ConnectionRequestJoinEvent>(gDemoState->mpClient->getId(), username));
 			mpParentScene->switchToState(SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CONNECT_LOAD_STATE);
-			//}
 		}
 
 		mpInputHandler->clearCurrentInput();

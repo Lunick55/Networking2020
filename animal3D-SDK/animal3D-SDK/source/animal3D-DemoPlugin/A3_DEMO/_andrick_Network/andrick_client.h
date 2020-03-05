@@ -7,10 +7,12 @@
 class Client : public EventListener
 {
 public:
-	Client();
+	Client(bool isRemote = false);
 	virtual ~Client() = default;
 
 	void processIncomingEvent(std::shared_ptr<struct Event> evnt) override;
+
+	void initNewUser(const UserId id, const std::string& username);
 
 	//These are all clientside functions.
 	//The server has it's own copy of clients and
@@ -28,18 +30,21 @@ public:
 	const RakNet::SystemAddress& getAddress() const { return mAddress; };
 
 	inline void setServersMaxUserCount(std::size_t maxUsers) { mServersMaxUserCount = maxUsers; };
+	inline void setConnectedUserCount(std::size_t maxUsers) { mConnectedUserCount = maxUsers; };
 	inline std::size_t getMaxUserCount() const { return mServersMaxUserCount; };
-	inline std::size_t getConnectedUserCount() const { return mClientMap.size(); };
+	inline std::size_t getConnectedUserCount() const { return mConnectedUserCount; };
 
 private:
-	bool mIsConnected;
+	bool mIsRemoteUser;
 	UserId mUserId;
 	std::string mUsername;
 	AuthorityId mAuthority;
 	RakNet::SystemAddress mAddress;
 
 	std::size_t mServersMaxUserCount;
-	std::map<UserId, std::shared_ptr<Client>> mClientMap;
+	std::size_t mConnectedUserCount;
+
+	std::map<UserId, std::shared_ptr<Client>> mClientMap;///TODO: Send over client data from server
 };
 
 #endif

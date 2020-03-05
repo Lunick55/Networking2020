@@ -134,6 +134,7 @@ void EventSystem::sendQueuedNetworkEvents()
 				std::shared_ptr<Client> user = nullptr;
 				if (gDemoState->mpServer->getClientById(eventData->receiverId, user))
 				{
+					std::cout << "USERID: " << std::to_string(user->getId()) << std::endl;
 					gDemoState->mpPacketHandler->sendToOne(packetData, packetSize, user->getAddress());
 				}
 			}

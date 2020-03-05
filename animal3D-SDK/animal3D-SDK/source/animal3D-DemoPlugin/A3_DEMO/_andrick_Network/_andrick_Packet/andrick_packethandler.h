@@ -5,6 +5,7 @@
 
 class PacketHandler
 {
+	friend class Server;
 public:
 	PacketHandler(bool isServer);
 	virtual ~PacketHandler() = default;

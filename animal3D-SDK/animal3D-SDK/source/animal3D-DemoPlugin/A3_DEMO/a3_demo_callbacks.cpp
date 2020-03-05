@@ -43,6 +43,7 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_clientboids.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
 //HACK: Karim's testing trash. DELETE
 //#include "_andrick_Event/andrick_eventSystem.h"
@@ -291,11 +292,11 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		a3fileStreamMakeDirectory("./data");
 
 		//Setup Networking
-		if (!demoState->peer)
-		{
-			//demoState->peer = RakNet::RakPeerInterface::GetInstance();
-			//othernetworking setup
-		}
+		//if (!demoState->peer)
+		//{
+		//	//demoState->peer = RakNet::RakPeerInterface::GetInstance();
+		//	//othernetworking setup
+		//}
 
 		/*
 		// set default GL state
@@ -349,11 +350,11 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_unload(a3_DemoState* demoState, a3boolean h
 		shutdownRakNet();
 
 		//Networking Cleanup
-		if (demoState->peer)
-		{
-			RakNet::RakPeerInterface::DestroyInstance(demoState->peer);
-			demoState->peer = 0;
-		}
+		//if (demoState->peer)
+		//{
+		//	RakNet::RakPeerInterface::DestroyInstance(demoState->peer);
+		//	demoState->peer = 0;
+		//}
 
 		// erase persistent state
 		free(demoState);

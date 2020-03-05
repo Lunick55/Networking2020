@@ -13,8 +13,14 @@
 
 ServerBoidsControlPanel::ServerBoidsControlPanel(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ServerBoidsScene::ServerBoidsStateId::CONTROL_PANEL, DARK_GREY),
-	mChatHistory(10)
+	mChatHistory(10),
+	mDataMode(andrick_ID_GENERIC_DATA_PUSH_EVENT),
+	mDataModeText("Data Push")
 {
+	mDataModeMap.insert({ andrick_ID_GENERIC_DATA_PUSH_EVENT, "Data Push" });
+	mDataModeMap.insert({ andrick_ID_GENERIC_DATA_SHARE_EVENT, "Data Share" });
+	mDataModeMap.insert({ andrick_ID_GENERIC_DATA_COUPLE_EVENT, "Data Couple" });
+
 	mMenuOptions.push_back(MenuOption(a3key_1, "Press [1] for Data Push."));
 	mMenuOptions.push_back(MenuOption(a3key_2, "Press [2] for Data Sharing."));
 	mMenuOptions.push_back(MenuOption(a3key_3, "Press [3] for Data Couple."));
@@ -34,6 +40,27 @@ void ServerBoidsControlPanel::enteringState()
 void ServerBoidsControlPanel::processInput()
 {
 	SceneState::processInput();
+
+	if (mpInputHandler->isKeyPressed(a3key_1))
+	{
+		std::shared_ptr<GenericEvent> dataPushEvnt = std::make_shared<GenericEvent>(PacketEventId::andrick_ID_GENERIC_DATA_PUSH_EVENT);
+		gEventSystem.queueLocalEvent(dataPushEvnt);
+		gEventSystem.queueNetworkEvent(dataPushEvnt);
+	}
+	else if (mpInputHandler->isKeyPressed(a3key_2))
+	{
+		std::shared_ptr<GenericEvent> dataShareEvnt = std::make_shared<GenericEvent>(PacketEventId::andrick_ID_GENERIC_DATA_SHARE_EVENT);
+		gEventSystem.queueLocalEvent(dataShareEvnt);
+		gEventSystem.queueNetworkEvent(dataShareEvnt);
+	}
+	else if (mpInputHandler->isKeyPressed(a3key_3))
+	{
+		std::shared_ptr<GenericEvent> dataCoupleEvnt = std::make_shared<GenericEvent>(PacketEventId::andrick_ID_GENERIC_DATA_COUPLE_EVENT);
+		gEventSystem.queueLocalEvent(dataCoupleEvnt);
+		gEventSystem.queueNetworkEvent(dataCoupleEvnt);
+	}
+
+	mpInputHandler->clearCurrentInput();
 
 	//if (mpInputHandler->isKeyPressed(a3key_enter))
 	//{
@@ -56,7 +83,17 @@ void ServerBoidsControlPanel::processInput()
 
 void ServerBoidsControlPanel::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
-
+	switch (evnt->eventId)
+	{
+	case EventId::GENERIC_EVENT:
+	{
+		std::shared_ptr<GenericEvent> genericEvnt = std::dynamic_pointer_cast<GenericEvent>(evnt);
+		handleGenericEvents(genericEvnt);
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void ServerBoidsControlPanel::update()
@@ -78,7 +115,7 @@ void ServerBoidsControlPanel::render()
 	gTextFormatter.drawText("Welcome to your server!", WHITE, TextAlign::CENTER_X);
 	
 	gTextFormatter.offsetLine(2);
-	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::CENTER_X);
+	gTextFormatter.drawText("Current mode: " + mDataModeText, GREEN, TextAlign::CENTER_X);
 	
 	gTextFormatter.setLine(9);
 	renderMenuOptions(WHITE, TextAlign::LEFT);
@@ -96,4 +133,34 @@ void ServerBoidsControlPanel::render()
 void ServerBoidsControlPanel::exitingState()
 {
 	SceneState::exitingState();
+
+	mDataMode = andrick_ID_GENERIC_DATA_PUSH_EVENT;
+	mDataModeText = "Data Push";
+}
+
+void ServerBoidsControlPanel::handleGenericEvents(std::shared_ptr<GenericEvent> genericEvnt)
+{
+	switch (genericEvnt->packetId)
+	{
+	case PacketEventId::andrick_ID_GENERIC_DATA_PUSH_EVENT:
+	{
+		mDataMode = mDataModeMap.find(andrick_ID_GENERIC_DATA_PUSH_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_GENERIC_DATA_PUSH_EVENT)->second;
+		break;
+	}
+	case PacketEventId::andrick_ID_GENERIC_DATA_SHARE_EVENT:
+	{
+		mDataMode = mDataModeMap.find(andrick_ID_GENERIC_DATA_SHARE_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_GENERIC_DATA_SHARE_EVENT)->second;
+		break;
+	}
+	case PacketEventId::andrick_ID_GENERIC_DATA_COUPLE_EVENT:
+	{
+		mDataMode = mDataModeMap.find(andrick_ID_GENERIC_DATA_COUPLE_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_GENERIC_DATA_COUPLE_EVENT)->second;
+		break;
+	}
+	default:
+		break;
+	}
 }
