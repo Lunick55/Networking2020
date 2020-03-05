@@ -12,7 +12,7 @@ public:
 
 protected:
 	float mWanderOffset = 100.0f;
-	float mWanderRadius = 30.0f;
+	float mWanderRadius = 360.0f;
 	float wanderRate = 1.0f;
 	float mWanderOrientation;
 	a3vec2 mTarget;

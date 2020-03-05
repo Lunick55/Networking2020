@@ -10,6 +10,8 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 
+const float TARGET_ELAPSED_MS = 33.3f / 1000.0f;
+
 ClientBoidsLocalPlay::ClientBoidsLocalPlay(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::LOCAL_PLAY, DARK_GREY)
 {
@@ -18,6 +20,16 @@ ClientBoidsLocalPlay::ClientBoidsLocalPlay(std::shared_ptr<Scene> parentScene) :
 
 void ClientBoidsLocalPlay::enteringState()
 {
+	gDemoState->mpBoidManager = std::make_shared<BoidManager>();
+	for (int i = 0; i < 20; i++)
+	{
+		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
+		if (pBoid == NULL)
+		{
+			gDemoState->mpBoidManager->deleteRandomUnit();
+		}
+	}
+
 	SceneState::enteringState();
 }
 
@@ -33,7 +45,7 @@ void ClientBoidsLocalPlay::processIncomingEvent(std::shared_ptr<Event> evnt)
 
 void ClientBoidsLocalPlay::update()
 {
-
+	gDemoState->mpBoidManager->updateAll(TARGET_ELAPSED_MS);
 }
 
 void ClientBoidsLocalPlay::queueOutgoingEvents()
@@ -51,6 +63,9 @@ void ClientBoidsLocalPlay::render()
 	gTextFormatter.offsetLine(2);
 	gTextFormatter.drawText("Current mode: Data Push", GREEN, TextAlign::LEFT);
 	gTextFormatter.offsetLine(6);
+
+	//draw units
+	gDemoState->mpBoidManager->drawAll();
 
 	renderMenuOptions(WHITE, TextAlign::CENTER_X);
 }

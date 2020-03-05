@@ -2,7 +2,6 @@
 
 #include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
-#include <A3_DEMO/_andrick_boids/andrick_boid_steering.h>
 
 UnitID BoidManager::msNextUnitID = PLAYER_UNIT_ID + 1;
 
@@ -12,7 +11,7 @@ BoidManager::BoidManager()
 {
 }
 
-Boid* BoidManager::createUnit(const Sprite& sprite, bool shouldWrap, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/, const UnitID& id)
+Boid* BoidManager::createUnit(bool shouldWrap, const SteeringData& steerData /*= ZERO_STEERING_DATA*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/, const UnitID& id)
 {
 	Boid* pUnit = NULL;
 
@@ -35,10 +34,14 @@ Boid* BoidManager::createUnit(const Sprite& sprite, bool shouldWrap, const Posit
 	//create some components
 	pUnit->mpPosition = new BoidPosition(shouldWrap);
 	pUnit->mpPosition->setData(posData);
+
 	pUnit->mpPhysics = new BoidPhysics(pUnit->mpPosition);
 	pUnit->mpPhysics->setData(physicsData);
+	pUnit->mpPhysics->setPositionComponent(pUnit->mpPosition);
+
 	pUnit->mpSteering = new BoidSteering();
-	pUnit->mpPhysics->setData(physicsData);
+	pUnit->mpSteering->setData(steerData);
+	pUnit->mpSteering->setPhysicsComponent(pUnit->mpPhysics);
 
 	//set max's
 	pUnit->mMaxSpeed = MAX_SPEED;
@@ -50,13 +53,13 @@ Boid* BoidManager::createUnit(const Sprite& sprite, bool shouldWrap, const Posit
 }
 
 
-Boid* BoidManager::createPlayerUnit(const Sprite& sprite, bool shouldWrap /*= true*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/)
+Boid* BoidManager::createPlayerUnit(bool shouldWrap /*= true*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/)
 {
-	return createUnit(sprite, shouldWrap, posData, physicsData, PLAYER_UNIT_ID);
+	return createUnit(shouldWrap, ZERO_STEERING_DATA, posData, physicsData, PLAYER_UNIT_ID);
 }
 
 
-Boid* BoidManager::createRandomUnit(const Sprite& sprite)
+Boid* BoidManager::createRandomUnit()
 {
 	int posX = rand() % gDemoState->windowWidth;
 	int posY =  rand() % gDemoState->windowHeight;
@@ -65,7 +68,7 @@ Boid* BoidManager::createRandomUnit(const Sprite& sprite)
 
 	a3vec2 tempPos;
 	a3real2Set(tempPos.v, (a3real)posX, (a3real)posY);
-	Boid* pUnit = createUnit(sprite, true, PositionData(tempPos, 0));
+	Boid* pUnit = createUnit(true, ZERO_STEERING_DATA,PositionData(tempPos, 0));
 	if (pUnit != NULL)
 	{
 		a3vec2 vec;

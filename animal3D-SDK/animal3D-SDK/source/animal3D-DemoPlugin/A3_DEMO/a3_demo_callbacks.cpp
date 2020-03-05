@@ -282,6 +282,13 @@ A3DYLIBSYMBOL a3_DemoState* a3demoCB_load(a3_DemoState* demoState, a3boolean hot
 		gDemoState->mpSceneManager->initScene(std::make_shared<MiniGameScene>());
 		gDemoState->mpSceneManager->initScene(std::make_shared<ServerBoidsScene>());
 		gDemoState->mpSceneManager->initScene(std::make_shared<ClientBoidsScene>());
+		gDemoState->mCohesionRadius = 0.4f;
+		gDemoState->mSeparationRadius = 0.1f;
+		gDemoState->mGroupAlignRadius = 0.4f;
+		gDemoState->mCohesionWeight = 2.0f;
+		gDemoState->mSeparationWeight = 1.0f;
+		gDemoState->mGroupAlignWeight = 3.0f;
+		
 		gEventSystem.addListener(gDemoState->mpSceneManager, EventProcessingType::BOTH);
 		
 		// enable asset streaming between loads

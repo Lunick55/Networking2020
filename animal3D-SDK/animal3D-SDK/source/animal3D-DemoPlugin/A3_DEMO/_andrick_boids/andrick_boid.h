@@ -5,10 +5,10 @@
 //#include "Sprite.h"
 #include <A3_DEMO/_andrick_boids/_andrick_steering/Steering.h>
 #include <a3_dylib_config_export.h>
+#include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 
 class BoidPosition;
 class BoidSteering;
-class Sprite;
 class UnitManager;
 
 const a3ui32 DEFAULT_QUEUE_CAPACITY = 8;
@@ -20,7 +20,7 @@ class Boid
 public:
 	void draw() const;
 	float getFacing() const;
-	void update(float elapsedTime) {};
+	void update(float elapsedTime);
 
 	BoidPosition* getPositionComponent() const;
 	BoidPhysics* getPhysicsComponent() const;

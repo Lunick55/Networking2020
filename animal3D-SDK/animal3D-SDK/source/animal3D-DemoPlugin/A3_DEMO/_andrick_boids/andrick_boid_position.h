@@ -1,6 +1,8 @@
 #pragma once
 
 #include <animal3D-A3DM/a3math/a3vector.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 
 struct PositionData
 {
@@ -20,7 +22,17 @@ public:
 	~BoidPosition() {};
 
 	//getters and setters
-	const a3vec2& getPosition() const { return mData.pos; };
+	const a3vec2 getPosition() const 
+	{
+		a3vec2 normalizedPos;
+
+		float normX = (mData.pos.x / gDemoState->windowWidth) - (1 - (mData.pos.x / gDemoState->windowWidth));
+		float normY = (mData.pos.y / gDemoState->windowHeight) - (1 - (mData.pos.y / gDemoState->windowHeight));
+
+		a3real2Set(normalizedPos.v, normX, normY);
+
+		return normalizedPos; 
+	};
 	void setPosition(const a3vec2& pos) { mData.pos = pos; wrapCoords(); };
 	void modPosition(const a3vec2& mod) { mData.pos.x += mod.x; mData.pos.y += mod.y; wrapCoords(); };
 	float getFacing() const { return mData.facing; };
@@ -38,4 +50,5 @@ private:
 	void wrapCoords();
 
 	friend class BoidManager;
+	friend class Boid;
 };

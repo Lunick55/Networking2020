@@ -46,7 +46,17 @@ Steering* FlockingSteering::getSteering()
 	mWander.getSteering();
 
 	//finish making dans fucking vectors work
-	//UNDONE: data.acc = (mCohesion.getData().acc * mWeightCohesion) + (mSeparation.getData().acc * mWeightSeparation) + (mGroupAlign.getData().acc * mWeightGroupAlign) + (mWander.getData().acc);
+
+	a3vec2 cohVec, sepVec, galVec;
+
+	a3real2ProductS(cohVec.v, mCohesion.getData().acc.v, gDemoState->mCohesionWeight);
+	a3real2ProductS(sepVec.v, mSeparation.getData().acc.v, gDemoState->mSeparationWeight);
+	a3real2ProductS(galVec.v, mGroupAlign.getData().acc.v, gDemoState->mGroupAlignWeight);
+
+	a3real2Sum(data.acc.v, cohVec.v, sepVec.v);
+	a3real2Sum(data.acc.v, galVec.v, mWander.getData().acc.v);	
+	//data.acc = mWander.getData().acc;
+
 	data.rotAcc = (mCohesion.getData().rotAcc * mWeightCohesion) +
 		(mSeparation.getData().rotAcc * mWeightSeparation) + 
 		(mGroupAlign.getData().rotAcc * mWeightGroupAlign) + 

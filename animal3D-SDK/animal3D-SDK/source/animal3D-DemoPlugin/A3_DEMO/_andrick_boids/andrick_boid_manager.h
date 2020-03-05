@@ -3,12 +3,13 @@
 #include <map>
 #include <A3_DEMO/_andrick_boids/andrick_boid_position.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid_physics.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid_steering.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 class Boid;
-class Sprite;
 struct PositionData;
 struct PhysicsData;
+struct SteeringData;
 
 const UnitID PLAYER_UNIT_ID = 0;
 const float PI = 3.14159f;
@@ -19,9 +20,9 @@ public:
 	BoidManager();
 	~BoidManager() {};
 
-	Boid* createUnit(const Sprite& sprite, bool shouldWrap = true, const PositionData& posData = ZERO_POSITION_DATA, const PhysicsData& physicsData = ZERO_PHYSICS_DATA, const UnitID& id = INVALID_UNIT_ID);
-	Boid* createPlayerUnit(const Sprite& sprite, bool shouldWrap = true, const PositionData& posData = ZERO_POSITION_DATA, const PhysicsData& physicsData = ZERO_PHYSICS_DATA);
-	Boid* createRandomUnit(const Sprite& sprite);
+	Boid* createUnit(bool shouldWrap = true, const SteeringData& steerData = ZERO_STEERING_DATA, const PositionData& posData = ZERO_POSITION_DATA, const PhysicsData& physicsData = ZERO_PHYSICS_DATA, const UnitID& id = INVALID_UNIT_ID);
+	Boid* createPlayerUnit(bool shouldWrap = true, const PositionData& posData = ZERO_POSITION_DATA, const PhysicsData& physicsData = ZERO_PHYSICS_DATA);
+	Boid* createRandomUnit();
 
 	Boid* getUnit(const UnitID& id) const;
 	void deleteUnit(const UnitID& id);

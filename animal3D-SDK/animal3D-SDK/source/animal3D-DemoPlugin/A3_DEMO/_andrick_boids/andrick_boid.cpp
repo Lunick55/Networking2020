@@ -23,13 +23,22 @@ Boid::~Boid()
 {
 }
 
+void Boid::update(float elapsedTime)
+{
+	BoidPhysics* pPhysics = mpSteering->getPhysicsComponent();
+	mpSteering->applySteering(*pPhysics);
+
+	BoidPosition* pPos = pPhysics->mpPositionComponent;
+	pPhysics->integrate(*pPos, elapsedTime);
+}
+
+
 void Boid::draw() const
 {
 	BoidPosition* pPosition = getPositionComponent();
 	//assert(pPosition != NULL);
 	const a3vec2& pos = pPosition->getPosition();
-	//TODO: implement a draw call somehow
-	//gpGame->getGraphicsSystem()->draw(mSprite, pos.getX(), pos.getY(), pPosition->getFacing());
+	gTextFormatter.drawBoidText(WHITE, pos);
 
 	if (mShowTarget)
 	{
