@@ -25,6 +25,8 @@ private:
 	std::string mDataModeText;
 	PacketEventId mDataMode;
 	std::map<PacketEventId, std::string> mDataModeMap;
+
+	a3vec2 incomingBoids[20];
 };
 
 #endif

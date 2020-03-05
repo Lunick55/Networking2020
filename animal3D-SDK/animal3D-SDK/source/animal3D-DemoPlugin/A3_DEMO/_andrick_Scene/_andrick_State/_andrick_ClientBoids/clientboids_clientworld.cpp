@@ -104,6 +104,11 @@ void ClientBoidsClientWorld::render()
 		std::to_string(gDemoState->mpClient->getMaxUserCount()) + " Clients Online",
 		WHITE, TextAlign::RIGHT);
 
+	for (int i = 0; i < 20; i++)
+	{
+		gTextFormatter.drawBoidText(WHITE, incomingBoids[i]);
+	}
+
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
 }
@@ -122,8 +127,19 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 	{
 	case PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT:
 	{
+		printf("Getting push...");
+
 		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
 		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
+
+		for (int i = 0; i < 20; i++)
+		{
+			float normX = ((float)boidEvnt->posX[i] / gDemoState->windowWidth) - (1 - ((float)boidEvnt->posX[i] / gDemoState->windowWidth));
+			float normY = ((float)boidEvnt->posY[i] / gDemoState->windowHeight) - (1 - ((float)boidEvnt->posY[i] / gDemoState->windowHeight));
+
+			a3real2Set(incomingBoids[i].v, normX, normY);
+		}
+
 		break;
 	}
 	case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:

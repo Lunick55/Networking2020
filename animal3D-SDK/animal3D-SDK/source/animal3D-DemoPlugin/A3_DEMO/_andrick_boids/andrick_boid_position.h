@@ -22,16 +22,23 @@ public:
 	~BoidPosition() {};
 
 	//getters and setters
-	const a3vec2 getPosition() const 
+	const a3vec2 getPosition(bool normalize = true) const 
 	{
-		a3vec2 normalizedPos;
+		if (normalize)
+		{
+			a3vec2 normalizedPos;
 
-		float normX = (mData.pos.x / gDemoState->windowWidth) - (1 - (mData.pos.x / gDemoState->windowWidth));
-		float normY = (mData.pos.y / gDemoState->windowHeight) - (1 - (mData.pos.y / gDemoState->windowHeight));
+			float normX = (mData.pos.x / gDemoState->windowWidth) - (1 - (mData.pos.x / gDemoState->windowWidth));
+			float normY = (mData.pos.y / gDemoState->windowHeight) - (1 - (mData.pos.y / gDemoState->windowHeight));
 
-		a3real2Set(normalizedPos.v, normX, normY);
+			a3real2Set(normalizedPos.v, normX, normY);
 
-		return normalizedPos; 
+			return normalizedPos;
+		}
+		else
+		{
+			return mData.pos;
+		}
 	};
 	void setPosition(const a3vec2& pos) { mData.pos = pos; wrapCoords(); };
 	void modPosition(const a3vec2& mod) { mData.pos.x += mod.x; mData.pos.y += mod.y; wrapCoords(); };

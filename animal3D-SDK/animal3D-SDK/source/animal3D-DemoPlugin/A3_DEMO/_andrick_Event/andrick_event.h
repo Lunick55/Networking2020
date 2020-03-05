@@ -158,7 +158,7 @@ struct ConnectionNewUserJoinedEvent : public SendableEvent
 
 struct BoidDataEvent : public SendableEvent
 {
-	inline BoidDataEvent(PacketEventId packetId, char xVals[20], char yVals[20], UserId userId = -1, bool isBroadcast = false, UserId receiverId = -1) :
+	inline BoidDataEvent(PacketEventId packetId, char xVals[20], char yVals[20], UserId userId = -1, bool isBroadcast = true, UserId receiverId = -1) :
 		SendableEvent(EventId::BOID_DATA_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
 		packetId(packetId), 
 		userId(userId) 

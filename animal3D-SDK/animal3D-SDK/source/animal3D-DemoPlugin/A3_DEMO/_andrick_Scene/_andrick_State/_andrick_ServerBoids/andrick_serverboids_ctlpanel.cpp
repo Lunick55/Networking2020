@@ -111,18 +111,18 @@ void ServerBoidsControlPanel::processIncomingEvent(std::shared_ptr<Event> evnt)
 
 void ServerBoidsControlPanel::update()
 {
-	if (mDataMode == PacketEventId::andrick_ID_GENERIC_DATA_PUSH_EVENT)
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT)
 	{
 		gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
 
 		//TODO: send vec2 array over the network
 	}
-	if (mDataMode == PacketEventId::andrick_ID_GENERIC_DATA_SHARE_EVENT)
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT)
 	{
 
 		//TODO: send vec2 array over the network
 	}
-	if (mDataMode == PacketEventId::andrick_ID_GENERIC_DATA_COUPLE_EVENT)
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT)
 	{
 
 		//TODO: send vec2 array over the network
@@ -132,7 +132,34 @@ void ServerBoidsControlPanel::update()
 
 void ServerBoidsControlPanel::queueOutgoingEvents()
 {
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT)
+	{
+		printf("Sending push...");
+		//TODO: send vec2 array over the network
+		a3vec2 boidPos[20];
+		char boidX[20], boidY[20];
 
+		for (int i = 1; i < 21; i++)
+		{
+			 boidPos[i-1] = gDemoState->mpBoidManager->getUnit(i)->getPositionComponent()->getPosition(false);
+			 boidX[i-1] = (char)boidPos[i-1].x;
+			 boidY[i-1] = (char)boidPos[i-1].y;
+		}
+
+		std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidX, boidY);
+
+		gEventSystem.queueNetworkEvent(packetData);
+	}
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT)
+	{
+
+		//TODO: send vec2 array over the network
+	}
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT)
+	{
+
+		//TODO: send vec2 array over the network
+	}
 }
 
 void ServerBoidsControlPanel::render()

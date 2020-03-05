@@ -204,24 +204,21 @@ int PacketHandler::processInboundPackets()
 		{
 			std::cout << "andrick_ID_BOID_DATA_PUSH_EVENT" << std::endl;
 			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			char temp[20];
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, temp, temp, boidEvntPacket->senderId));
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->posX, boidEvntPacket->posY, boidEvntPacket->senderId));
 			break;
 		}
 		case andrick_ID_BOID_DATA_SHARE_EVENT:
 		{
 			std::cout << "andrick_ID_BOID_DATA_SHARE_EVENT" << std::endl;
 			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			char temp[20];
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, temp, temp, boidEvntPacket->senderId));
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->posX, boidEvntPacket->posY, boidEvntPacket->senderId));
 			break;
 		}
 		case andrick_ID_BOID_DATA_COUPLE_EVENT:
 		{
 			std::cout << "andrick_ID_BOID_DATA_COUPLE_EVENT" << std::endl;
 			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			char temp[20];
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, temp, temp, boidEvntPacket->senderId));
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->posX, boidEvntPacket->posY, boidEvntPacket->senderId));
 			break;
 		}
 			////////////////////////////////////////////////
