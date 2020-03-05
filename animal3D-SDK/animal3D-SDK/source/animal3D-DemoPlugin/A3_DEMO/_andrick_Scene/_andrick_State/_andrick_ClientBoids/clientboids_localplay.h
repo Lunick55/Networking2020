@@ -2,6 +2,7 @@
 #define CLIENTBOIDS_LOCALPLAY_H_
 
 #include <A3_DEMO/_andrick_Scene/_andrick_State/andrick_scenestate.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 
 class ClientBoidsLocalPlay : public SceneState
 {

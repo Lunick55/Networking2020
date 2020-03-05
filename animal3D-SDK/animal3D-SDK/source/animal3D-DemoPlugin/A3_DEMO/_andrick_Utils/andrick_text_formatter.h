@@ -35,6 +35,9 @@ public:
 	std::string formattedChatMessage(const char* username, const char* message, AuthorityId authority);
 	std::string formattedChatMessage(const std::string& username, const std::string& message, AuthorityId authority);
 
+	///
+	void drawBoidText(a3vec4 color, a3vec2 viewportPosition = a3vec2());
+
 private:
 	a3vec3 mCursorPosition;
 	a3vec4 mColor;

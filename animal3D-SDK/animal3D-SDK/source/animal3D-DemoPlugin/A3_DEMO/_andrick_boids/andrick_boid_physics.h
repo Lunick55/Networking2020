@@ -63,6 +63,8 @@ public:
 	float getRotationalVelocity() const { return mData.rotVel; };
 	float getRotationalAcceleration() const { return mData.rotAcc; };
 
+	BoidPosition* getPositionComponent() { return mpPositionComponent; };
+
 private:
 	PhysicsData mData;
 	BoidPosition* mpPositionComponent = nullptr;
@@ -75,4 +77,5 @@ private:
 	void setPositionComponent(BoidPosition* pComp) { mpPositionComponent = pComp; };
 
 	friend class BoidManager;
+	friend class Boid;
 };

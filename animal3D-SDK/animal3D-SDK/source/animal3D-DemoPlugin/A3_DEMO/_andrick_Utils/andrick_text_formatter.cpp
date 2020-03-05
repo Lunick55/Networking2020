@@ -65,6 +65,22 @@ void TextFormatter::drawText(const std::string& string, a3vec4 color, TextAlign 
 
 }
 
+void TextFormatter::drawBoidText(a3vec4 color, a3vec2 viewportPosition)
+{
+	a3vec3 position = mCursorPosition;
+
+	std::string string = "o";
+	TextAlign alignOverride = TextAlign::UNALIGN;
+
+	a3vec3 vec3Pos;
+	a3real3Set(vec3Pos.v, viewportPosition.x, viewportPosition.y, 1.0f);
+
+	position = calculatePosition(string, alignOverride, vec3Pos);
+	
+	a3textDraw(gDemoState->text, position.x, position.y + 0.1f, position.z, color.r, color.g, color.b, 1.0f, string.c_str());
+}
+
+
 void TextFormatter::newLine()
 {
 	++mCurrentLine;
