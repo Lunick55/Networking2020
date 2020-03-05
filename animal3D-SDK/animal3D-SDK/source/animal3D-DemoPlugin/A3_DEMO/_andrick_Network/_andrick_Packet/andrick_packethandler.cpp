@@ -2,6 +2,7 @@
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packet.h>
 #include <A3_DEMO/_andrick_Network/andrick_client.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
 PacketHandler::PacketHandler(bool isServer) :
 	mIsServer(isServer),
@@ -51,9 +52,11 @@ bool PacketHandler::shutdown()
 {
 	if (mpPeer)
 	{
+		mpPeer->Shutdown(500);
 		RakNet::RakPeerInterface::DestroyInstance(mpPeer);
 		mpPeer = nullptr;
 
+		gDemoState->mIsOnline = false;
 		return true;
 	}
 
@@ -82,6 +85,7 @@ bool PacketHandler::disconnect()
 			mpPeer->CloseConnection(mpPeer->GetSystemAddressFromIndex(i), true);
 		}
 
+		gDemoState->mIsOnline = false;
 		return true;
 	}
 
@@ -101,22 +105,24 @@ int PacketHandler::processInboundPackets()
 		//RakNet::BitStream inBitStream(packet->data, packet->length, false);
 		//inBitStream.Read(messageId);
 
-		std::shared_ptr<Event> evnt;
+		std::vector<std::shared_ptr<Event>> newEvents;
 
 		switch (packet->data[0])
 		{
-			////////////////////
-			// RAKNET PACKETS //
-			////////////////////
-		case ID_CONNECTION_REQUEST_ACCEPTED:///Server sends this to client
+			////////////////////////////////////////////////
+			// RAKNET PACKETS                             
+			////////////////////////////////////////////////
+		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
-			ConnectionRequestAcceptedPacket* requestAcceptedPacket = (ConnectionRequestAcceptedPacket*)packet->data;
-			evnt = std::make_shared<ConnectionRequestAcceptedEvent>(packet->systemAddress, requestAcceptedPacket->newUserId);
+			std::cout << "ID_CONNECTION_REQUEST_ACCEPTED" << std::endl;
 			break;
 		}
-		case ID_NEW_INCOMING_CONNECTION:///Client sends this to server
-			evnt = std::make_shared<NewIncomingConnectionEvent>(packet->systemAddress);
+		case ID_NEW_INCOMING_CONNECTION:
+		{
+			std::cout << "ID_NEW_INCOMING_CONNECTION" << std::endl;
+			newEvents.push_back(std::make_shared<NewIncomingConnectionEvent>(packet->systemAddress));
 			break;
+		}
 		case ID_NO_FREE_INCOMING_CONNECTIONS:
 			std::cout << "ID_NO_FREE_INCOMING_CONNECTIONS" << std::endl;
 			break;
@@ -133,45 +139,101 @@ int PacketHandler::processInboundPackets()
 			std::cout << "ID_REMOTE_CONNECTION_LOST" << std::endl;
 			break;
 		case ID_REMOTE_NEW_INCOMING_CONNECTION:
+		{
 			std::cout << "ID_REMOTE_NEW_INCOMING_CONNECTION" << std::endl;
 			break;
-
-			////////////////////
-			// CUSTOM PACKETS //
-			////////////////////
-
+		}
+			////////////////////////////////////////////////
+			// CUSTOM PACKETS                             
+			////////////////////////////////////////////////
+		case andrick_ID_CONNECTION_REQUEST_ACCEPTED:///Server sends this to client
+		{
+			std::cout << "andrick_ID_CONNECTION_REQUEST_ACCEPTED" << std::endl;
+			ConnectionRequestAcceptedPacket* requestAcceptedPacket = (ConnectionRequestAcceptedPacket*)packet->data;
+			newEvents.push_back(std::make_shared<ConnectionRequestAcceptedEvent>(packet->systemAddress, requestAcceptedPacket->newUserId));
+			break;
+		}
 		case andrick_ID_CONNECTION_ATTEMPT_FAILED:///Server sends this to Client - Server rejected us for some reason
 		{
+			std::cout << "andrick_ID_CONNECTION_ATTEMPT_FAILED" << std::endl;
 			ConnectionRequestFailedPacket* requestFailedPacket = (ConnectionRequestFailedPacket*)packet->data;
-			evnt = std::make_shared<ConnectionRequestFailedEvent>(requestFailedPacket->errorMessage);
+			newEvents.push_back(std::make_shared<ConnectionRequestFailedEvent>(packet->systemAddress, requestFailedPacket->errorMessage));
 			break;
 		}
 		case andrick_ID_REQUEST_JOIN_SERVER:///Client sends this to Server
+		{
 			std::cout << "andrick_ID_REQUEST_JOIN_SERVER" << std::endl;
-			break;
-
-		case andrick_ID_JOIN_ACCEPTED:///Server sends this to Joining Client
-			std::cout << "andrick_ID_JOIN_ACCEPTED" << std::endl;
-			break;
-
-		case andrick_ID_USER_JOINED_SERVER:///Server sends this to existing Clients
-			std::cout << "andrick_ID_USER_JOINED_SERVER" << std::endl;
-			break;
-
-		case andrick_ID_GENERIC_EVENT:
-			std::cout << "andrick_ID_GENERIC_EVENT" << std::endl;
-			break;
-
-			/////////////////////
-			// UNKNOWN PACKETS //
-			/////////////////////
-		default:
+			RequestJoinServerPacket* requestJoinServerPacket = (RequestJoinServerPacket*)packet->data;
+			newEvents.push_back(std::make_shared<ConnectionRequestJoinEvent>(requestJoinServerPacket->userId,
+				requestJoinServerPacket->username, false, requestJoinServerPacket->userId));
 			break;
 		}
-
-		if (evnt != nullptr)
+		case andrick_ID_JOIN_ACCEPTED:///Server sends this to Joining Client
 		{
-			gEventSystem.queueLocalEvent(evnt);
+			std::cout << "andrick_ID_JOIN_ACCEPTED" << std::endl;
+			JoinAcceptedPacket* joinAcceptedPacket = (JoinAcceptedPacket*)packet->data;
+			newEvents.push_back(std::make_shared<ConnectionJoinAcceptedEvent>(joinAcceptedPacket->username, 
+				joinAcceptedPacket->maxUserCount, joinAcceptedPacket->connectedUserCount));
+			break;
+		}
+		case andrick_ID_JOIN_FAILED:///Server sends this to Joining Client
+		{
+			std::cout << "andrick_ID_JOIN_FAILED" << std::endl;
+			JoinFailedPacket* joinFailedPacket = (JoinFailedPacket*)packet->data;
+			newEvents.push_back(std::make_shared<ConnectionJoinFailedEvent>(joinFailedPacket->userId, joinFailedPacket->errorMessage));
+			break;
+		}
+		case andrick_ID_USER_JOINED_SERVER:///Server sends this to existing Clients
+		{
+			std::cout << "andrick_ID_USER_JOINED_SERVER" << std::endl;
+			NewUserJoinedServerPacket* userJoinedPacket = (NewUserJoinedServerPacket*)packet->data;
+			newEvents.push_back(std::make_shared<ConnectionNewUserJoinedEvent>(userJoinedPacket->userId, userJoinedPacket->username));
+			break;
+		}
+		case andrick_ID_USER_DISCONNECTED:
+		{
+			std::cout << "andrick_ID_USER_DISCONNECTED" << std::endl;
+			UserDisconnectedPacket* userDisconnectedPacket = (UserDisconnectedPacket*)packet->data;
+			newEvents.push_back(std::make_shared<UserDisconnectedEvent>(userDisconnectedPacket->userId));
+			break;
+		}
+			////////////////////////////////////////////////
+			// GENERIC PACKET TYPES (They all do the same thing rn, but I wanted the separate couts)                 
+			////////////////////////////////////////////////
+		case andrick_ID_GENERIC_DATA_PUSH_EVENT:
+		{
+			std::cout << "andrick_ID_GENERIC_DATA_PUSH_EVENT" << std::endl;
+			GenericEventPacket* genericEvntPacket = (GenericEventPacket*)packet->data;
+			newEvents.push_back(std::make_shared<GenericEvent>(genericEvntPacket->packetId, genericEvntPacket->senderId));
+			break;
+		}
+		case andrick_ID_GENERIC_DATA_SHARE_EVENT:
+		{
+			std::cout << "andrick_ID_GENERIC_DATA_SHARE_EVENT" << std::endl;
+			GenericEventPacket* genericEvntPacket = (GenericEventPacket*)packet->data;
+			newEvents.push_back(std::make_shared<GenericEvent>(genericEvntPacket->packetId, genericEvntPacket->senderId));
+			break;
+		}
+		case andrick_ID_GENERIC_DATA_COUPLE_EVENT:
+		{
+			std::cout << "andrick_ID_GENERIC_DATA_COUPLE_EVENT" << std::endl;
+			GenericEventPacket* genericEvntPacket = (GenericEventPacket*)packet->data;
+			newEvents.push_back(std::make_shared<GenericEvent>(genericEvntPacket->packetId, genericEvntPacket->senderId));
+			break;
+		}
+			////////////////////////////////////////////////
+			// UNKNOWN PACKETS                            
+			////////////////////////////////////////////////
+		default:
+		{
+			std::cout << "Unknown packet" << std::endl;
+			break;
+		}
+		}
+
+		for (auto iter = newEvents.begin(); iter != newEvents.end(); ++iter)
+		{
+			gEventSystem.queueLocalEvent(*iter);
 		}
 	}
 

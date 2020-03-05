@@ -22,7 +22,9 @@ MainMenuTitle::MainMenuTitle(std::shared_ptr<Scene> parentScene) :
 void MainMenuTitle::enteringState()
 {
 	SceneState::enteringState();
-	shutdownRakNet();
+
+	if (gDemoState->mIsOnline)
+		gEventSystem.queueNetworkEvent(std::make_shared<UserDisconnectedEvent>(gDemoState->mpClient->getId()));
 }
 
 void MainMenuTitle::processInput()

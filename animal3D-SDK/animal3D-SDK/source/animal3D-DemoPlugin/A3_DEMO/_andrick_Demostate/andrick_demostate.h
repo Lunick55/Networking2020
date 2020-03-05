@@ -56,7 +56,7 @@ struct a3_DemoState
 	//---------------------------------------------------------------------
 	//custom andrick stuff
 
-	RakNet::RakPeerInterface* peer;
+	bool mIsOnline = false;
 	std::shared_ptr<class SceneManager> mpSceneManager;
 	std::shared_ptr<class Client> mpClient;
 	std::shared_ptr<class Server> mpServer;

@@ -12,8 +12,10 @@ public:
 
 	void processIncomingEvent(std::shared_ptr<struct Event> evnt) override;
 	bool processNewIncomingUser(RakNet::SystemAddress clientAddress, UserId& newUserId, std::string& errorMessage);
+	bool isUsernameTaken(const std::string& username);
 
 	bool getClientById(UserId userId, std::shared_ptr<Client>& out);
+	bool disconnectClient(const UserId& id);
 
 	inline void setMaxUsers(std::size_t maxUsers) { mMaxUsers = maxUsers; };
 	inline std::size_t getMaxUserCount() const { return mMaxUsers; };

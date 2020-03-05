@@ -35,10 +35,12 @@ struct ConnectionRequestFailedPacket
 struct RequestJoinServerPacket
 {
 	PacketEventId packetId;
+	UserId userId;
 	char username[sMAX_USERNAME_LENGTH];
 
-	RequestJoinServerPacket(const std::string& name) :
-		packetId(andrick_ID_REQUEST_JOIN_SERVER)
+	RequestJoinServerPacket(UserId userId, const std::string& name) :
+		packetId(andrick_ID_REQUEST_JOIN_SERVER),
+		userId(userId)
 	{
 		strcpy(username, name.c_str());
 	}
@@ -53,8 +55,6 @@ struct JoinAcceptedPacket
 	PacketEventId packetId;
 
 	//The server assigns the client a userId and sends it to them!
-	UserId userId;
-
 	char username[sMAX_USERNAME_LENGTH];
 
 	//The maximum amount of users that can be on the server.
@@ -64,9 +64,8 @@ struct JoinAcceptedPacket
 	//Holds user [id, username]
 	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];	//[connectedUserCount][message length]
 
-	JoinAcceptedPacket(UserId user, const std::string& name, char maxUsers, char currentUserCount) : //, char userInfo[][sMAX_USERNAME_LENGTH + 1]) :
+	JoinAcceptedPacket(const std::string& name, char maxUsers, char currentUserCount) : //, char userInfo[][sMAX_USERNAME_LENGTH + 1]) :
 		packetId(andrick_ID_JOIN_ACCEPTED),
-		userId(user),
 		maxUserCount(maxUsers),
 		connectedUserCount(currentUserCount)
 	{
@@ -76,10 +75,26 @@ struct JoinAcceptedPacket
 };
 #pragma pack(pop)
 
+#pragma pack(push, 1)
+struct JoinFailedPacket
+{
+	PacketEventId packetId;
+	UserId userId;
+	char errorMessage[sMAX_MESSAGE_LENGTH];
+
+	JoinFailedPacket(UserId userId, const std::string& message) :
+		packetId(andrick_ID_JOIN_FAILED),
+		userId(userId)
+	{
+		strcpy(errorMessage, message.c_str());
+	}
+};
+#pragma pack(pop)
+
 //Server sends to everyone else in the chat that someone joined.
 //Server sends a public message saying this user joined.
 #pragma pack(push, 1)
-struct UserJoinedServerPacket
+struct NewUserJoinedServerPacket
 {
 	PacketEventId packetId;
 	UserId userId;
@@ -90,7 +105,7 @@ struct UserJoinedServerPacket
 	//Holds user [id, username]
 	//char connectedUserInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1];
 
-	UserJoinedServerPacket(UserId user, const std::string& name/*, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1]*/) :
+	NewUserJoinedServerPacket(UserId user, const std::string& name/*, char currentUserCount, char userInfo[sMAX_USERS][sMAX_USERNAME_LENGTH + 1]*/) :
 		packetId(andrick_ID_USER_JOINED_SERVER),
 		userId(user),
 		username()
@@ -106,13 +121,13 @@ struct UserJoinedServerPacket
 //The server sends this to everyone in the chat.
 //The server then sends a public message saying this user left.
 #pragma pack(push, 1)
-struct UserLeftServerPacket
+struct UserDisconnectedPacket
 {
 	PacketEventId packetId;
 	UserId userId;
 
-	UserLeftServerPacket(UserId user) :
-		packetId(andrick_ID_USER_LEFT_SERVER),
+	UserDisconnectedPacket(UserId user) :
+		packetId(andrick_ID_USER_DISCONNECTED),
 		userId(user)
 	{
 
@@ -230,16 +245,13 @@ struct WhisperPacket
 struct GenericEventPacket
 {
 	PacketEventId packetId;
-	//UserId senderId;
-	//UserId recieverId;
+	UserId senderId;
+	//EventId eventId;
 
-	EventId ID;
-
-	GenericEventPacket(EventId id)://(UserId sender, UserId reciever, EventId id) :
-		packetId(andrick_ID_GENERIC_EVENT),
-		//senderId(sender),
-		//recieverId(reciever),
-		ID(id)
+	GenericEventPacket(PacketEventId packetId, /*EventId eventId,*/ UserId sender) :
+		packetId(packetId),
+		/*eventId(eventId),*/
+		senderId(sender)
 	{
 
 	}
