@@ -35,6 +35,8 @@ public:
 
 	std::map<UnitID, Boid*> getMap() { return mUnitMap; };
 
+	a3vec2 otherBoids[20];
+
 private:
 	static UnitID msNextUnitID;
 	std::map<UnitID, Boid*> mUnitMap;

@@ -3,6 +3,8 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_serverboids.h>
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 #include <A3_DEMO/_andrick_Event/andrick_eventsystem.h>
 #include <A3_DEMO/_andrick_Network/andrick_server.h>
 #include <A3_DEMO/_andrick_Network/andrick_client.h>
@@ -32,6 +34,15 @@ void ServerBoidsControlPanel::enteringState()
 	if (gDemoState->mpPacketHandler->startup(gDemoState->mpServer->getMaxUserCount()))
 	{
 		printf("\nServer spinning up... \n");
+	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
+		if (pBoid == NULL)
+		{
+			gDemoState->mpBoidManager->deleteRandomUnit();
+		}
 	}
 
 	SceneState::enteringState();
@@ -98,6 +109,22 @@ void ServerBoidsControlPanel::processIncomingEvent(std::shared_ptr<Event> evnt)
 
 void ServerBoidsControlPanel::update()
 {
+	if (mDataMode == PacketEventId::andrick_ID_GENERIC_DATA_PUSH_EVENT)
+	{
+		gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
+
+		//TODO: send vec2 array over the network
+	}
+	if (mDataMode == PacketEventId::andrick_ID_GENERIC_DATA_SHARE_EVENT)
+	{
+
+		//TODO: send vec2 array over the network
+	}
+	if (mDataMode == PacketEventId::andrick_ID_GENERIC_DATA_COUPLE_EVENT)
+	{
+
+		//TODO: send vec2 array over the network
+	}
 
 }
 
@@ -126,6 +153,9 @@ void ServerBoidsControlPanel::render()
 		std::to_string(gDemoState->mpServer->getMaxUserCount()) + " Clients Online", 
 		WHITE, TextAlign::RIGHT);
 
+	//TODO: remove this draw call
+	gDemoState->mpBoidManager->drawAll();
+
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
 }
@@ -133,6 +163,11 @@ void ServerBoidsControlPanel::render()
 void ServerBoidsControlPanel::exitingState()
 {
 	SceneState::exitingState();
+
+	for (int i = 0; i < 20; i++)
+	{
+		gDemoState->mpBoidManager->deleteRandomUnit();
+	}
 
 	mDataMode = andrick_ID_GENERIC_DATA_PUSH_EVENT;
 	mDataModeText = "Data Push";
