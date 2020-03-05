@@ -16,12 +16,12 @@
 ServerBoidsControlPanel::ServerBoidsControlPanel(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ServerBoidsScene::ServerBoidsStateId::CONTROL_PANEL, DARK_GREY),
 	mChatHistory(10),
-	mDataMode(andrick_ID_GENERIC_DATA_PUSH_EVENT),
+	mDataMode(andrick_ID_BOID_DATA_PUSH_EVENT),
 	mDataModeText("Data Push")
 {
-	mDataModeMap.insert({ andrick_ID_GENERIC_DATA_PUSH_EVENT, "Data Push" });
-	mDataModeMap.insert({ andrick_ID_GENERIC_DATA_SHARE_EVENT, "Data Share" });
-	mDataModeMap.insert({ andrick_ID_GENERIC_DATA_COUPLE_EVENT, "Data Couple" });
+	mDataModeMap.insert({ andrick_ID_BOID_DATA_PUSH_EVENT, "Data Push" });
+	mDataModeMap.insert({ andrick_ID_BOID_DATA_SHARE_EVENT, "Data Share" });
+	mDataModeMap.insert({ andrick_ID_BOID_DATA_COUPLE_EVENT, "Data Couple" });
 
 	mMenuOptions.push_back(MenuOption(a3key_1, "Press [1] for Data Push."));
 	mMenuOptions.push_back(MenuOption(a3key_2, "Press [2] for Data Sharing."));
@@ -52,21 +52,23 @@ void ServerBoidsControlPanel::processInput()
 {
 	SceneState::processInput();
 
+	char temp[20];
+
 	if (mpInputHandler->isKeyPressed(a3key_1))
 	{
-		std::shared_ptr<GenericEvent> dataPushEvnt = std::make_shared<GenericEvent>(PacketEventId::andrick_ID_GENERIC_DATA_PUSH_EVENT);
+		std::shared_ptr<BoidDataEvent> dataPushEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT, temp, temp);
 		gEventSystem.queueLocalEvent(dataPushEvnt);
 		gEventSystem.queueNetworkEvent(dataPushEvnt);
 	}
 	else if (mpInputHandler->isKeyPressed(a3key_2))
 	{
-		std::shared_ptr<GenericEvent> dataShareEvnt = std::make_shared<GenericEvent>(PacketEventId::andrick_ID_GENERIC_DATA_SHARE_EVENT);
+		std::shared_ptr<BoidDataEvent> dataShareEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT, temp, temp);
 		gEventSystem.queueLocalEvent(dataShareEvnt);
 		gEventSystem.queueNetworkEvent(dataShareEvnt);
 	}
 	else if (mpInputHandler->isKeyPressed(a3key_3))
 	{
-		std::shared_ptr<GenericEvent> dataCoupleEvnt = std::make_shared<GenericEvent>(PacketEventId::andrick_ID_GENERIC_DATA_COUPLE_EVENT);
+		std::shared_ptr<BoidDataEvent> dataCoupleEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT, temp, temp);
 		gEventSystem.queueLocalEvent(dataCoupleEvnt);
 		gEventSystem.queueNetworkEvent(dataCoupleEvnt);
 	}
@@ -96,10 +98,10 @@ void ServerBoidsControlPanel::processIncomingEvent(std::shared_ptr<Event> evnt)
 {
 	switch (evnt->eventId)
 	{
-	case EventId::GENERIC_EVENT:
+	case EventId::BOID_DATA_EVENT:
 	{
-		std::shared_ptr<GenericEvent> genericEvnt = std::dynamic_pointer_cast<GenericEvent>(evnt);
-		handleGenericEvents(genericEvnt);
+		std::shared_ptr<BoidDataEvent> boidEvnt = std::dynamic_pointer_cast<BoidDataEvent>(evnt);
+		handleBoidDataEvents(boidEvnt);
 		break;
 	}
 	default:
@@ -169,30 +171,30 @@ void ServerBoidsControlPanel::exitingState()
 		gDemoState->mpBoidManager->deleteRandomUnit();
 	}
 
-	mDataMode = andrick_ID_GENERIC_DATA_PUSH_EVENT;
+	mDataMode = andrick_ID_BOID_DATA_PUSH_EVENT;
 	mDataModeText = "Data Push";
 }
 
-void ServerBoidsControlPanel::handleGenericEvents(std::shared_ptr<GenericEvent> genericEvnt)
+void ServerBoidsControlPanel::handleBoidDataEvents(std::shared_ptr<BoidDataEvent> boidEvnt)
 {
-	switch (genericEvnt->packetId)
+	switch (boidEvnt->packetId)
 	{
-	case PacketEventId::andrick_ID_GENERIC_DATA_PUSH_EVENT:
+	case PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT:
 	{
-		mDataMode = mDataModeMap.find(andrick_ID_GENERIC_DATA_PUSH_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_GENERIC_DATA_PUSH_EVENT)->second;
+		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
 		break;
 	}
-	case PacketEventId::andrick_ID_GENERIC_DATA_SHARE_EVENT:
+	case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:
 	{
-		mDataMode = mDataModeMap.find(andrick_ID_GENERIC_DATA_SHARE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_GENERIC_DATA_SHARE_EVENT)->second;
+		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
 		break;
 	}
-	case PacketEventId::andrick_ID_GENERIC_DATA_COUPLE_EVENT:
+	case PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT:
 	{
-		mDataMode = mDataModeMap.find(andrick_ID_GENERIC_DATA_COUPLE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_GENERIC_DATA_COUPLE_EVENT)->second;
+		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
 		break;
 	}
 	default:
