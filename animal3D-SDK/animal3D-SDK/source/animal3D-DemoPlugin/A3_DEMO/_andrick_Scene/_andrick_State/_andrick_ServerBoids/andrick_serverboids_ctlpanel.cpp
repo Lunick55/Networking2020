@@ -52,7 +52,7 @@ void ServerBoidsControlPanel::processInput()
 {
 	SceneState::processInput();
 
-	char temp[20];
+	float temp[20];
 
 	if (mpInputHandler->isKeyPressed(a3key_1))
 	{
@@ -137,13 +137,13 @@ void ServerBoidsControlPanel::queueOutgoingEvents()
 		printf("Sending push...");
 		//TODO: send vec2 array over the network
 		a3vec2 boidPos[20];
-		char boidX[20], boidY[20];
+		float boidX[20], boidY[20];
 
-		for (int i = 1; i < 21; i++)
+		for (int i = 0; i < 20; i++)
 		{
-			 boidPos[i-1] = gDemoState->mpBoidManager->getUnit(i)->getPositionComponent()->getPosition(false);
-			 boidX[i-1] = (char)boidPos[i-1].x;
-			 boidY[i-1] = (char)boidPos[i-1].y;
+			 boidPos[i] = gDemoState->mpBoidManager->getUnit(i+1)->getPositionComponent()->getPosition();
+			 boidX[i] = (float)boidPos[i].x;
+			 boidY[i] = (float)boidPos[i].y;
 		}
 
 		std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidX, boidY);

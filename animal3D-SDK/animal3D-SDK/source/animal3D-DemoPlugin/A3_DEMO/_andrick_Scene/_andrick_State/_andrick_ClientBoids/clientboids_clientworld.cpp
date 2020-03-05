@@ -35,7 +35,7 @@ void ClientBoidsClientWorld::processInput()
 {
 	SceneState::processInput();
 
-	char temp[20];
+	float temp[20];
 
 	if (mpInputHandler->isKeyPressed(a3key_1))
 	{
@@ -134,10 +134,10 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 
 		for (int i = 0; i < 20; i++)
 		{
-			float normX = ((float)boidEvnt->posX[i] / gDemoState->windowWidth) - (1 - ((float)boidEvnt->posX[i] / gDemoState->windowWidth));
-			float normY = ((float)boidEvnt->posY[i] / gDemoState->windowHeight) - (1 - ((float)boidEvnt->posY[i] / gDemoState->windowHeight));
+			//float normX = (boidEvnt->posX[i] / gDemoState->windowWidth) - (1 - (boidEvnt->posX[i] / gDemoState->windowWidth));
+			//float normY = (boidEvnt->posY[i] / gDemoState->windowHeight) - (1 - (boidEvnt->posY[i] / gDemoState->windowHeight));
 
-			a3real2Set(incomingBoids[i].v, normX, normY);
+			a3real2Set(incomingBoids[i].v, boidEvnt->posX[i], boidEvnt->posY[i]);
 		}
 
 		break;

@@ -41,7 +41,7 @@ void ClientBoidsLocalPlay::processInput()
 {
 	SceneState::processInput();
 
-	char temp[20];
+	float temp[20];
 
 	if (mpInputHandler->isKeyPressed(a3key_1))
 	{

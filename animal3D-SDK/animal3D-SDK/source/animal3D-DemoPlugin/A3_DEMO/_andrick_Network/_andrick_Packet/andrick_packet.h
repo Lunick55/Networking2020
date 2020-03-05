@@ -264,16 +264,18 @@ struct BoidDataPacket
 {
 	PacketEventId packetId;
 	UserId senderId;
-	char posX[20];
-	char posY[20];
+	float posX[20];
+	float posY[20];
 
-	BoidDataPacket(PacketEventId packetId, char xVals[20], char yVals[20], UserId sender) :
+	BoidDataPacket(PacketEventId packetId, float xVals[20], float yVals[20], UserId sender) :
 		packetId(packetId),
 		/*eventId(eventId),*/
 		senderId(sender)
 	{
-		memcpy(posX, xVals, sizeof(char) * 20);
-		memcpy(posY, yVals, sizeof(char) * 20);
+		//memcpy(posX, xVals, sizeof(float) * 20);
+		//memcpy(posY, yVals, sizeof(float) * 20);
+		std::copy(xVals, xVals + 20, posX);
+		std::copy(yVals, yVals + 20, posY);
 	}
 };
 #pragma pack(pop)
