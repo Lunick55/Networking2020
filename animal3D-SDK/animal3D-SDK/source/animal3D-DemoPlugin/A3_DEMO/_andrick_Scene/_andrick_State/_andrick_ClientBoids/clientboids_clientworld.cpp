@@ -35,25 +35,24 @@ void ClientBoidsClientWorld::processInput()
 {
 	SceneState::processInput();
 
-	float temp[20];
+	//float temp[20];
 
 	if (mpInputHandler->isKeyPressed(a3key_1))
 	{
-		std::shared_ptr<BoidDataEvent> dataPushEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT, temp, temp);
-		gEventSystem.queueLocalEvent(dataPushEvnt);
-		gEventSystem.queueNetworkEvent(dataPushEvnt);
+		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
+
 	}
 	else if (mpInputHandler->isKeyPressed(a3key_2))
 	{
-		std::shared_ptr<BoidDataEvent> dataShareEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT, temp, temp);
-		gEventSystem.queueLocalEvent(dataShareEvnt);
-		gEventSystem.queueNetworkEvent(dataShareEvnt);
+		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
 	}
 	else if (mpInputHandler->isKeyPressed(a3key_3))
 	{
-		std::shared_ptr<BoidDataEvent> dataCoupleEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT, temp, temp);
-		gEventSystem.queueLocalEvent(dataCoupleEvnt);
-		gEventSystem.queueNetworkEvent(dataCoupleEvnt);
+		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
+		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
+
 	}
 
 	mpInputHandler->clearCurrentInput();
@@ -104,13 +103,21 @@ void ClientBoidsClientWorld::render()
 		std::to_string(gDemoState->mpClient->getMaxUserCount()) + " Clients Online",
 		WHITE, TextAlign::RIGHT);
 
-	for (int i = 0; i < 20; i++)
+	switch (mDataMode)
 	{
-		gTextFormatter.drawBoidText(WHITE, incomingBoids[i]);
+	case PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT:
+	{
+		for (int i = 0; i < 20; i++)
+		{
+			gTextFormatter.drawBoidText(WHITE, incomingBoids[i]);
+		}
+		break;
+	}
 	}
 
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
+
 }
 
 void ClientBoidsClientWorld::exitingState()
@@ -129,8 +136,8 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 	{
 		printf("Getting push...");
 
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
+		//mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
+		//mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
 
 		for (int i = 0; i < 20; i++)
 		{
@@ -142,19 +149,20 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 
 		break;
 	}
-	case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
-		break;
-	}
-	case PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT:
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
-		break;
-	}
-	default:
-		break;
+	//case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:
+	//{
+	//	mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
+	//	mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
+	//	break;
+	//}
+	//case PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT:
+	//{
+	//	mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
+	//	mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
+	//	break;
+	//}
+	//default:
+	//	break;
+	//}
 	}
 }
