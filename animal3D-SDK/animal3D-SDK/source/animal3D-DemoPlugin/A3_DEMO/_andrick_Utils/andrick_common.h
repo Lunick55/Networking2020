@@ -97,7 +97,8 @@ enum class EventId : char
 	USER_DISCONNECTED,///Disconnected Client -> Server. Server -> All Clients - A client left the server
 	CHAT_MESSAGE,
 	INCREMENT_THE_SPACE,
-	GENERIC_EVENT,
+	//GENERIC_EVENT,
+	BOID_DATA_EVENT,
 	COMMAND
 };
 
@@ -174,12 +175,12 @@ enum PacketEventId : unsigned char
 
 
 	//////////////////////////
-	// GENERIC EVENT TYPES
+	// BOID EVENT TYPES
 	//////////////////////////
 
-	andrick_ID_GENERIC_DATA_PUSH_EVENT,
-	andrick_ID_GENERIC_DATA_SHARE_EVENT,
-	andrick_ID_GENERIC_DATA_COUPLE_EVENT,
+	andrick_ID_BOID_DATA_PUSH_EVENT,
+	andrick_ID_BOID_DATA_SHARE_EVENT,
+	andrick_ID_BOID_DATA_COUPLE_EVENT,
 
 	//////////////////////////
 

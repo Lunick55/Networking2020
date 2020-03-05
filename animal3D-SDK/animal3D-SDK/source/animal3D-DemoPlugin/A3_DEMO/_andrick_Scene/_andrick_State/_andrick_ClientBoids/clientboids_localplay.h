@@ -16,6 +16,13 @@ public:
 	virtual void queueOutgoingEvents() override;
 	virtual void render() override;
 	virtual void exitingState() override;
+
+	void handleBoidDataEvents(std::shared_ptr<BoidDataEvent> boidEvnt);
+
+private:
+	std::string mDataModeText;
+	PacketEventId mDataMode;
+	std::map<PacketEventId, std::string> mDataModeMap;
 };
 
 #endif

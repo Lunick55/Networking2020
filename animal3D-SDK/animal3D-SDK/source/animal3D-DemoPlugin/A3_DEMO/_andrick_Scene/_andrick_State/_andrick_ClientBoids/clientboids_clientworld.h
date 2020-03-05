@@ -17,9 +17,14 @@ public:
 	virtual void render() override;
 	virtual void exitingState() override;
 
+	void handleBoidDataEvents(std::shared_ptr<BoidDataEvent> boidEvnt);
+
 private:
 	unsigned int mChatHistory;
 	std::vector<std::shared_ptr<struct LogInfo>> mChatLogHistory;
+	std::string mDataModeText;
+	PacketEventId mDataMode;
+	std::map<PacketEventId, std::string> mDataModeMap;
 };
 
 #endif

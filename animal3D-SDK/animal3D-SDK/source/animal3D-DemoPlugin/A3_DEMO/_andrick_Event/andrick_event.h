@@ -144,16 +144,35 @@ struct ConnectionNewUserJoinedEvent : public SendableEvent
 	std::string mUsername;
 };
 
-struct GenericEvent : public SendableEvent
+//struct GenericEvent : public SendableEvent
+//{
+//	inline GenericEvent(PacketEventId packetId, UserId userId = -1, bool isBroadcast = false, UserId receiverId = -1) :
+//		SendableEvent(EventId::GENERIC_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
+//		packetId(packetId), userId(userId) {}
+//	virtual ~GenericEvent() = default;
+//	virtual std::size_t allocatePacket(char*& out) override;
+//
+//	UserId userId;
+//	PacketEventId packetId;
+//};
+
+struct BoidDataEvent : public SendableEvent
 {
-	inline GenericEvent(PacketEventId packetId, UserId userId = -1, bool isBroadcast = false, UserId receiverId = -1) :
-		SendableEvent(EventId::GENERIC_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
-		packetId(packetId), userId(userId) {}
-	virtual ~GenericEvent() = default;
+	inline BoidDataEvent(PacketEventId packetId, char xVals[20], char yVals[20], UserId userId = -1, bool isBroadcast = false, UserId receiverId = -1) :
+		SendableEvent(EventId::BOID_DATA_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
+		packetId(packetId), 
+		userId(userId) 
+	{
+		memcpy(posX, xVals, sizeof(char) * 20);
+		memcpy(posY, yVals, sizeof(char) * 20);
+	}
+	virtual ~BoidDataEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
 
 	UserId userId;
 	PacketEventId packetId;
+	char posX[20];
+	char posY[20];
 };
 
 struct CommandEvent : public SendableEvent

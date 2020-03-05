@@ -241,19 +241,39 @@ struct WhisperPacket
 };
 #pragma pack(pop)
 
+//#pragma pack(push, 1)
+//struct GenericEventPacket
+//{
+//	PacketEventId packetId;
+//	UserId senderId;
+//	char posX[20];
+//	char posY[20];
+//
+//	GenericEventPacket(PacketEventId packetId, /*EventId eventId,*/ UserId sender) :
+//		packetId(packetId),
+//		/*eventId(eventId),*/
+//		senderId(sender)
+//	{
+//
+//	}
+//};
+//#pragma pack(pop)
+
 #pragma pack(push, 1)
-struct GenericEventPacket
+struct BoidDataPacket
 {
 	PacketEventId packetId;
 	UserId senderId;
-	//EventId eventId;
+	char posX[20];
+	char posY[20];
 
-	GenericEventPacket(PacketEventId packetId, /*EventId eventId,*/ UserId sender) :
+	BoidDataPacket(PacketEventId packetId, char xVals[20], char yVals[20], UserId sender) :
 		packetId(packetId),
 		/*eventId(eventId),*/
 		senderId(sender)
 	{
-
+		memcpy(posX, xVals, sizeof(char) * 20);
+		memcpy(posY, yVals, sizeof(char) * 20);
 	}
 };
 #pragma pack(pop)

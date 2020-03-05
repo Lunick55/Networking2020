@@ -198,27 +198,30 @@ int PacketHandler::processInboundPackets()
 			break;
 		}
 			////////////////////////////////////////////////
-			// GENERIC PACKET TYPES (They all do the same thing rn, but I wanted the separate couts)                 
+			// BOID PACKET TYPES (They all do the same thing rn, but I wanted the separate couts)                 
 			////////////////////////////////////////////////
-		case andrick_ID_GENERIC_DATA_PUSH_EVENT:
+		case andrick_ID_BOID_DATA_PUSH_EVENT:
 		{
-			std::cout << "andrick_ID_GENERIC_DATA_PUSH_EVENT" << std::endl;
-			GenericEventPacket* genericEvntPacket = (GenericEventPacket*)packet->data;
-			newEvents.push_back(std::make_shared<GenericEvent>(genericEvntPacket->packetId, genericEvntPacket->senderId));
+			std::cout << "andrick_ID_BOID_DATA_PUSH_EVENT" << std::endl;
+			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
+			char temp[20];
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, temp, temp, boidEvntPacket->senderId));
 			break;
 		}
-		case andrick_ID_GENERIC_DATA_SHARE_EVENT:
+		case andrick_ID_BOID_DATA_SHARE_EVENT:
 		{
-			std::cout << "andrick_ID_GENERIC_DATA_SHARE_EVENT" << std::endl;
-			GenericEventPacket* genericEvntPacket = (GenericEventPacket*)packet->data;
-			newEvents.push_back(std::make_shared<GenericEvent>(genericEvntPacket->packetId, genericEvntPacket->senderId));
+			std::cout << "andrick_ID_BOID_DATA_SHARE_EVENT" << std::endl;
+			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
+			char temp[20];
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, temp, temp, boidEvntPacket->senderId));
 			break;
 		}
-		case andrick_ID_GENERIC_DATA_COUPLE_EVENT:
+		case andrick_ID_BOID_DATA_COUPLE_EVENT:
 		{
-			std::cout << "andrick_ID_GENERIC_DATA_COUPLE_EVENT" << std::endl;
-			GenericEventPacket* genericEvntPacket = (GenericEventPacket*)packet->data;
-			newEvents.push_back(std::make_shared<GenericEvent>(genericEvntPacket->packetId, genericEvntPacket->senderId));
+			std::cout << "andrick_ID_BOID_DATA_COUPLE_EVENT" << std::endl;
+			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
+			char temp[20];
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, temp, temp, boidEvntPacket->senderId));
 			break;
 		}
 			////////////////////////////////////////////////

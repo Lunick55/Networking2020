@@ -221,12 +221,22 @@ std::size_t ConnectionNewUserJoinedEvent::allocatePacket(char*& out)
 
 #pragma endregion
 
-#pragma region GenericEvent
-std::size_t GenericEvent::allocatePacket(char*& out)
+//#pragma region GenericEvent
+//std::size_t GenericEvent::allocatePacket(char*& out)
+//{
+//	std::size_t packetSize = sizeof(GenericEventPacket);
+//	out = (char*)malloc(packetSize);
+//	memcpy(out, (char*)&GenericEventPacket(packetId, userId), packetSize);
+//	return packetSize;
+//}
+//#pragma endregion
+
+#pragma region BoidDataEvent
+std::size_t BoidDataEvent::allocatePacket(char*& out)
 {
-	std::size_t packetSize = sizeof(GenericEventPacket);
+	std::size_t packetSize = sizeof(BoidDataPacket);
 	out = (char*)malloc(packetSize);
-	memcpy(out, (char*)&GenericEventPacket(packetId, userId), packetSize);
+	memcpy(out, (char*)&BoidDataPacket(packetId, posX, posY, userId), packetSize);
 	return packetSize;
 }
 #pragma endregion
