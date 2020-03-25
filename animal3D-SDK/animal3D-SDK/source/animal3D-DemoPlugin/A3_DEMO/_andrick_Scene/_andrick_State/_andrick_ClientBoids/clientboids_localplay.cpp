@@ -25,7 +25,7 @@ ClientBoidsLocalPlay::ClientBoidsLocalPlay(std::shared_ptr<Scene> parentScene) :
 
 void ClientBoidsLocalPlay::enteringState()
 {
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
 		if (pBoid == NULL)
@@ -41,21 +41,21 @@ void ClientBoidsLocalPlay::processInput()
 {
 	SceneState::processInput();
 
-	float temp[20];
+	a3vec2 temp[BOID_COUNT];
 
 	if (mpInputHandler->isKeyPressed(a3key_1))
 	{
-		std::shared_ptr<BoidDataEvent> dataPushEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT, temp, temp);
+		std::shared_ptr<BoidDataEvent> dataPushEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT, temp, temp, temp);
 		gEventSystem.queueLocalEvent(dataPushEvnt);
 	}
 	else if (mpInputHandler->isKeyPressed(a3key_2))
 	{
-		std::shared_ptr<BoidDataEvent> dataShareEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT, temp, temp);
+		std::shared_ptr<BoidDataEvent> dataShareEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT, temp, temp, temp);
 		gEventSystem.queueLocalEvent(dataShareEvnt);
 	}
 	else if (mpInputHandler->isKeyPressed(a3key_3))
 	{
-		std::shared_ptr<BoidDataEvent> dataCoupleEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT, temp, temp);
+		std::shared_ptr<BoidDataEvent> dataCoupleEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT, temp, temp, temp);
 		gEventSystem.queueLocalEvent(dataCoupleEvnt);
 	}
 
@@ -106,7 +106,7 @@ void ClientBoidsLocalPlay::render()
 
 void ClientBoidsLocalPlay::exitingState()
 {
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		gDemoState->mpBoidManager->deleteRandomUnit();
 	}

@@ -9,6 +9,7 @@
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 
 ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, LIGHT_BLUE),
@@ -28,6 +29,15 @@ ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScen
 
 void ClientBoidsClientWorld::enteringState()
 {
+	for (int i = 0; i < BOID_COUNT; i++)
+	{
+		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
+		if (pBoid == NULL)
+		{
+			gDemoState->mpBoidManager->deleteRandomUnit();
+		}
+	}
+
 	SceneState::enteringState();
 }
 
@@ -75,7 +85,22 @@ void ClientBoidsClientWorld::processIncomingEvent(std::shared_ptr<Event> evnt)
 
 void ClientBoidsClientWorld::update()
 {
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT)
+	{
+		gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
 
+		//TODO: send vec2 array over the network
+	}
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT)
+	{
+
+		//TODO: send vec2 array over the network
+	}
+	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT)
+	{
+
+		//TODO: send vec2 array over the network
+	}
 }
 
 void ClientBoidsClientWorld::queueOutgoingEvents()
@@ -97,6 +122,8 @@ void ClientBoidsClientWorld::render()
 	gTextFormatter.setLine(5);
 	renderMenuOptions(WHITE, TextAlign::LEFT);
 
+	gDemoState->mpBoidManager->drawAll();
+
 	gTextFormatter.setLine(4);
 	gTextFormatter.drawText(
 		std::to_string(gDemoState->mpClient->getConnectedUserCount()) + "/" +
@@ -107,9 +134,9 @@ void ClientBoidsClientWorld::render()
 	{
 	case PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT:
 	{
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < BOID_COUNT; i++)
 		{
-			gTextFormatter.drawBoidText(WHITE, incomingBoids[i]);
+			gTextFormatter.drawBoidText(WHITE, incomingBoids[i].pos);
 		}
 		break;
 	}
@@ -123,6 +150,11 @@ void ClientBoidsClientWorld::render()
 void ClientBoidsClientWorld::exitingState()
 {
 	SceneState::exitingState();
+
+	for (int i = 0; i < BOID_COUNT; i++)
+	{
+		gDemoState->mpBoidManager->deleteRandomUnit();
+	}
 
 	mDataMode = andrick_ID_BOID_DATA_PUSH_EVENT;
 	mDataModeText = "Data Push";
@@ -139,12 +171,14 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 		//mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
 		//mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
 
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < BOID_COUNT; i++)
 		{
 			//float normX = (boidEvnt->posX[i] / gDemoState->windowWidth) - (1 - (boidEvnt->posX[i] / gDemoState->windowWidth));
 			//float normY = (boidEvnt->posY[i] / gDemoState->windowHeight) - (1 - (boidEvnt->posY[i] / gDemoState->windowHeight));
 
-			a3real2Set(incomingBoids[i].v, boidEvnt->posX[i], boidEvnt->posY[i]);
+			a3real2Set(incomingBoids[i].pos.v, boidEvnt->position[i].x, boidEvnt->position[i].y);
+			a3real2Set(incomingBoids[i].vel.v, boidEvnt->velocity[i].x, boidEvnt->velocity[i].y);
+			a3real2Set(incomingBoids[i].acc.v, boidEvnt->acceleration[i].x, boidEvnt->acceleration[i].y);
 		}
 
 		break;

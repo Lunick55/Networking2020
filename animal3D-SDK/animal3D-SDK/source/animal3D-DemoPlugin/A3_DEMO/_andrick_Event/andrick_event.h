@@ -158,21 +158,27 @@ struct ConnectionNewUserJoinedEvent : public SendableEvent
 
 struct BoidDataEvent : public SendableEvent
 {
-	inline BoidDataEvent(PacketEventId packetId, float xVals[20], float yVals[20], UserId userId = -1, bool isBroadcast = true, UserId receiverId = -1) :
+	inline BoidDataEvent(PacketEventId packetId, a3vec2 posVals[BOID_COUNT], 
+													a3vec2 velVals[BOID_COUNT],
+														a3vec2 accVals[BOID_COUNT],
+			 UserId userId = -1, bool isBroadcast = true, UserId receiverId = -1) :
+
 		SendableEvent(EventId::BOID_DATA_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
 		packetId(packetId), 
 		userId(userId) 
 	{
-		memcpy(posX, xVals, sizeof(float) * 20);
-		memcpy(posY, yVals, sizeof(float) * 20);
+		memcpy(position, posVals, sizeof(a3vec2) * BOID_COUNT);
+		memcpy(velocity, velVals, sizeof(a3vec2) * BOID_COUNT);
+		memcpy(acceleration, accVals, sizeof(a3vec2) * BOID_COUNT);
 	}
 	virtual ~BoidDataEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
 
 	UserId userId;
 	PacketEventId packetId;
-	float posX[20];
-	float posY[20];
+	a3vec2 position[BOID_COUNT];
+	a3vec2 velocity[BOID_COUNT];
+	a3vec2 acceleration[BOID_COUNT];
 };
 
 struct CommandEvent : public SendableEvent

@@ -36,7 +36,7 @@ void ServerBoidsControlPanel::enteringState()
 		printf("\nServer spinning up... \n");
 	}
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
 		if (pBoid == NULL)
@@ -110,19 +110,15 @@ void ServerBoidsControlPanel::update()
 {
 	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT)
 	{
-		gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
-
-		//TODO: send vec2 array over the network
+		//gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
 	}
 	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT)
 	{
 
-		//TODO: send vec2 array over the network
 	}
 	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT)
 	{
 
-		//TODO: send vec2 array over the network
 	}
 
 }
@@ -132,20 +128,24 @@ void ServerBoidsControlPanel::queueOutgoingEvents()
 	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT)
 	{
 		printf("Sending push...");
-		//TODO: send vec2 array over the network
-		a3vec2 boidPos[20];
-		float boidX[20], boidY[20];
 
-		for (int i = 0; i < 20; i++)
+		a3vec2 boidPos[BOID_COUNT];
+		a3vec2 boidVel[BOID_COUNT];
+		a3vec2 boidAcc[BOID_COUNT];
+		//float boidX[20], boidY[20];
+
+		for (int i = 0; i < BOID_COUNT; i++)
 		{
 			 boidPos[i] = gDemoState->mpBoidManager->getUnit(i+1)->getPositionComponent()->getPosition();
-			 boidX[i] = (float)boidPos[i].x;
-			 boidY[i] = (float)boidPos[i].y;
+			 //TODO: populate these bby
+			 //boidVel[i] = gDemoState->mpBoidManager->getUnit(i+1)->getPositionComponent()->getPosition();
+			 //boidAcc[i] = gDemoState->mpBoidManager->getUnit(i+1)->getPositionComponent()->getPosition();
 		}
 
-		std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidX, boidY);
+		std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidPos, boidVel, boidAcc);
 
-		gEventSystem.queueNetworkEvent(packetData);
+		//TODO: this should send nothing. We send only incoming boids!
+		//gEventSystem.queueNetworkEvent(packetData);
 	}
 	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT)
 	{
@@ -179,8 +179,8 @@ void ServerBoidsControlPanel::render()
 		std::to_string(gDemoState->mpServer->getMaxUserCount()) + " Clients Online", 
 		WHITE, TextAlign::RIGHT);
 
-	//TODO: remove this draw call
-	gDemoState->mpBoidManager->drawAll();
+	//TODO: remove this draw call //no
+	//gDemoState->mpBoidManager->drawAll();
 
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
@@ -190,7 +190,7 @@ void ServerBoidsControlPanel::exitingState()
 {
 	SceneState::exitingState();
 
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		gDemoState->mpBoidManager->deleteRandomUnit();
 	}

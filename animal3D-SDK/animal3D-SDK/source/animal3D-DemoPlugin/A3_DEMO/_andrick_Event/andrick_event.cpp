@@ -236,7 +236,7 @@ std::size_t BoidDataEvent::allocatePacket(char*& out)
 {
 	std::size_t packetSize = sizeof(BoidDataPacket);
 	out = (char*)malloc(packetSize);
-	memcpy(out, (char*)&BoidDataPacket(packetId, posX, posY, userId), packetSize);
+	memcpy(out, (char*)&BoidDataPacket(packetId, position, velocity, acceleration, userId), packetSize);
 	return packetSize;
 }
 #pragma endregion

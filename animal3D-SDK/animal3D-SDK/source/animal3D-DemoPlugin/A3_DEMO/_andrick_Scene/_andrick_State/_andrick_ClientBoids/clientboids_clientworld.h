@@ -26,7 +26,14 @@ private:
 	PacketEventId mDataMode;
 	std::map<PacketEventId, std::string> mDataModeMap;
 
-	a3vec2 incomingBoids[20];
+	struct BoidData
+	{
+		a3vec2 pos;
+		a3vec2 vel;
+		a3vec2 acc;
+	};
+
+	BoidData incomingBoids[BOID_COUNT];
 };
 
 #endif

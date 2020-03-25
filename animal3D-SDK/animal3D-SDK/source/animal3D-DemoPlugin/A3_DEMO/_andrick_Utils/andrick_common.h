@@ -23,6 +23,8 @@ static const int sPORT = 5555;
 
 static const int MAX_INPUT_LENGTH = 512;
 
+static constexpr int BOID_COUNT = 20;
+
 //static const std::string PLAY_TICTACTOE = "tic";
 //static const std::string PLAY_BATTLE = "battle";
 

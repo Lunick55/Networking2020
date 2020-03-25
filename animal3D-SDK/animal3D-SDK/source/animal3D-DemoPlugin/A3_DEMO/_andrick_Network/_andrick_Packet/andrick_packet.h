@@ -264,18 +264,19 @@ struct BoidDataPacket
 {
 	PacketEventId packetId;
 	UserId senderId;
-	float posX[20];
-	float posY[20];
+	a3vec2 position[BOID_COUNT];
+	a3vec2 velocity[BOID_COUNT];
+	a3vec2 acceleration[BOID_COUNT];
 
-	BoidDataPacket(PacketEventId packetId, float xVals[20], float yVals[20], UserId sender) :
+	BoidDataPacket(PacketEventId packetId, a3vec2 posVals[BOID_COUNT],
+											a3vec2 velVals[BOID_COUNT],
+											a3vec2 accVals[BOID_COUNT], UserId sender) :
 		packetId(packetId),
-		/*eventId(eventId),*/
 		senderId(sender)
 	{
-		//memcpy(posX, xVals, sizeof(float) * 20);
-		//memcpy(posY, yVals, sizeof(float) * 20);
-		std::copy(xVals, xVals + 20, posX);
-		std::copy(yVals, yVals + 20, posY);
+		std::copy(posVals, posVals + BOID_COUNT, position);
+		std::copy(velVals, velVals + BOID_COUNT, velocity);
+		std::copy(accVals, accVals + BOID_COUNT, acceleration);
 	}
 };
 #pragma pack(pop)
