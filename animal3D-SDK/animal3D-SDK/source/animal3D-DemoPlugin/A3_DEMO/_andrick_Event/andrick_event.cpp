@@ -20,11 +20,26 @@ void NewIncomingConnectionEvent::execute()
 
 	//Send an accepted/failed event to the client
 	if (gDemoState->mpServer->processNewIncomingUser(clientAddress, userId, errorMessage))
+	{
 		evnt = std::make_shared<ConnectionRequestAcceptedEvent>(gDemoState->mpPacketHandler->getServerAddress(), userId, false, userId);
-	else
-		evnt = std::make_shared<ConnectionRequestFailedEvent>(clientAddress, errorMessage);
+		gEventSystem.queueNetworkEvent(evnt);
 
-	gEventSystem.queueNetworkEvent(evnt);
+		//auto userMap = gDemoState->mpServer->getConnectedUsers();
+		//for (auto iter = userMap.begin(); iter != userMap.end(); ++iter)
+		//{
+		//	std::shared_ptr<SendableEvent> connectedUserData = std::make_shared<BoidDataEvent>(
+		//		andrick_ID_BOID_DATA_PUSH_EVENT, iter->second->->boids, boidEvntPacket->senderId
+		//	);
+		//
+		//	gEventSystem.queueNetworkEvent(connectedUserData);
+		//}
+	}
+	else
+	{
+		evnt = std::make_shared<ConnectionRequestFailedEvent>(clientAddress, errorMessage);
+		gEventSystem.queueNetworkEvent(evnt);
+	}
+
 }
 #pragma endregion
 
@@ -236,7 +251,7 @@ std::size_t BoidDataEvent::allocatePacket(char*& out)
 {
 	std::size_t packetSize = sizeof(BoidDataPacket);
 	out = (char*)malloc(packetSize);
-	memcpy(out, (char*)&BoidDataPacket(packetId, position, velocity, acceleration, userId), packetSize);
+	memcpy(out, (char*)&BoidDataPacket(packetId, boids, userId), packetSize);
 	return packetSize;
 }
 #pragma endregion

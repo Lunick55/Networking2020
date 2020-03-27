@@ -204,23 +204,23 @@ int PacketHandler::processInboundPackets()
 		{
 			std::cout << "andrick_ID_BOID_DATA_PUSH_EVENT" << std::endl;
 			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->position, boidEvntPacket->velocity, boidEvntPacket->acceleration, boidEvntPacket->senderId));
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->boids, boidEvntPacket->senderId));
 			break;
 		}
-		case andrick_ID_BOID_DATA_SHARE_EVENT:
-		{
-			std::cout << "andrick_ID_BOID_DATA_SHARE_EVENT" << std::endl;
-			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->position, boidEvntPacket->velocity, boidEvntPacket->acceleration, boidEvntPacket->senderId));
-			break;
-		}
-		case andrick_ID_BOID_DATA_COUPLE_EVENT:
-		{
-			std::cout << "andrick_ID_BOID_DATA_COUPLE_EVENT" << std::endl;
-			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->position, boidEvntPacket->velocity, boidEvntPacket->acceleration, boidEvntPacket->senderId));
-			break;
-		}
+		//case andrick_ID_BOID_DATA_SHARE_EVENT:
+		//{
+		//	std::cout << "andrick_ID_BOID_DATA_SHARE_EVENT" << std::endl;
+		//	BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
+		//	newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->position, boidEvntPacket->velocity, boidEvntPacket->acceleration, boidEvntPacket->senderId));
+		//	break;
+		//}
+		//case andrick_ID_BOID_DATA_COUPLE_EVENT:
+		//{
+		//	std::cout << "andrick_ID_BOID_DATA_COUPLE_EVENT" << std::endl;
+		//	BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
+		//	newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->position, boidEvntPacket->velocity, boidEvntPacket->acceleration, boidEvntPacket->senderId));
+		//	break;
+		//}
 			////////////////////////////////////////////////
 			// UNKNOWN PACKETS                            
 			////////////////////////////////////////////////

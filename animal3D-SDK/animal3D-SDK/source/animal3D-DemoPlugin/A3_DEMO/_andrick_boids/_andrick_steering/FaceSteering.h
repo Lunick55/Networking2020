@@ -4,7 +4,7 @@
 class FaceSteering : public Steering
 {
 public:
-	FaceSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
+	FaceSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
 
 	virtual Steering* getSteering();
 	Steering* getSteering(a3vec2 diff);

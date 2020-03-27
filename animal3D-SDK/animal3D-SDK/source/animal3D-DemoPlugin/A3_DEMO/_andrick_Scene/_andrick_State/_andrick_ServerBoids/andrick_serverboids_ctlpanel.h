@@ -24,7 +24,6 @@ private:
 	std::vector<std::shared_ptr<struct LogInfo>> mChatLogHistory;
 	std::string mDataModeText;
 	PacketEventId mDataMode;
-	std::map<PacketEventId, std::string> mDataModeMap;
 };
 
 #endif

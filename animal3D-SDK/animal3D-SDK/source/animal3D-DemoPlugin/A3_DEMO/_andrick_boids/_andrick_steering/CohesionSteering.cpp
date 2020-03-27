@@ -5,8 +5,8 @@
 #include "CohesionSteering.h"
 
 
-CohesionSteering::CohesionSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering(), mArriveSteering(ArriveSteering(ownerID, targetLoc, targetID, shouldFlee))
+CohesionSteering::CohesionSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userID), mArriveSteering(ArriveSteering(userID, ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
 	{
@@ -24,7 +24,7 @@ CohesionSteering::CohesionSteering(const UnitID& ownerID, const a3vec2& targetLo
 Steering* CohesionSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
@@ -32,19 +32,22 @@ Steering* CohesionSteering::getSteering()
 	int neighborCount = 0;
 	mNeighborRadius = gDemoState->mCohesionRadius;
 
-	std::map<UnitID, Boid*> unitMap = gDemoState->mpBoidManager->getMap();
+	std::map<UserId, std::map<UnitID, Boid*>> unitMap = gDemoState->mpBoidManager->getMap();
 
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{
-		if (it->second != pOwner)
+		for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
 		{
-			a3vec2 unitPos = it->second->getPositionComponent()->getPosition();
-			diff = unitPos;
-			a3real2Sub(diff.v, pOwner->getPositionComponent()->getPosition().v);
-			if (a3real2Length(diff.v) < mNeighborRadius)
+			if (unitIter->second != pOwner)
 			{
-				a3real2Add(positionVector.v, it->second->getPositionComponent()->getPosition().v);
-				neighborCount++;
+				a3vec2 unitPos = unitIter->second->getPositionComponent()->getPosition();
+				diff = unitPos;
+				a3real2Sub(diff.v, pOwner->getPositionComponent()->getPosition().v);
+				if (a3real2Length(diff.v) < mNeighborRadius)
+				{
+					a3real2Add(positionVector.v, unitIter->second->getPositionComponent()->getPosition().v);
+					neighborCount++;
+				}
 			}
 		}
 	}

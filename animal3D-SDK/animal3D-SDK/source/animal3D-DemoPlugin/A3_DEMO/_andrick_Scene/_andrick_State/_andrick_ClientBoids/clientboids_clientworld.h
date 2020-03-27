@@ -18,22 +18,13 @@ public:
 	virtual void exitingState() override;
 
 	void handleBoidDataEvents(std::shared_ptr<BoidDataEvent> boidEvnt);
+	void removeBoidData(std::shared_ptr<UserDisconnectedEvent> disconnectEvnt);
 
 private:
 	unsigned int mChatHistory;
 	std::vector<std::shared_ptr<struct LogInfo>> mChatLogHistory;
 	std::string mDataModeText;
 	PacketEventId mDataMode;
-	std::map<PacketEventId, std::string> mDataModeMap;
-
-	struct BoidData
-	{
-		a3vec2 pos;
-		a3vec2 vel;
-		a3vec2 acc;
-	};
-
-	BoidData incomingBoids[BOID_COUNT];
 };
 
 #endif

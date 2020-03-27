@@ -13,6 +13,12 @@ class UnitManager;
 
 const a3ui32 DEFAULT_QUEUE_CAPACITY = 8;
 
+struct BoidData
+{
+	UnitID boidID;
+	PhysicsData boidPhysicsData;
+	PositionData boidPositionData;
+};
 
 //class Unit : public TransactionProcessor
 class Boid
@@ -31,7 +37,7 @@ public:
 	float getMaxRotVel() const { return mMaxRotVel; };
 	void setShowTarget(bool val) { mShowTarget = val; };
 
-	void setSteering(Steering::SteeringType type, a3vec2 targetLoc = a3vec2_zero, UnitID targetUnitID = INVALID_UNIT_ID);
+	void setSteering(UserId userID, Steering::SteeringType type, a3vec2 targetLoc = a3vec2_zero, UnitID targetUnitID = INVALID_UNIT_ID);
 
 private:
 	UnitID mID;

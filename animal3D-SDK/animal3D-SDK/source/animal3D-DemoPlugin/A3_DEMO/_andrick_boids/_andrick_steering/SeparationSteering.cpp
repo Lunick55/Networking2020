@@ -7,8 +7,8 @@
 
 
 
-SeparationSteering::SeparationSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering(), mSeekSteering(SeekSteering(ownerID, targetLoc, targetID, shouldFlee))
+SeparationSteering::SeparationSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userID), mSeekSteering(SeekSteering(userID, ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
 	{
@@ -26,7 +26,7 @@ SeparationSteering::SeparationSteering(const UnitID& ownerID, const a3vec2& targ
 Steering* SeparationSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
@@ -34,19 +34,21 @@ Steering* SeparationSteering::getSteering()
 	int neighborCount = 0;
 	mNeighborRadius = gDemoState->mSeparationRadius;
 
-	std::map<UnitID, Boid*> unitMap = gDemoState->mpBoidManager->getMap();
+	std::map<UserId, std::map<UnitID, Boid*>> unitMap = gDemoState->mpBoidManager->getMap();
 
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{
-		if (it->second != pOwner)
+		for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
 		{
-			a3vec2 unitPos = it->second->getPositionComponent()->getPosition();
-			a3real2Diff(diff.v, unitPos.v, pOwner->getPositionComponent()->getPosition().v);
-			if (a3real2Length(diff.v) < mNeighborRadius)
+			if (unitIter->second != pOwner)
 			{
-				
-				a3real2Add(positionVector.v, it->second->getPositionComponent()->getPosition().v);
-				neighborCount++;
+				a3vec2 unitPos = unitIter->second->getPositionComponent()->getPosition();
+				a3real2Diff(diff.v, unitPos.v, pOwner->getPositionComponent()->getPosition().v);
+				if (a3real2Length(diff.v) < mNeighborRadius)
+				{
+					a3real2Add(positionVector.v, unitIter->second->getPositionComponent()->getPosition().v);
+					neighborCount++;
+				}
 			}
 		}
 	}

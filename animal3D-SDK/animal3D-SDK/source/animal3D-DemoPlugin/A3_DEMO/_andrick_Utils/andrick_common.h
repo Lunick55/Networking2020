@@ -10,9 +10,9 @@
 #include <RakNet/MessageIdentifiers.h>
 #include <animal3D-A3DG/animal3D-A3DG.h>
 #include <animal3D-A3DM/animal3D-A3DM.h>
-//#include <A3_DEMO/a3_Networking/a3_Networking_gs_tictactoe.h>
 
 typedef char UserId;
+typedef unsigned int UnitID;
 
 static const int INVALID_USER_ID = -1;
 static const int sMAX_USERNAME_LENGTH = 20;
@@ -24,9 +24,6 @@ static const int sPORT = 5555;
 static const int MAX_INPUT_LENGTH = 512;
 
 static constexpr int BOID_COUNT = 20;
-
-//static const std::string PLAY_TICTACTOE = "tic";
-//static const std::string PLAY_BATTLE = "battle";
 
 extern struct a3_DemoState* gDemoState;
 extern class TextFormatter& gTextFormatter;

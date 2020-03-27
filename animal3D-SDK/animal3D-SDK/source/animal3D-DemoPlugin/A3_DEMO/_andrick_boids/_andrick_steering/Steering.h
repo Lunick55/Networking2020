@@ -11,8 +11,6 @@
 #include <Bits.h>
 //#include "defines.h"
 
-typedef unsigned int UnitID;
-
 //const IDType INVALID_ID = -1;
 //const IDType HIGHEST_ID = 9999;
 const UnitID INVALID_UNIT_ID = UINT_MAX;
@@ -37,7 +35,8 @@ public:
 	};
 
 	//constructors and destructors
-	Steering( SteeringType type = INVALID_TYPE ):mType(type), mTargetLoc(a3vec2_zero), mTargetID(INVALID_UNIT_ID), mOwnerID(INVALID_UNIT_ID), mData(ZERO_PHYSICS_DATA) {};
+	Steering(UserId userId, SteeringType type = INVALID_TYPE ):mType(type), mTargetLoc(a3vec2_zero), mTargetID(INVALID_UNIT_ID),
+		mUserID(userId), mOwnerID(INVALID_UNIT_ID), mData(ZERO_PHYSICS_DATA) {};
 	virtual ~Steering(){};
 
 	//accessors
@@ -56,6 +55,7 @@ protected:
 	UnitID mTargetID;
 	UnitID mOwnerID;
 	PhysicsData mData;
+	UserId mUserID;
 
 	virtual Steering* getSteering() { return this; };//overridden by sub-classes
 

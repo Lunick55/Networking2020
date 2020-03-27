@@ -6,8 +6,8 @@
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-FaceSteering::FaceSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering()
+FaceSteering::FaceSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userID)
 {
 	if (shouldFlee)
 	{
@@ -25,7 +25,7 @@ FaceSteering::FaceSteering(const UnitID& ownerID, const a3vec2& targetLoc, const
 Steering* FaceSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 
 	//diff = mTargetLoc - pOwner->getPositionComponent()->getPosition();
@@ -97,7 +97,7 @@ Steering* FaceSteering::getSteering()
 
 Steering* FaceSteering::getSteering(a3vec2 diff)
 {
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();

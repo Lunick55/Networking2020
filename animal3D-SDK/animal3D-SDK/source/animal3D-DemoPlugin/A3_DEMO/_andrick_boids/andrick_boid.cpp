@@ -76,11 +76,11 @@ BoidSteering* Boid::getSteeringComponent() const
 	return mpSteering;
 }
 
-void Boid::setSteering(Steering::SteeringType type, a3vec2 targetLoc /*= ZERO_VECTOR2D*/, UnitID targetUnitID /*= INVALID_UNIT_ID*/)
+void Boid::setSteering(UserId userID, Steering::SteeringType type, a3vec2 targetLoc /*= ZERO_VECTOR2D*/, UnitID targetUnitID /*= INVALID_UNIT_ID*/)
 {
 	BoidSteering* pSteeringComponent = getSteeringComponent();
 	if (pSteeringComponent != NULL)
 	{
-		pSteeringComponent->setData(SteeringData(type, targetLoc, mID, targetUnitID));
+		pSteeringComponent->setData(SteeringData(type, userID, targetLoc, mID, targetUnitID));
 	}
 }

@@ -9,13 +9,14 @@ enum Steering::SteeringType;
 
 struct SteeringData
 {
-	SteeringData() :type(Steering::INVALID_TYPE), targetLoc(a3vec2_zero), ownerID(INVALID_UNIT_ID), targetID(INVALID_UNIT_ID) {};
-	SteeringData(Steering::SteeringType theType, const a3vec2& theTargetLoc = a3vec2_zero, UnitID theOwner = INVALID_UNIT_ID, UnitID theTarget = INVALID_UNIT_ID)
+	SteeringData() :type(Steering::INVALID_TYPE), targetLoc(a3vec2_zero), userID(-1), ownerID(INVALID_UNIT_ID), targetID(INVALID_UNIT_ID) {};
+	SteeringData(Steering::SteeringType theType, UserId userID, const a3vec2& theTargetLoc = a3vec2_zero, UnitID theOwner = INVALID_UNIT_ID, UnitID theTarget = INVALID_UNIT_ID)
 		:type(theType), targetLoc(theTargetLoc), ownerID(theOwner), targetID(theTarget) {};
 	Steering::SteeringType type;
 	a3vec2 targetLoc;
 	UnitID ownerID;
 	UnitID targetID;
+	UserId userID;
 };
 
 const SteeringData ZERO_STEERING_DATA;

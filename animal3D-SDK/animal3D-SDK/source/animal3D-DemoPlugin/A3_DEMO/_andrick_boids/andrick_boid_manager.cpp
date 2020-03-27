@@ -11,7 +11,7 @@ BoidManager::BoidManager()
 {
 }
 
-Boid* BoidManager::createUnit(bool shouldWrap, const SteeringData& steerData /*= ZERO_STEERING_DATA*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/, const UnitID& id)
+Boid* BoidManager::createUnit(const UserId& userId, bool shouldWrap, const SteeringData& steerData /*= ZERO_STEERING_DATA*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/, const UnitID& id)
 {
 	Boid* pUnit = NULL;
 
@@ -26,7 +26,7 @@ Boid* BoidManager::createUnit(bool shouldWrap, const SteeringData& steerData /*=
 	}
 
 	//place in map
-	mUnitMap[theID] = pUnit;
+	mUnitMap[userId][theID] = pUnit;
 
 	//assign id and increment nextID counter
 	pUnit->mID = theID;
@@ -52,14 +52,18 @@ Boid* BoidManager::createUnit(bool shouldWrap, const SteeringData& steerData /*=
 	return pUnit;
 }
 
+Boid* BoidManager::getPlayerUnit(const UserId& userId) const
+{ 
+	return getUnit(userId, PLAYER_UNIT_ID);
+}
 
-Boid* BoidManager::createPlayerUnit(bool shouldWrap /*= true*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/)
+Boid* BoidManager::createPlayerUnit(const UserId& userId, bool shouldWrap /*= true*/, const PositionData& posData /*= ZERO_POSITION_DATA*/, const PhysicsData& physicsData /*= ZERO_PHYSICS_DATA*/)
 {
-	return createUnit(shouldWrap, ZERO_STEERING_DATA, posData, physicsData, PLAYER_UNIT_ID);
+	return createUnit(userId, shouldWrap, ZERO_STEERING_DATA, posData, physicsData, PLAYER_UNIT_ID);
 }
 
 
-Boid* BoidManager::createRandomUnit()
+Boid* BoidManager::createRandomUnit(const UserId& userId)
 {
 	int posX = rand() % gDemoState->windowWidth;
 	int posY =  rand() % gDemoState->windowHeight;
@@ -68,12 +72,12 @@ Boid* BoidManager::createRandomUnit()
 
 	a3vec2 tempPos;
 	a3real2Set(tempPos.v, (a3real)posX, (a3real)posY);
-	Boid* pUnit = createUnit(true, ZERO_STEERING_DATA,PositionData(tempPos, 0));
+	Boid* pUnit = createUnit(userId, true, ZERO_STEERING_DATA,PositionData(tempPos, 0));
 	if (pUnit != NULL)
 	{
 		a3vec2 vec;
 		a3real2Set(vec.v, (a3real)(gDemoState->windowWidth / 2), (a3real)(rand() % gDemoState->windowWidth / 2));
-		pUnit->setSteering(Steering::FLOCKING, vec);
+		pUnit->setSteering(userId, Steering::FLOCKING, vec);
 		int temp = rand() % 360;
 		temp = (int)(temp * (PI / 180));
 		pUnit->getPositionComponent()->setFacing((float)temp);
@@ -82,43 +86,49 @@ Boid* BoidManager::createRandomUnit()
 	return pUnit;
 }
 
-Boid* BoidManager::getUnit(const UnitID& id) const
+Boid* BoidManager::getUnit(const UserId& userId, const UnitID& unitId) const
 {
-	auto it = mUnitMap.find(id);
-	if (it != mUnitMap.end())//found?
+	auto it = mUnitMap.find(userId);
+	if (it != mUnitMap.end())//found client?
 	{
-		return it->second;
+		auto unitIter = it->second.find(unitId);
+		if (unitIter != it->second.end())//found unit?
+		{
+			return unitIter->second;
+		}
 	}
-	else
+
+	return nullptr;
+}
+
+void BoidManager::deleteUnit(const UserId& userId, const UnitID& unitId)
+{
+	auto it = mUnitMap.find(unitId);
+	if (it != mUnitMap.end())//found client?
 	{
-		return NULL;
+		auto unitIter = it->second.find(unitId);
+		if (unitIter != it->second.end())//found unit?
+		{
+			Boid* pUnit = unitIter->second;//hold for later
+
+			//remove from map
+			mUnitMap.erase(it);
+
+			//remove components
+			delete pUnit->mpPhysics;
+			delete pUnit->mpPosition;
+			delete pUnit->mpSteering;
+
+			//call destructor
+			pUnit->~Boid();
+
+			//free the object in the pool
+			//mPool.freeObject((Byte*)pUnit);
+		}
 	}
 }
 
-void BoidManager::deleteUnit(const UnitID& id)
-{
-	auto it = mUnitMap.find(id);
-	if (it != mUnitMap.end())//found?
-	{
-		Boid* pUnit = it->second;//hold for later
-
-		//remove from map
-		mUnitMap.erase(it);
-
-		//remove components
-		delete pUnit->mpPhysics;
-		delete pUnit->mpPosition;
-		delete pUnit->mpSteering;
-
-		//call destructor
-		pUnit->~Boid();
-
-		//free the object in the pool
-		//mPool.freeObject((Byte*)pUnit);
-	}
-}
-
-void BoidManager::deleteRandomUnit()
+void BoidManager::deleteRandomUnit(const UserId& userId)
 {
 	if (mUnitMap.size() >= 1)
 	{
@@ -132,7 +142,7 @@ void BoidManager::deleteRandomUnit()
 		{
 			if (cnt == target)
 			{
-				deleteUnit(it->first);
+				deleteUnit(userId, it->first);
 				break;
 			}
 		}
@@ -143,7 +153,10 @@ void BoidManager::drawAll() const
 {
 	for (auto it = mUnitMap.begin(); it != mUnitMap.end(); ++it)
 	{
-		it->second->draw();
+		for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
+		{
+			unitIter->second->draw();
+		}
 	}
 }
 
@@ -151,6 +164,9 @@ void BoidManager::updateAll(float elapsedTime)
 {
 	for (auto it = mUnitMap.begin(); it != mUnitMap.end(); ++it)
 	{
-		it->second->update(elapsedTime);
+		for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
+		{
+			unitIter->second->update(elapsedTime);
+		}
 	}
 }

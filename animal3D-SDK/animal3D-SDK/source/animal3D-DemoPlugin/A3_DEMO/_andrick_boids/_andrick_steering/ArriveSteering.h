@@ -4,7 +4,7 @@
 class ArriveSteering : public Steering
 {
 public:
-	ArriveSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
+	ArriveSteering(const UserId& userId, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
 
 	virtual Steering* getSteering();
 

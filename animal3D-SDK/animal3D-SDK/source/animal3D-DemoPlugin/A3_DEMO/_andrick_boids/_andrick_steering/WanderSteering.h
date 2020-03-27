@@ -5,7 +5,7 @@
 class WanderSteering : public Steering
 {
 public:
-	WanderSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
+	WanderSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
 	a3vec2 asVector(float num);
 
 	virtual Steering* getSteering();

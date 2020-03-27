@@ -27,10 +27,10 @@ void ClientBoidsLocalPlay::enteringState()
 {
 	for (int i = 0; i < BOID_COUNT; i++)
 	{
-		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
-		if (pBoid == NULL)
+		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit(gDemoState->mpClient->getId());
+		if (!pBoid)
 		{
-			gDemoState->mpBoidManager->deleteRandomUnit();
+			gDemoState->mpBoidManager->deleteRandomUnit(gDemoState->mpClient->getId());
 		}
 	}
 
@@ -41,23 +41,21 @@ void ClientBoidsLocalPlay::processInput()
 {
 	SceneState::processInput();
 
-	a3vec2 temp[BOID_COUNT];
-
-	if (mpInputHandler->isKeyPressed(a3key_1))
-	{
-		std::shared_ptr<BoidDataEvent> dataPushEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT, temp, temp, temp);
-		gEventSystem.queueLocalEvent(dataPushEvnt);
-	}
-	else if (mpInputHandler->isKeyPressed(a3key_2))
-	{
-		std::shared_ptr<BoidDataEvent> dataShareEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT, temp, temp, temp);
-		gEventSystem.queueLocalEvent(dataShareEvnt);
-	}
-	else if (mpInputHandler->isKeyPressed(a3key_3))
-	{
-		std::shared_ptr<BoidDataEvent> dataCoupleEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT, temp, temp, temp);
-		gEventSystem.queueLocalEvent(dataCoupleEvnt);
-	}
+	//if (mpInputHandler->isKeyPressed(a3key_1))
+	//{
+	//	std::shared_ptr<BoidDataEvent> dataPushEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT);
+	//	gEventSystem.queueLocalEvent(dataPushEvnt);
+	//}
+	//else if (mpInputHandler->isKeyPressed(a3key_2))
+	//{
+	//	std::shared_ptr<BoidDataEvent> dataShareEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT, temp, temp, temp);
+	//	gEventSystem.queueLocalEvent(dataShareEvnt);
+	//}
+	//else if (mpInputHandler->isKeyPressed(a3key_3))
+	//{
+	//	std::shared_ptr<BoidDataEvent> dataCoupleEvnt = std::make_shared<BoidDataEvent>(PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT, temp, temp, temp);
+	//	gEventSystem.queueLocalEvent(dataCoupleEvnt);
+	//}
 
 	mpInputHandler->clearCurrentInput();
 }
@@ -108,7 +106,7 @@ void ClientBoidsLocalPlay::exitingState()
 {
 	for (int i = 0; i < BOID_COUNT; i++)
 	{
-		gDemoState->mpBoidManager->deleteRandomUnit();
+		gDemoState->mpBoidManager->deleteRandomUnit(gDemoState->mpClient->getId());
 	}
 
 	SceneState::exitingState();
@@ -128,18 +126,18 @@ void ClientBoidsLocalPlay::handleBoidDataEvents(std::shared_ptr<BoidDataEvent> b
 		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
 		break;
 	}
-	case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
-		break;
-	}
-	case PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT:
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
-		break;
-	}
+	//case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:
+	//{
+	//	mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
+	//	mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
+	//	break;
+	//}
+	//case PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT:
+	//{
+	//	mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
+	//	mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
+	//	break;
+	//}
 	default:
 		break;
 	}

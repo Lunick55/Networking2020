@@ -6,8 +6,8 @@
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-ArriveSteering::ArriveSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering()
+ArriveSteering::ArriveSteering(const UserId& userId, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userId)
 {
 	if (shouldFlee)
 	{
@@ -27,14 +27,14 @@ Steering* ArriveSteering::getSteering()
 	//TODO: get boid manager for all the comments with gpGame
 
 	a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID); 
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID); 
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 	//are we seeking a location or a unit?
 
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mTargetID);
+		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mUserID, mTargetID);
 		//assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}

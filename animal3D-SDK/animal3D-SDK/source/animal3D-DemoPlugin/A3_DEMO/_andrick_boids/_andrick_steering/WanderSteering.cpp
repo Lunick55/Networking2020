@@ -7,8 +7,8 @@
 #include <animal3D-A3DM/a3math/a3random.h>
 
 
-WanderSteering::WanderSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: mWanderOrientation(0), Steering(), mFaceSteering(FaceSteering(ownerID, targetLoc, targetID, shouldFlee))
+WanderSteering::WanderSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: mWanderOrientation(0), Steering(userID), mFaceSteering(FaceSteering(userID, ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
 	{
@@ -25,7 +25,7 @@ WanderSteering::WanderSteering(const UnitID& ownerID, const a3vec2& targetLoc, c
 
 Steering* WanderSteering::getSteering()
 {
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 	
 	//update wander orientation

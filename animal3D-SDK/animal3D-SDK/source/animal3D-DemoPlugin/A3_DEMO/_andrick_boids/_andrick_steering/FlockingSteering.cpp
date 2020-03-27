@@ -5,8 +5,12 @@
 #include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
-FlockingSteering::FlockingSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering(), mCohesion(CohesionSteering(ownerID, targetLoc, targetID, shouldFlee)), mSeparation(SeparationSteering(ownerID, targetLoc, targetID, shouldFlee)), mGroupAlign(GroupAlignSteering(ownerID, targetLoc, targetID, shouldFlee)), mWander(WanderSteering(ownerID, targetLoc, targetID, shouldFlee))
+FlockingSteering::FlockingSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userID),
+	mCohesion(CohesionSteering(userID, ownerID, targetLoc, targetID, shouldFlee)), 
+	mSeparation(SeparationSteering(userID, ownerID, targetLoc, targetID, shouldFlee)), 
+	mGroupAlign(GroupAlignSteering(userID, ownerID, targetLoc, targetID, shouldFlee)), 
+	mWander(WanderSteering(userID, ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
 	{
@@ -24,7 +28,7 @@ FlockingSteering::FlockingSteering(const UnitID& ownerID, const a3vec2& targetLo
 Steering* FlockingSteering::getSteering()
 {
 	//a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 
@@ -35,7 +39,7 @@ Steering* FlockingSteering::getSteering()
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mTargetID);
+		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mUserID, mTargetID);
 		//assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}

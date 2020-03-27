@@ -17,13 +17,6 @@ ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScen
 	mDataMode(andrick_ID_BOID_DATA_PUSH_EVENT),
 	mDataModeText("Data Push")
 {
-	mDataModeMap.insert({ andrick_ID_BOID_DATA_PUSH_EVENT, "Data Push" });
-	mDataModeMap.insert({ andrick_ID_BOID_DATA_SHARE_EVENT, "Data Share" });
-	mDataModeMap.insert({ andrick_ID_BOID_DATA_COUPLE_EVENT, "Data Couple" });
-
-	mMenuOptions.push_back(MenuOption(a3key_1, "Press [1] for Data Push."));
-	mMenuOptions.push_back(MenuOption(a3key_2, "Press [2] for Data Sharing."));
-	mMenuOptions.push_back(MenuOption(a3key_3, "Press [3] for Data Couple."));
 	setEscapeOption(MenuOption(a3key_escape, "<-- [ESC to disconnect]", nullptr, SceneId::CLIENT_BOIDS, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CONFIRM_DISCONNECT));
 }
 
@@ -31,10 +24,11 @@ void ClientBoidsClientWorld::enteringState()
 {
 	for (int i = 0; i < BOID_COUNT; i++)
 	{
-		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit();
-		if (pBoid == NULL)
+		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit(gDemoState->mpClient->getId());
+		
+		if (!pBoid)
 		{
-			gDemoState->mpBoidManager->deleteRandomUnit();
+			gDemoState->mpBoidManager->deleteRandomUnit(gDemoState->mpClient->getId());
 		}
 	}
 
@@ -44,27 +38,6 @@ void ClientBoidsClientWorld::enteringState()
 void ClientBoidsClientWorld::processInput()
 {
 	SceneState::processInput();
-
-	//float temp[20];
-
-	if (mpInputHandler->isKeyPressed(a3key_1))
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
-
-	}
-	else if (mpInputHandler->isKeyPressed(a3key_2))
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
-	}
-	else if (mpInputHandler->isKeyPressed(a3key_3))
-	{
-		mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
-		mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
-
-	}
-
 	mpInputHandler->clearCurrentInput();
 }
 
@@ -78,6 +51,12 @@ void ClientBoidsClientWorld::processIncomingEvent(std::shared_ptr<Event> evnt)
 		handleBoidDataEvents(boidEvnt);
 		break;
 	}
+	case EventId::USER_DISCONNECTED:
+	{
+		std::shared_ptr<UserDisconnectedEvent> disconnectEvnt = std::dynamic_pointer_cast<UserDisconnectedEvent>(evnt);
+		removeBoidData(disconnectEvnt);
+		break;
+	}
 	default:
 		break;
 	}
@@ -85,27 +64,34 @@ void ClientBoidsClientWorld::processIncomingEvent(std::shared_ptr<Event> evnt)
 
 void ClientBoidsClientWorld::update()
 {
-	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT)
-	{
-		gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
+	//We need to have a local copy of all the online boids.
+	//Store client boid data in client.
+	//We have a map of all the connected clients
+	//Populate this when a new client joins
 
-		//TODO: send vec2 array over the network
-	}
-	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT)
-	{
+	//We get boid updates each frame
+	//Get client by id from each boid update
+	//Update the client boid vel, acc, and pos, with the new boid data
 
-		//TODO: send vec2 array over the network
-	}
-	if (mDataMode == PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT)
-	{
+	//Iterate through all the clients
+	//Integrate using the vel, acc, and pos data.
 
-		//TODO: send vec2 array over the network
-	}
+	gDemoState->mpBoidManager->updateAll((float)gDemoState->renderTimer->secondsPerTick);
 }
 
 void ClientBoidsClientWorld::queueOutgoingEvents()
 {
-
+	BoidData localBoidData[BOID_COUNT];
+	
+	UserId userId = gDemoState->mpClient->getId();
+	for (int i = 0; i < BOID_COUNT; i++)
+	{
+		localBoidData[i].boidPositionData = gDemoState->mpBoidManager->getUnit(userId, i + 1)->getPositionComponent()->getData();
+		localBoidData[i].boidPhysicsData = gDemoState->mpBoidManager->getUnit(userId, i + 1)->getPhysicsComponent()->getData();
+	}
+	
+	std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, localBoidData, userId);
+	gEventSystem.queueNetworkEvent(packetData);
 }
 
 void ClientBoidsClientWorld::render()
@@ -116,44 +102,33 @@ void ClientBoidsClientWorld::render()
 	gTextFormatter.setLine(1);
 	gTextFormatter.drawText("Welcome to the Boids Server!", WHITE, TextAlign::CENTER_X);
 
-	gTextFormatter.offsetLine(2);
-	gTextFormatter.drawText("Current mode: " + mDataModeText, GREEN, TextAlign::CENTER_X);
-
 	gTextFormatter.setLine(5);
 	renderMenuOptions(WHITE, TextAlign::LEFT);
 
+	//TODO: Lerp between incoming and previous
 	gDemoState->mpBoidManager->drawAll();
 
 	gTextFormatter.setLine(4);
 	gTextFormatter.drawText(
 		std::to_string(gDemoState->mpClient->getConnectedUserCount()) + "/" +
 		std::to_string(gDemoState->mpClient->getMaxUserCount()) + " Clients Online",
-		WHITE, TextAlign::RIGHT);
-
-	switch (mDataMode)
-	{
-	case PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT:
-	{
-		for (int i = 0; i < BOID_COUNT; i++)
-		{
-			gTextFormatter.drawBoidText(WHITE, incomingBoids[i].pos);
-		}
-		break;
-	}
-	}
+		WHITE, TextAlign::RIGHT
+	);
 
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
-
 }
 
 void ClientBoidsClientWorld::exitingState()
 {
 	SceneState::exitingState();
 
-	for (int i = 0; i < BOID_COUNT; i++)
+	for (std::size_t userID = 0; userID < gDemoState->mpClient->getConnectedUserCount(); ++userID)
 	{
-		gDemoState->mpBoidManager->deleteRandomUnit();
+		for (int unitID = 0; unitID < BOID_COUNT; ++unitID)
+		{
+			gDemoState->mpBoidManager->deleteRandomUnit((UserId)userID);
+		}
 	}
 
 	mDataMode = andrick_ID_BOID_DATA_PUSH_EVENT;
@@ -162,41 +137,43 @@ void ClientBoidsClientWorld::exitingState()
 
 void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent> boidEvnt)
 {
-	switch (boidEvnt->packetId)
-	{
-	case PacketEventId::andrick_ID_BOID_DATA_PUSH_EVENT:
-	{
-		printf("Getting push...");
+	printf("Getting push...");
 
-		//mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->first;
-		//mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_PUSH_EVENT)->second;
+	//Don't update our boids with the packet we sent to the server.
+	if (boidEvnt->userId == gDemoState->mpClient->getId())
+		return;
 
+	if (!gDemoState->mpBoidManager->isUserRegistered(boidEvnt->userId))
+	{
 		for (int i = 0; i < BOID_COUNT; i++)
 		{
-			//float normX = (boidEvnt->posX[i] / gDemoState->windowWidth) - (1 - (boidEvnt->posX[i] / gDemoState->windowWidth));
-			//float normY = (boidEvnt->posY[i] / gDemoState->windowHeight) - (1 - (boidEvnt->posY[i] / gDemoState->windowHeight));
-
-			a3real2Set(incomingBoids[i].pos.v, boidEvnt->position[i].x, boidEvnt->position[i].y);
-			a3real2Set(incomingBoids[i].vel.v, boidEvnt->velocity[i].x, boidEvnt->velocity[i].y);
-			a3real2Set(incomingBoids[i].acc.v, boidEvnt->acceleration[i].x, boidEvnt->acceleration[i].y);
+			Boid* pBoid = gDemoState->mpBoidManager->createUnit(boidEvnt->userId, true, ZERO_STEERING_DATA,
+				boidEvnt->boids[i].boidPositionData, boidEvnt->boids[i].boidPhysicsData);
 		}
-
-		break;
 	}
-	//case PacketEventId::andrick_ID_BOID_DATA_SHARE_EVENT:
-	//{
-	//	mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->first;
-	//	mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_SHARE_EVENT)->second;
-	//	break;
-	//}
-	//case PacketEventId::andrick_ID_BOID_DATA_COUPLE_EVENT:
-	//{
-	//	mDataMode = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->first;
-	//	mDataModeText = mDataModeMap.find(andrick_ID_BOID_DATA_COUPLE_EVENT)->second;
-	//	break;
-	//}
-	//default:
-	//	break;
-	//}
+	else
+	{
+		for (int i = 0; i < BOID_COUNT; i++)
+		{
+			BoidData currentBoid = boidEvnt->boids[i];
+			Boid* boid = gDemoState->mpBoidManager->getUnit(boidEvnt->userId, currentBoid.boidID);
+
+			if (boid)
+			{
+				boid->getPositionComponent()->setData(currentBoid.boidPositionData);
+				boid->getPhysicsComponent()->setData(currentBoid.boidPhysicsData);
+			}
+		}
+	}
+}
+
+void ClientBoidsClientWorld::removeBoidData(std::shared_ptr<UserDisconnectedEvent> disconnectEvnt)
+{
+	if (gDemoState->mpBoidManager->isUserRegistered(disconnectEvnt->userId))
+	{
+		for (int unitID = 0; unitID < BOID_COUNT; ++unitID)
+		{
+			gDemoState->mpBoidManager->deleteRandomUnit(disconnectEvnt->userId);
+		}
 	}
 }

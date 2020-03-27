@@ -20,6 +20,7 @@ public:
 	inline void setMaxUsers(std::size_t maxUsers) { mMaxUsers = maxUsers; };
 	inline std::size_t getMaxUserCount() const { return mMaxUsers; };
 	inline std::size_t getConnectedUserCount() const { return mConnectedUserMap.size(); };
+	inline const std::map<UserId, std::shared_ptr<Client>>& getConnectedUsers() const { return mConnectedUserMap; };
 
 private:
 	std::size_t mMaxUsers;

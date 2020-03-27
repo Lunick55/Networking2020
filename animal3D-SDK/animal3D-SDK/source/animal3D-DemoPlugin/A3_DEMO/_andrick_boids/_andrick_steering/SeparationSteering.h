@@ -5,7 +5,7 @@
 class SeparationSteering : public Steering
 {
 public:
-	SeparationSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
+	SeparationSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID = INVALID_UNIT_ID, bool shouldFlee = false);
 
 	virtual Steering* getSteering();
 

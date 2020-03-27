@@ -6,8 +6,8 @@
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-SeekSteering::SeekSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering()
+SeekSteering::SeekSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userID)
 {
 	if (shouldFlee)
 	{
@@ -25,13 +25,13 @@ SeekSteering::SeekSteering(const UnitID& ownerID, const a3vec2& targetLoc, const
 Steering* SeekSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 	
 	if (mTargetID != INVALID_UNIT_ID)
 	{
 		//seeking unit
-		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mTargetID);
+		Boid* pTarget = gDemoState->mpBoidManager->getUnit(mUserID, mTargetID);
 		assert(pTarget != NULL);
 		mTargetLoc = pTarget->getPositionComponent()->getPosition();
 	}

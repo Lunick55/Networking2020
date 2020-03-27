@@ -2,6 +2,7 @@
 #define EVENT_H_
 
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 enum class EventDispatchType : char
 {
@@ -158,27 +159,22 @@ struct ConnectionNewUserJoinedEvent : public SendableEvent
 
 struct BoidDataEvent : public SendableEvent
 {
-	inline BoidDataEvent(PacketEventId packetId, a3vec2 posVals[BOID_COUNT], 
-													a3vec2 velVals[BOID_COUNT],
-														a3vec2 accVals[BOID_COUNT],
+	inline BoidDataEvent(PacketEventId packetId, BoidData boidData[BOID_COUNT],
 			 UserId userId = -1, bool isBroadcast = true, UserId receiverId = -1) :
 
 		SendableEvent(EventId::BOID_DATA_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
 		packetId(packetId), 
 		userId(userId) 
 	{
-		memcpy(position, posVals, sizeof(a3vec2) * BOID_COUNT);
-		memcpy(velocity, velVals, sizeof(a3vec2) * BOID_COUNT);
-		memcpy(acceleration, accVals, sizeof(a3vec2) * BOID_COUNT);
+		memcpy(boids, boidData, sizeof(a3vec2) * BOID_COUNT);
 	}
+
 	virtual ~BoidDataEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
 
 	UserId userId;
 	PacketEventId packetId;
-	a3vec2 position[BOID_COUNT];
-	a3vec2 velocity[BOID_COUNT];
-	a3vec2 acceleration[BOID_COUNT];
+	BoidData boids[BOID_COUNT];
 };
 
 struct CommandEvent : public SendableEvent

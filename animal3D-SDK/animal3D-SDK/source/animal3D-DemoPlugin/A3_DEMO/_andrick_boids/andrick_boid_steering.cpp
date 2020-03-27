@@ -42,63 +42,63 @@ void BoidSteering::setData(const SteeringData& data)
 		//cleanup old steering - todo: check for already existing steering and reuse if possible
 		delete mpSteering;
 		//create new steering
-		mpSteering = new SeekSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new SeekSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::FLEE:
 	{
 		delete mpSteering;
 
-		mpSteering = new SeekSteering(data.ownerID, data.targetLoc, data.targetID, true);
+		mpSteering = new SeekSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, true);
 		break;
 	}
 	case Steering::ARRIVE:
 	{
 		delete mpSteering;
 
-		mpSteering = new ArriveSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new ArriveSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::FACE:
 	{
 		delete mpSteering;
 
-		mpSteering = new FaceSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new FaceSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::WANDER:
 	{
 		delete mpSteering;
 
-		mpSteering = new WanderSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new WanderSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::COHESION:
 	{
 		delete mpSteering;
 
-		mpSteering = new CohesionSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new CohesionSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::SEPARATION:
 	{
 		delete mpSteering;
 
-		mpSteering = new SeparationSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new SeparationSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::GROUPALIGN:
 	{
 		delete mpSteering;
 
-		mpSteering = new GroupAlignSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new GroupAlignSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	case Steering::FLOCKING:
 	{
 		delete mpSteering;
 
-		mpSteering = new FlockingSteering(data.ownerID, data.targetLoc, data.targetID, false);
+		mpSteering = new FlockingSteering(data.userID, data.ownerID, data.targetLoc, data.targetID, false);
 		break;
 	}
 	default:

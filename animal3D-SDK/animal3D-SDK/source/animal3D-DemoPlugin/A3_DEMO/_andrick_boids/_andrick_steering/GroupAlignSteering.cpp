@@ -6,8 +6,8 @@
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 
-GroupAlignSteering::GroupAlignSteering(const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
-	: Steering(), mFaceSteering(FaceSteering(ownerID, targetLoc, targetID, shouldFlee))
+GroupAlignSteering::GroupAlignSteering(const UserId& userID, const UnitID& ownerID, const a3vec2& targetLoc, const UnitID& targetID, bool shouldFlee /*= false*/)
+	: Steering(userID), mFaceSteering(FaceSteering(userID, ownerID, targetLoc, targetID, shouldFlee))
 {
 	if (shouldFlee)
 	{
@@ -25,7 +25,7 @@ GroupAlignSteering::GroupAlignSteering(const UnitID& ownerID, const a3vec2& targ
 Steering* GroupAlignSteering::getSteering()
 {
 	a3vec2 diff;
-	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mOwnerID);
+	Boid* pOwner = gDemoState->mpBoidManager->getUnit(mUserID, mOwnerID);
 	//are we seeking a location or a unit?
 	PhysicsData data = pOwner->getPhysicsComponent()->getData();
 	mNeighborRadius = gDemoState->mGroupAlignRadius;
@@ -33,19 +33,22 @@ Steering* GroupAlignSteering::getSteering()
 	a3vec2 directionVector = a3vec2_zero;
 	int neighborCount = 0;
 
-	std::map<UnitID, Boid*> unitMap = gDemoState->mpBoidManager->getMap();
+	std::map<UserId, std::map<UnitID, Boid*>> unitMap = gDemoState->mpBoidManager->getMap();
 	for (auto it = unitMap.begin(); it != unitMap.end(); ++it)
 	{
-		if (it->second != pOwner)
+		for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
 		{
-			a3vec2 unitPos = it->second->getPositionComponent()->getPosition();
-			a3real2Diff(diff.v, unitPos.v, pOwner->getPositionComponent()->getPosition().v);
-			if (a3real2Length(diff.v) < mNeighborRadius)
+			if (unitIter->second != pOwner)
 			{
-				directionVector.x = directionVector.x + (float)cos(it->second->getFacing() - (PI / 2));
-				directionVector.y = directionVector.y + (float)sin(it->second->getFacing() - (PI/2));
+				a3vec2 unitPos = unitIter->second->getPositionComponent()->getPosition();
+				a3real2Diff(diff.v, unitPos.v, pOwner->getPositionComponent()->getPosition().v);
+				if (a3real2Length(diff.v) < mNeighborRadius)
+				{
+					directionVector.x = directionVector.x + (float)cos(unitIter->second->getFacing() - (PI / 2));
+					directionVector.y = directionVector.y + (float)sin(unitIter->second->getFacing() - (PI / 2));
 
-				neighborCount++;
+					neighborCount++;
+				}
 			}
 		}
 	}

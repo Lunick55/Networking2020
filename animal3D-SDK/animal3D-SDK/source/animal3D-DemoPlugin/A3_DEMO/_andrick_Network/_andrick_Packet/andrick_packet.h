@@ -2,6 +2,7 @@
 #define PACKET_H_
 
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
+#include <A3_DEMO/_andrick_boids/andrick_boid.h>
 
 #pragma pack(push, 1)
 struct ConnectionRequestAcceptedPacket
@@ -264,19 +265,13 @@ struct BoidDataPacket
 {
 	PacketEventId packetId;
 	UserId senderId;
-	a3vec2 position[BOID_COUNT];
-	a3vec2 velocity[BOID_COUNT];
-	a3vec2 acceleration[BOID_COUNT];
+	BoidData boids[BOID_COUNT];
 
-	BoidDataPacket(PacketEventId packetId, a3vec2 posVals[BOID_COUNT],
-											a3vec2 velVals[BOID_COUNT],
-											a3vec2 accVals[BOID_COUNT], UserId sender) :
+	inline BoidDataPacket(PacketEventId packetId, BoidData boidData[BOID_COUNT], UserId sender) :
 		packetId(packetId),
 		senderId(sender)
 	{
-		std::copy(posVals, posVals + BOID_COUNT, position);
-		std::copy(velVals, velVals + BOID_COUNT, velocity);
-		std::copy(accVals, accVals + BOID_COUNT, acceleration);
+		std::copy(boidData, boidData + BOID_COUNT, boids);
 	}
 };
 #pragma pack(pop)
