@@ -98,6 +98,7 @@ void ClientBoidsClientWorld::queueOutgoingEvents()
 	{
 		localBoidData[i].boidPositionData = gDemoState->mpBoidManager->getUnit(userId, i + 1)->getPositionComponent()->getData();
 		localBoidData[i].boidPhysicsData = gDemoState->mpBoidManager->getUnit(userId, i + 1)->getPhysicsComponent()->getData();
+		localBoidData[i].boidID = i + 1;
 	}
 
 	std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidColor, localBoidData, userId);
@@ -158,7 +159,7 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 		for (int i = 0; i < BOID_COUNT; i++)
 		{
 			Boid* pBoid = gDemoState->mpBoidManager->createUnit(boidEvnt->userId, true, ZERO_STEERING_DATA,
-				boidEvnt->boids[i].boidPositionData, boidEvnt->boids[i].boidPhysicsData);
+				boidEvnt->boids[i].boidPositionData, boidEvnt->boids[i].boidPhysicsData, boidEvnt->boids[i].boidID);
 
 			pBoid->setColor(boidEvnt->boidColor);
 		}

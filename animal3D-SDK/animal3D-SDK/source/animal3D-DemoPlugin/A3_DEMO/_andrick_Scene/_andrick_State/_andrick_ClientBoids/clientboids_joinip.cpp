@@ -34,6 +34,8 @@ void ClientBoidsJoinIP::processInput()
 
 	if (mpInputHandler->isKeyPressed(a3key_enter))
 	{
+
+
 		std::string ipAddress;
 		if (!mpInputHandler->validateIPAddress(mpInputHandler->getCurrentInput(), ipAddress))
 		{

@@ -23,7 +23,7 @@ static const int sPORT = 5555;
 
 static const int MAX_INPUT_LENGTH = 512;
 
-static constexpr int BOID_COUNT = 20;
+static constexpr int BOID_COUNT = 1;
 
 extern struct a3_DemoState* gDemoState;
 extern class TextFormatter& gTextFormatter;

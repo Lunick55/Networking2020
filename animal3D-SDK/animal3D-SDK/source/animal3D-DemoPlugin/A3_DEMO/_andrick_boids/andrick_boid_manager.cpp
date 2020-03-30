@@ -34,8 +34,8 @@ Boid* BoidManager::createUnit(const UserId& userId, bool shouldWrap, const Steer
 	}
 	else
 	{
-		auto newUserMap = mUnitMap.insert({ userId, {} }).first;
-		newUserMap->second.insert({ theID, pUnit });
+		auto newUserMap = mUnitMap.insert({ userId, {{ theID, pUnit }} }).first;
+		//newUserMap->second.insert({ theID, pUnit });
 	}
 
 	//assign id and increment nextID counter

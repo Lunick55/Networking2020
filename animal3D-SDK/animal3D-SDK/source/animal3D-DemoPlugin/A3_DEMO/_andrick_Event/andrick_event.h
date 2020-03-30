@@ -167,7 +167,7 @@ struct BoidDataEvent : public SendableEvent
 		userId(userId),
 		boidColor(boidColor)
 	{
-		memcpy(boids, boidData, sizeof(a3vec2) * BOID_COUNT);
+		memcpy(boids, boidData, sizeof(BoidData) * BOID_COUNT);
 	}
 
 	virtual ~BoidDataEvent() = default;

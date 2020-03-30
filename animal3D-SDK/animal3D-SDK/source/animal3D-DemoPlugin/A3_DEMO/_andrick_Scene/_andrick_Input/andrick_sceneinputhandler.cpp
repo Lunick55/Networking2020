@@ -134,6 +134,14 @@ bool SceneInputHandler::validateUsername(const std::string& input) const
 
 bool SceneInputHandler::validateIPAddress(const std::string& input, std::string& output)
 {
+	std::string fuckAndrew = "localhost";
+
+	if (input == "\r")
+	{
+		output = fuckAndrew;
+		return true;
+	}
+
 	output = "";
 	std::vector<std::string> list = splitString(input, '.');
 
