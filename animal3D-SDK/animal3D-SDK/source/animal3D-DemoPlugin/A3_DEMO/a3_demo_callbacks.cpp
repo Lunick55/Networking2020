@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctime>
+#include <cstdlib>
 
 #include <A3_DEMO/_andrick_Utils/andrick_text_formatter.h>
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
@@ -170,6 +172,8 @@ A3DYLIBSYMBOL a3i32 foo(a3i32 bar)
 // window idles
 A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 {
+	std::srand(static_cast<unsigned int>(time(NULL)));
+
 	// perform any idle tasks, such as rendering
 	if (!demoState->exitFlag)
 	{

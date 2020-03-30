@@ -11,8 +11,6 @@
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
-#include <ctime>
-#include <cstdlib>
 
 ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, LIGHT_BLUE),
@@ -25,8 +23,6 @@ ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScen
 
 void ClientBoidsClientWorld::enteringState()
 {
-	std::srand(static_cast<unsigned int>(time(NULL)));
-
 	Color boidColor = AndrickColors::createColor(rand() % 255 / 255.0f,
 		rand() % 255 / 255.0f,
 		rand() % 255 / 255.0f,
