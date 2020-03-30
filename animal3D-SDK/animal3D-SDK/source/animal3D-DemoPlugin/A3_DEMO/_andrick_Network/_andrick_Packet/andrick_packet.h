@@ -265,11 +265,13 @@ struct BoidDataPacket
 {
 	PacketEventId packetId;
 	UserId senderId;
+	Color boidColor;
 	BoidData boids[BOID_COUNT];
 
-	inline BoidDataPacket(PacketEventId packetId, BoidData boidData[BOID_COUNT], UserId sender) :
+	inline BoidDataPacket(PacketEventId packetId, Color boidColor, BoidData boidData[BOID_COUNT], UserId sender) :
 		packetId(packetId),
-		senderId(sender)
+		senderId(sender),
+		boidColor(boidColor)
 	{
 		std::copy(boidData, boidData + BOID_COUNT, boids);
 	}

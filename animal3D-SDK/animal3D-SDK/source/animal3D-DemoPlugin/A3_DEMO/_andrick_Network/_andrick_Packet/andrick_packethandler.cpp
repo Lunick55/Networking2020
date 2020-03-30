@@ -204,7 +204,7 @@ int PacketHandler::processInboundPackets()
 		{
 			std::cout << "andrick_ID_BOID_DATA_PUSH_EVENT" << std::endl;
 			BoidDataPacket* boidEvntPacket = (BoidDataPacket*)packet->data;
-			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->boids, boidEvntPacket->senderId));
+			newEvents.push_back(std::make_shared<BoidDataEvent>(boidEvntPacket->packetId, boidEvntPacket->boidColor, boidEvntPacket->boids, boidEvntPacket->senderId));
 			break;
 		}
 		//case andrick_ID_BOID_DATA_SHARE_EVENT:

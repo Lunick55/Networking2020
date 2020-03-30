@@ -10,6 +10,7 @@
 #include <A3_DEMO/_andrick_Scene/andrick_scene_mainmenu.h>
 #include <A3_DEMO/_andrick_Scene/_andrick_Input/andrick_sceneinputhandler.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
+#include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
 ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScene) :
 	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, LIGHT_BLUE),
@@ -22,9 +23,15 @@ ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScen
 
 void ClientBoidsClientWorld::enteringState()
 {
+	Color boidColor = AndrickColors::createColor(rand() % 255 / 255.0f,
+		rand() % 255 / 255.0f,
+		rand() % 255 / 255.0f,
+		1.0f);
+
 	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit(gDemoState->mpClient->getId());
+		pBoid->setColor(boidColor);
 
 		if (!pBoid)
 		{
@@ -84,13 +91,14 @@ void ClientBoidsClientWorld::queueOutgoingEvents()
 	BoidData localBoidData[BOID_COUNT];
 	
 	UserId userId = gDemoState->mpClient->getId();
+	Color boidColor = gDemoState->mpBoidManager->getUnit(userId, 1)->getColor();
 	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		localBoidData[i].boidPositionData = gDemoState->mpBoidManager->getUnit(userId, i + 1)->getPositionComponent()->getData();
 		localBoidData[i].boidPhysicsData = gDemoState->mpBoidManager->getUnit(userId, i + 1)->getPhysicsComponent()->getData();
 	}
-	
-	std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, localBoidData, userId);
+
+	std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidColor, localBoidData, userId);
 	gEventSystem.queueNetworkEvent(packetData);
 }
 
@@ -149,6 +157,8 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 		{
 			Boid* pBoid = gDemoState->mpBoidManager->createUnit(boidEvnt->userId, true, ZERO_STEERING_DATA,
 				boidEvnt->boids[i].boidPositionData, boidEvnt->boids[i].boidPhysicsData);
+
+			pBoid->setColor(boidEvnt->boidColor);
 		}
 	}
 	else

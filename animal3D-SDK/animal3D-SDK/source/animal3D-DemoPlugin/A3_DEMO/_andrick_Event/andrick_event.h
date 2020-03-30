@@ -159,12 +159,13 @@ struct ConnectionNewUserJoinedEvent : public SendableEvent
 
 struct BoidDataEvent : public SendableEvent
 {
-	inline BoidDataEvent(PacketEventId packetId, BoidData boidData[BOID_COUNT],
+	inline BoidDataEvent(PacketEventId packetId, Color boidColor, BoidData boidData[BOID_COUNT],
 			 UserId userId = -1, bool isBroadcast = true, UserId receiverId = -1) :
 
 		SendableEvent(EventId::BOID_DATA_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
 		packetId(packetId), 
-		userId(userId) 
+		userId(userId),
+		boidColor(boidColor)
 	{
 		memcpy(boids, boidData, sizeof(a3vec2) * BOID_COUNT);
 	}
@@ -172,6 +173,7 @@ struct BoidDataEvent : public SendableEvent
 	virtual ~BoidDataEvent() = default;
 	virtual std::size_t allocatePacket(char*& out) override;
 
+	Color boidColor;
 	UserId userId;
 	PacketEventId packetId;
 	BoidData boids[BOID_COUNT];

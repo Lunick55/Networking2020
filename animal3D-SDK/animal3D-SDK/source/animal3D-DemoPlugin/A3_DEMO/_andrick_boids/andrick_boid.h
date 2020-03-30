@@ -36,6 +36,8 @@ public:
 	float getMaxRotAcc() const { return mMaxRotAcc; };
 	float getMaxRotVel() const { return mMaxRotVel; };
 	void setShowTarget(bool val) { mShowTarget = val; };
+	void setColor(const Color color) { mDrawColor = color; }
+	inline const Color getColor() const { return mDrawColor; }
 
 	void setSteering(UserId userID, Steering::SteeringType type, a3vec2 targetLoc = a3vec2_zero, UnitID targetUnitID = INVALID_UNIT_ID);
 
@@ -50,6 +52,7 @@ private:
 	float mMaxRotAcc;
 	float mMaxRotVel;
 	bool mShowTarget;
+	Color mDrawColor = WHITE;
 
 	Boid();// const Sprite& sprite);
 	virtual ~Boid();
