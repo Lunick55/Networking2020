@@ -25,7 +25,7 @@ void ClientBoidsClientWorld::enteringState()
 	for (int i = 0; i < BOID_COUNT; i++)
 	{
 		Boid* pBoid = gDemoState->mpBoidManager->createRandomUnit(gDemoState->mpClient->getId());
-		
+
 		if (!pBoid)
 		{
 			gDemoState->mpBoidManager->deleteRandomUnit(gDemoState->mpClient->getId());
