@@ -189,13 +189,17 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 				gDemoState->mpPacketHandler->processInboundPackets();
 			}
 
+			bool shouldLag = netUpdateCounter >= (1.0f / (gDemoState->renderTimer->ticksPerSecond * gDemoState->getNetworkUpdateScaler()));
 
 			demoState->mpSceneManager->input();
-			gEventSystem.executeQueuedLocalEvents();
+
+			if (shouldLag)
+				gEventSystem.executeQueuedLocalEvents();
+
 			demoState->mpSceneManager->update();
 
 			//Scaler = 1 -> 1 update per tick. Scaler = 0.5 -> 1 update per 2 ticks, etc
-			if (netUpdateCounter >= (1.0f / (gDemoState->renderTimer->ticksPerSecond * gDemoState->getNetworkUpdateScaler())))
+			if (shouldLag)
 			{
 				//std::printf("Checking for network update after %f seconds.\n", netUpdateCounter);
 				netUpdateCounter = 0;

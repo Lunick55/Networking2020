@@ -44,9 +44,7 @@ private:
 	std::size_t mServersMaxUserCount;
 	std::size_t mConnectedUserCount;
 
-	std::map<UserId, std::shared_ptr<Client>> mClientMap;///TODO: Send over client data from server
-
-
+	std::map<UserId, std::shared_ptr<Client>> mClientMap;
 };
 
 #endif

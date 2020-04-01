@@ -128,6 +128,8 @@ void ClientBoidsClientWorld::render()
 
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
+
+	gTextFormatter.drawText(std::to_string(gDemoState->mpClient->getId()));
 }
 
 void ClientBoidsClientWorld::exitingState()
@@ -168,19 +170,69 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 	{
 		for (int i = 0; i < BOID_COUNT; i++)
 		{
-			BoidData currentBoid = boidEvnt->boids[i];
-			Boid* boid = gDemoState->mpBoidManager->getUnit(boidEvnt->userId, currentBoid.boidID);
+			const BoidData& currentBoid = boidEvnt->boids[i];
+			const Boid* boid = gDemoState->mpBoidManager->getUnit(boidEvnt->userId, currentBoid.boidID);
 
 			if (boid)
 			{
-				std::optional<BoidInfo> info = gDemoState->mpBoidManager->getBoidInfo(boidEvnt->userId);
-				BoidInfo bInfo = info.value();
+				//On Update
+					//Iterate through all of the userinfo and add deltatime to time since last local update
+					//If local client, update boid normally
+					//If remote client, attempt to do hermite spline smoothing using userinfo physics/position data and set velocity, position based on that
 
-				bInfo.timeBetweenLastNetworkUpdate = bInfo.timeSinceLastLocalUpdate;
-				bInfo.timeSinceLastLocalUpdate = 0.0f;
+				//On New Packet
+					//Get userinfo for userid and set time between last network update = to time since last local update
+					//Set time since last local update to zero
+					//In userinfo, add new physics/position data and remove physics/position data that is more than 3 old
 
-				boid->getPositionComponent()->setData(currentBoid.boidPositionData);
-				boid->getPhysicsComponent()->setData(currentBoid.boidPhysicsData);
+				BoidInfo* info = gDemoState->mpBoidManager->getBoidInfo(boidEvnt->userId);
+
+				if (info)
+				{
+					info->timeBetweenNetworkUpdates = info->timeSinceLastNetworkUpdate;
+
+					//It doesn't like this for some reason?
+					info->timeSinceLastNetworkUpdate = 0.0f;
+					//
+
+					std::printf("Last Local Update IN WORLD %f \n", info->timeSinceLastNetworkUpdate);
+
+					Move m = { currentBoid.boidPhysicsData, currentBoid.boidPositionData, getTime() };
+
+					std::map<UnitID, std::multiset<Move>>::iterator& allUnitMovesIter = info->unprocessedMoves.find(currentBoid.boidID);
+
+					if (allUnitMovesIter == info->unprocessedMoves.end())
+					{
+						allUnitMovesIter = info->unprocessedMoves.insert({ currentBoid.boidID, std::multiset<Move>() }).first;
+					}
+
+					std::multiset<Move> currentKnownUnitMoves = allUnitMovesIter->second;
+					currentKnownUnitMoves.insert(m);
+
+					std::multiset<Move> updatedMoves;
+
+					Move mostRecentMove = *currentKnownUnitMoves.rbegin();
+
+					//Timestamp always ordered oldest to newest (multiset sorts by least to greatest).
+					for (auto currentKnownIter = currentKnownUnitMoves.rbegin(); currentKnownIter != currentKnownUnitMoves.rend(); ++currentKnownIter)
+					{
+						//if (currentKnownIter->timeStamp >= mostRecentMove.timeStamp)
+						//{
+							//mostRecentMove = *currentKnownIter;
+							updatedMoves.insert(mostRecentMove);
+						//}
+					
+						if (updatedMoves.size() == 2)
+						{
+							break;
+						}
+					}
+
+					allUnitMovesIter->second = updatedMoves;
+
+					//boid->getPositionComponent()->setData(currentBoid.boidPositionData);
+					//boid->getPhysicsComponent()->setData(currentBoid.boidPhysicsData);
+				}
 			}
 		}
 	}
