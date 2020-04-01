@@ -49,7 +49,7 @@ Boid* BoidManager::createUnit(const UserId& userId, bool shouldWrap, const Steer
 
 	auto boidIter = mUnitMap.find(userId);
 	BoidInfo* b = nullptr;
-	Move m;
+	Move m = { pUnit->getPhysicsComponent()->getData(), pUnit->getPositionComponent()->getData(), getTime() };
 
 	if (boidIter != mUnitMap.end())
 	{
@@ -59,11 +59,12 @@ Boid* BoidManager::createUnit(const UserId& userId, bool shouldWrap, const Steer
 	else
 	{
 		mUnitMap.insert({ userId, {{ theID, pUnit }} });
+		mLerpCounter.insert({ userId, 0.0f });
 		b = new BoidInfo();
+		b->unprocessedMoves.insert({ theID, std::multiset<Move>() });
 	}
 
-	m = { pUnit->getPhysicsComponent()->getData(), pUnit->getPositionComponent()->getData() };
-	b->steeringData.insert({ theID, m });
+	b->unprocessedMoves.find(theID)->second.insert(m);
 	mBoidInfoMap.insert({ userId, b });
 
 	return pUnit;
@@ -192,6 +193,12 @@ void BoidManager::updateAll(float elapsedTime)
 	std::map<UserId, std::map<UnitID, Boid*>>::iterator& currentBoidsIter = mUnitMap.begin();
 	for (; currentBoidInfoIter != mBoidInfoMap.end(); ++currentBoidsIter, ++currentBoidInfoIter)
 	{
+		//auto lerpCountIter = mLerpCounter.find(currentBoidInfoIter->first);
+		//if (lerpCountIter != gDemoState->mpBoidManager->mLerpCounter.end())
+		//{
+		//	lerpCountIter->second += (float)gDemoState->renderTimer->secondsPerTick;
+		//}
+
 		//std::printf("UserID: %i | Current Iter:: %i \n", gDemoState->mpClient->getId(), currentBoidsIter->first);
 
 		currentBoidInfoIter->second->timeSinceLastNetworkUpdate += (float)gDemoState->renderTimer->secondsPerTick;
@@ -230,13 +237,14 @@ void BoidManager::updateAll(float elapsedTime)
 					boidPhysicsData.vel = newVelocity;
 
 					PositionData boidPositionData = currentBoidIter->second->getPositionComponent()->getData();
+					boidPositionData.pos = spline.targetLoc;
 
-					currentBoidIter->second->getPhysicsComponent()->setData(boidPhysicsData);
-					currentBoidIter->second->getPositionComponent()->setData(boidPositionData);
+					//currentBoidIter->second->getPhysicsComponent()->setData(boidPhysicsData);
+					//currentBoidIter->second->getPositionComponent()->setData(boidPositionData);
 				}
 
 				//Simulate
-				simulateMove(currentBoidInfoIter->first, *currentBoidInfoIter->second);
+				//simulateMove(currentBoidInfoIter->first, *currentBoidInfoIter->second);
 			}
 		}
 	}
@@ -247,10 +255,13 @@ BoidInfo* BoidManager::createMove(const UserId& userId)
 	BoidInfo* boidMoveInfo = nullptr;
 
 	std::map<UserId, BoidInfo*>::iterator userInfoIter = mBoidInfoMap.find(userId);
-	std::map<UnitID, Move>::iterator steeringIter = userInfoIter->second->steeringData.begin();
+	std::map<UnitID, std::multiset<Move>>::iterator steeringIter = userInfoIter->second->unprocessedMoves.begin();
 
-	for (; steeringIter != userInfoIter->second->steeringData.end(); ++steeringIter)
-		steeringIter->second.timeStamp = getTime();
+	for (; steeringIter != userInfoIter->second->unprocessedMoves.end(); ++steeringIter)
+	{
+		Move m = { getUnit(userId, steeringIter->first)->getPhysicsComponent()->getData(), getUnit(userId, steeringIter->first)->getPositionComponent()->getData(), getTime() };
+		steeringIter->second.insert(m);
+	}
 
 	boidMoveInfo = userInfoIter->second;
 
@@ -259,9 +270,9 @@ BoidInfo* BoidManager::createMove(const UserId& userId)
 
 void BoidManager::simulateMove(const UserId& userId, const BoidInfo& move)
 {
-	std::map<UnitID, Move>::const_iterator steeringIter = move.steeringData.begin();
+	std::map<UnitID, std::multiset<Move>>::const_iterator steeringIter = move.unprocessedMoves.begin();
 
-	for (; steeringIter != move.steeringData.end(); ++steeringIter)
+	for (; steeringIter != move.unprocessedMoves.end(); ++steeringIter)
 	{
 		Boid* currentUnit = getUnit(userId, steeringIter->first);
 		
@@ -279,11 +290,11 @@ HermiteCubicSpline BoidManager::createSpline(BoidInfo* boidInfo, Boid* currentBo
 	std::map<UnitID, std::multiset<Move>>::iterator unprocessedMoves = boidInfo->unprocessedMoves.begin();
 
 	spline.startLoc = currentBoid->getPositionComponent()->getData().pos;
-	spline.targetLoc = unprocessedMoves->second.begin()->positionData.pos;
+	spline.targetLoc = unprocessedMoves->second.rbegin()->positionData.pos;
 
 	float velToDerivative = boidInfo->timeBetweenNetworkUpdates;
 	spline.startDerivative = mult(velToDerivative, currentBoid->getPhysicsComponent()->getData().vel);
-	spline.targetDerivative = mult(velToDerivative, unprocessedMoves->second.begin()->physicsData.vel);
+	spline.targetDerivative = mult(velToDerivative, unprocessedMoves->second.rbegin()->physicsData.vel);
 
 	return spline;
 }

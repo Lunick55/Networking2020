@@ -168,6 +168,13 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 	}
 	else
 	{
+		//auto lerpCountIter = gDemoState->mpBoidManager->mLerpCounter.find(boidEvnt->userId);
+		//
+		//if (lerpCountIter != gDemoState->mpBoidManager->mLerpCounter.end())
+		//{
+		//	lerpCountIter->second = 0.0f;
+		//}
+
 		for (int i = 0; i < BOID_COUNT; i++)
 		{
 			const BoidData& currentBoid = boidEvnt->boids[i];
@@ -192,12 +199,12 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 					info->timeBetweenNetworkUpdates = info->timeSinceLastNetworkUpdate;
 
 					//It doesn't like this for some reason?
-					info->timeSinceLastNetworkUpdate = 0.0f;
+					//info->timeSinceLastNetworkUpdate = 0.0f;
 					//
 
 					std::printf("Last Local Update IN WORLD %f \n", info->timeSinceLastNetworkUpdate);
 
-					Move m = { currentBoid.boidPhysicsData, currentBoid.boidPositionData, getTime() };
+					Move m = { currentBoid.boidPhysicsData, currentBoid.boidPositionData, boidEvnt->timestamp };
 
 					std::map<UnitID, std::multiset<Move>>::iterator& allUnitMovesIter = info->unprocessedMoves.find(currentBoid.boidID);
 
@@ -230,8 +237,9 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 
 					allUnitMovesIter->second = updatedMoves;
 
-					//boid->getPositionComponent()->setData(currentBoid.boidPositionData);
-					//boid->getPhysicsComponent()->setData(currentBoid.boidPhysicsData);
+					//Shouldnt be here ideally for lerping but idk how to get lerping to work
+					boid->getPositionComponent()->setData(currentBoid.boidPositionData);
+					boid->getPhysicsComponent()->setData(currentBoid.boidPhysicsData);
 				}
 			}
 		}

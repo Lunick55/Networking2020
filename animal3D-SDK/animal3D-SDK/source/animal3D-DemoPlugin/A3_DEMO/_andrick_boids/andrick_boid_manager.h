@@ -122,7 +122,7 @@ static bool operator<(const Move& x, const Move& y) {
 
 struct BoidInfo
 {
-	std::map<UnitID, Move> steeringData;
+	//std::map<UnitID, Move> steeringData;
 	std::map<UnitID, std::multiset<Move>> unprocessedMoves;
 	float timeSinceLastNetworkUpdate = 0.0f;
 	float timeBetweenNetworkUpdates = 0.0f;
@@ -161,10 +161,13 @@ public:
 
 		return boidInfo;
 	}
+	//std::map<UserId, float> mLerpCounter = {};
 
 private:
 	static UnitID msNextUnitID;
 	std::map<UserId, std::map<UnitID, Boid*>> mUnitMap = {};
+
+
 	//std::map<UserId, BoidInfo> mBoidInfoMap = {};
 
 	std::map<UserId, BoidInfo*> mBoidInfoMap = {};
