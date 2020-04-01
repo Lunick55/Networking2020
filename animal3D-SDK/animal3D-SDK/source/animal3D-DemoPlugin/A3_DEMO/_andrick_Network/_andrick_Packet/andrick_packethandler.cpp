@@ -112,6 +112,22 @@ int PacketHandler::processInboundPackets()
 			////////////////////////////////////////////////
 			// RAKNET PACKETS                             
 			////////////////////////////////////////////////
+
+		case ID_TIMESTAMP:
+		{
+			std::cout << "BOMB WILL GO OFF IN: " << std::endl;
+
+			switch (packet->data[sizeof(unsigned char) + sizeof(unsigned long)])
+			{
+			case andrick_ID_BOID_DATA_PUSH_EVENT:
+				std::cout << "WE DID IT!" << std::endl;
+				break;
+			default:
+				break;
+			}
+
+			break;
+		}
 		case ID_CONNECTION_REQUEST_ACCEPTED:
 		{
 			std::cout << "ID_CONNECTION_REQUEST_ACCEPTED" << std::endl;

@@ -3,6 +3,7 @@
 
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
+#include <chrono>
 
 #pragma pack(push, 1)
 struct ConnectionRequestAcceptedPacket
@@ -263,6 +264,8 @@ struct WhisperPacket
 #pragma pack(push, 1)
 struct BoidDataPacket
 {
+	unsigned char useTimeStamp;
+	RakNet::Time timeStamp;
 	PacketEventId packetId;
 	UserId senderId;
 	Color boidColor;
@@ -273,8 +276,28 @@ struct BoidDataPacket
 		senderId(sender),
 		boidColor(boidColor)
 	{
+		useTimeStamp = ID_TIMESTAMP;
+
+		using namespace std::chrono;
+		milliseconds ms = duration_cast<milliseconds>(
+			system_clock::now().time_since_epoch()
+			);
+
+		timeStamp = ms.count();
+		std::printf("Time: %I64i\n", timeStamp);
+
 		std::copy(boidData, boidData + BOID_COUNT, boids);
 	}
+};
+#pragma pack(pop)
+
+#pragma pack(push, 1)
+struct structName
+{
+unsigned char useTimeStamp; // Assign ID_TIMESTAMP to this
+RakNet::Time timeStamp; // Put the system time in here returned by RakNet::GetTime() or some other method that returns a similar value
+unsigned char typeId; // Your type here
+// Your data here
 };
 #pragma pack(pop)
 
