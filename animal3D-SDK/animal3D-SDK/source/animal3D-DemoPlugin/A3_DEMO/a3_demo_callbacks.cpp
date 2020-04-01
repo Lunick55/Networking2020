@@ -174,6 +174,8 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 {
 	std::srand(static_cast<unsigned int>(time(NULL)));
 
+	static a3f64 netUpdateCounter = 0.0f;
+
 	// perform any idle tasks, such as rendering
 	if (!demoState->exitFlag)
 	{
@@ -187,11 +189,23 @@ A3DYLIBSYMBOL a3i32 a3demoCB_idle(a3_DemoState *demoState)
 				gDemoState->mpPacketHandler->processInboundPackets();
 			}
 
+
 			demoState->mpSceneManager->input();
-			gEventSystem.executeQueuedLocalEvents();//demoState->mpSceneManager->processIncomingEvent(evnt);
+			gEventSystem.executeQueuedLocalEvents();
 			demoState->mpSceneManager->update();
-			demoState->mpSceneManager->queueOutgoingEvents();
-			gEventSystem.sendQueuedNetworkEvents();
+
+			//Scaler = 1 -> 1 update per tick. Scaler = 0.5 -> 1 update per 2 ticks, etc
+			if (netUpdateCounter >= (1.0f / (gDemoState->renderTimer->ticksPerSecond * gDemoState->getNetworkUpdateScaler())))
+			{
+				//std::printf("Checking for network update after %f seconds.\n", netUpdateCounter);
+				netUpdateCounter = 0;
+				demoState->mpSceneManager->queueOutgoingEvents();
+				gEventSystem.sendQueuedNetworkEvents();
+			}
+
+			//Simulate network lag
+			netUpdateCounter += gDemoState->renderTimer->secondsPerTick;
+
 			demoState->mpSceneManager->render();
 
 			// update input

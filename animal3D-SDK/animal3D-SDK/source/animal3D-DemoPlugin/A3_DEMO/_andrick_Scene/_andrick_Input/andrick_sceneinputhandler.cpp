@@ -57,6 +57,15 @@ void SceneInputHandler::updateInput()
 	{
 		handleTyping(mCurrentInput);
 	}
+
+	if (isKeyPressed(a3key_L))
+	{
+		gDemoState->mNetworkUpdatesScaler = gDemoState->renderTimer->secondsPerTick;
+	}
+	else if (isKeyPressed(a3key_U))
+	{
+		gDemoState->mNetworkUpdatesScaler = 1.0f;
+	}
 }
 
 bool SceneInputHandler::handleCommandInput()

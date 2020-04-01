@@ -101,7 +101,7 @@ void ClientBoidsClientWorld::queueOutgoingEvents()
 		localBoidData[i].boidID = i + 1;
 	}
 
-	std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, boidColor, localBoidData, userId);
+	std::shared_ptr<BoidDataEvent> packetData = std::make_shared<BoidDataEvent>(andrick_ID_BOID_DATA_PUSH_EVENT, getTime(), boidColor, localBoidData, userId);
 	gEventSystem.queueNetworkEvent(packetData);
 }
 
@@ -148,7 +148,7 @@ void ClientBoidsClientWorld::exitingState()
 
 void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent> boidEvnt)
 {
-	printf("Getting push...");
+	//printf("Getting push...");
 
 	//Don't update our boids with the packet we sent to the server.
 	if (boidEvnt->userId == gDemoState->mpClient->getId())
@@ -173,6 +173,12 @@ void ClientBoidsClientWorld::handleBoidDataEvents(std::shared_ptr<BoidDataEvent>
 
 			if (boid)
 			{
+				std::optional<BoidInfo> info = gDemoState->mpBoidManager->getBoidInfo(boidEvnt->userId);
+				BoidInfo bInfo = info.value();
+
+				bInfo.timeBetweenLastNetworkUpdate = bInfo.timeSinceLastLocalUpdate;
+				bInfo.timeSinceLastLocalUpdate = 0.0f;
+
 				boid->getPositionComponent()->setData(currentBoid.boidPositionData);
 				boid->getPhysicsComponent()->setData(currentBoid.boidPhysicsData);
 			}

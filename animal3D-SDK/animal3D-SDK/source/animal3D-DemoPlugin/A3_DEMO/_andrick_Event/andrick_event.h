@@ -159,13 +159,14 @@ struct ConnectionNewUserJoinedEvent : public SendableEvent
 
 struct BoidDataEvent : public SendableEvent
 {
-	inline BoidDataEvent(PacketEventId packetId, Color boidColor, BoidData boidData[BOID_COUNT],
+	inline BoidDataEvent(PacketEventId packetId, RakNet::Time timestamp, Color boidColor, BoidData boidData[BOID_COUNT],
 			 UserId userId = -1, bool isBroadcast = true, UserId receiverId = -1) :
 
 		SendableEvent(EventId::BOID_DATA_EVENT, EventProcessingType::BOTH, isBroadcast, receiverId),
 		packetId(packetId), 
 		userId(userId),
-		boidColor(boidColor)
+		boidColor(boidColor),
+		timestamp(timestamp)
 	{
 		memcpy(boids, boidData, sizeof(BoidData) * BOID_COUNT);
 	}
@@ -174,6 +175,7 @@ struct BoidDataEvent : public SendableEvent
 	virtual std::size_t allocatePacket(char*& out) override;
 
 	Color boidColor;
+	RakNet::Time timestamp;
 	UserId userId;
 	PacketEventId packetId;
 	BoidData boids[BOID_COUNT];

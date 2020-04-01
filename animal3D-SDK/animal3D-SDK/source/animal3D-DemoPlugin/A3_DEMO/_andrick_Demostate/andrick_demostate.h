@@ -69,6 +69,10 @@ struct a3_DemoState
 	float mSeparationWeight = 1.0f;
 	float mGroupAlignWeight = 1.0f;
 
+	a3f64 mNetworkUpdatesScaler = 0.033f;
+
+	const a3f64 getNetworkUpdateScaler() { if (mNetworkUpdatesScaler == 0) { mNetworkUpdatesScaler = 1.0f; } return mNetworkUpdatesScaler; }
+
 	//bool isServer = false; //HACK: ew gross
 	//std::vector<RakNet::SystemAddress> mUserAddressList; // also gross
 	//RakNet::SystemAddress serverAddress; //super gross

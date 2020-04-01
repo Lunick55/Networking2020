@@ -6,6 +6,8 @@
 #include <A3_DEMO/_andrick_Demostate/andrick_demostate.h>
 #include <A3_DEMO/_andrick_Network/_andrick_Packet/andrick_packethandler.h>
 
+#include <chrono>
+
 EventSystem& gEventSystem = EventSystem::get();
 TextFormatter& gTextFormatter = TextFormatter::get();
 a3_DemoState* gDemoState = nullptr;
@@ -56,6 +58,17 @@ extern "C"
 				}
 			}
 		}
+	}
+
+	RakNet::Time getTime()
+	{
+		using namespace std::chrono;
+		milliseconds ms = duration_cast<milliseconds>(
+			system_clock::now().time_since_epoch()
+			);
+		//std::printf("Time: %I64i\n", ms.count());
+
+		return ms.count();
 	}
 
 #ifdef __cplusplus

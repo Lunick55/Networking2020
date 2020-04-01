@@ -264,27 +264,19 @@ struct WhisperPacket
 #pragma pack(push, 1)
 struct BoidDataPacket
 {
-	unsigned char useTimeStamp;
-	RakNet::Time timeStamp;
+	//unsigned char useTimeStamp;
 	PacketEventId packetId;
+	RakNet::Time timeStamp;
 	UserId senderId;
 	Color boidColor;
 	BoidData boids[BOID_COUNT];
 
-	inline BoidDataPacket(PacketEventId packetId, Color boidColor, BoidData boidData[BOID_COUNT], UserId sender) :
+	inline BoidDataPacket(PacketEventId packetId, RakNet::Time timestamp, Color boidColor, BoidData boidData[BOID_COUNT], UserId sender) :
 		packetId(packetId),
 		senderId(sender),
 		boidColor(boidColor)
 	{
-		useTimeStamp = ID_TIMESTAMP;
-
-		using namespace std::chrono;
-		milliseconds ms = duration_cast<milliseconds>(
-			system_clock::now().time_since_epoch()
-			);
-
-		timeStamp = ms.count();
-		std::printf("Time: %I64i\n", timeStamp);
+		//useTimeStamp = ID_TIMESTAMP;
 
 		std::copy(boidData, boidData + BOID_COUNT, boids);
 	}

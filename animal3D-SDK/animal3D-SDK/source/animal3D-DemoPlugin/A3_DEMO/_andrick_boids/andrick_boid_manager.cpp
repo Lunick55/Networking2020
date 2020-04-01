@@ -2,6 +2,7 @@
 
 #include <A3_DEMO/_andrick_boids/andrick_boid_manager.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid.h>
+#include <A3_DEMO/_andrick_Network/andrick_client.h>
 
 UnitID BoidManager::msNextUnitID = PLAYER_UNIT_ID + 1;
 
@@ -25,17 +26,29 @@ Boid* BoidManager::createUnit(const UserId& userId, bool shouldWrap, const Steer
 		msNextUnitID++;
 	}
 
-	//place in map
+	//place unit in map
 	auto boidIter = mUnitMap.find(userId);
 
 	if (boidIter != mUnitMap.end())
 	{
-		boidIter->second.insert({ theID, pUnit});
+		boidIter->second.insert({ theID, pUnit });
 	}
 	else
 	{
 		auto newUserMap = mUnitMap.insert({ userId, {{ theID, pUnit }} }).first;
 		//newUserMap->second.insert({ theID, pUnit });
+	}
+
+	//place info in map
+	auto boidInfoIter = mBoidInfoMap.find(userId);
+
+	if (boidInfoIter != mBoidInfoMap.end())
+	{
+		boidInfoIter->second = BoidInfo();
+	}
+	else
+	{
+		mBoidInfoMap.insert({ userId, BoidInfo() });
 	}
 
 	//assign id and increment nextID counter
@@ -172,11 +185,32 @@ void BoidManager::drawAll() const
 
 void BoidManager::updateAll(float elapsedTime)
 {
-	for (auto it = mUnitMap.begin(); it != mUnitMap.end(); ++it)
+
+	std::map<UserId, BoidInfo>::iterator boidInfo = mBoidInfoMap.begin();
+	std::map<UserId, std::map<UnitID, Boid*>>::iterator it = mUnitMap.begin();
+	for (; it != mUnitMap.end(); ++it, ++boidInfo)
 	{
-		for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
+		//std::printf("UserID: %i\n", gDemoState->mpClient->getId());
+
+		if (it->first == gDemoState->mpClient->getId())
 		{
-			unitIter->second->update(elapsedTime);
-		}
+			for (auto unitIter = it->second.begin(); unitIter != it->second.end(); ++unitIter)
+			{
+				unitIter->second->update(elapsedTime);
+			}
+
+			//boidInfo->second.timeSinceLastLocalUpdate += elapsedTime;
+			//
+			////Make sure this isn't 0
+			//if (boidInfo->second.timeBetweenLastNetworkUpdate < 0.0004f) return;
+			//
+			//a3f64 lerpRatio = boidInfo->second.timeSinceLastLocalUpdate / boidInfo->second.timeBetweenLastNetworkUpdate;
+			//
+			//std::printf("UserID: %i, Lerp: %f", it->first, lerpRatio);
+			////Do lerp stuff here
+			////Lerp position
+			////Lerp velocity
+			////Lerp acceleration
+		}	//
 	}
 }

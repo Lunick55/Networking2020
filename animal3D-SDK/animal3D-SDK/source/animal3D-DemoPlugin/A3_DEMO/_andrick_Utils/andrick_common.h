@@ -200,6 +200,7 @@ extern "C"
 	extern void initializeServer();
 	extern void initializeClient();
 	extern void shutdownRakNet();
+	extern RakNet::Time getTime();
 #ifdef __cplusplus
 }
 #endif

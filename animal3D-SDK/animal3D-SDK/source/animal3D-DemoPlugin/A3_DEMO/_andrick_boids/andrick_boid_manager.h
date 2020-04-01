@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <map>
 #include <A3_DEMO/_andrick_boids/andrick_boid_position.h>
 #include <A3_DEMO/_andrick_boids/andrick_boid_physics.h>
@@ -13,6 +14,13 @@ struct SteeringData;
 
 const UnitID PLAYER_UNIT_ID = 0;
 const float PI = 3.14159f;
+
+struct BoidInfo
+{
+	float timeSinceLastLocalUpdate = 0.0f;
+	float timeBetweenLastNetworkUpdate = 0.0f;
+	float clientSimulatedTime = 0.0f;
+};
 
 class BoidManager
 {
@@ -35,8 +43,22 @@ public:
 	Boid* getPlayerUnit(const UserId& userId) const;
 
 	std::map<UserId, std::map<UnitID, Boid*>> getMap() { return mUnitMap; };
+	std::optional<BoidInfo> getBoidInfo(const UserId& userId) 
+	{ 
+		auto iter = mBoidInfoMap.find(userId);
+		std::optional<BoidInfo> boidInfo;
+
+		if (iter != mBoidInfoMap.end())
+		{
+			boidInfo = iter->second;
+		}
+
+		return boidInfo;
+	}
 
 private:
 	static UnitID msNextUnitID;
-	std::map<UserId, std::map<UnitID, Boid*>> mUnitMap;
+	std::map<UserId, std::map<UnitID, Boid*>> mUnitMap = {};
+	std::map<UserId, BoidInfo> mBoidInfoMap = {};
+	//std::vector<BoidInfo> mPreviousMoves;
 };
