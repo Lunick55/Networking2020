@@ -59,7 +59,7 @@ Boid* BoidManager::createUnit(const UserId& userId, bool shouldWrap, const Steer
 	else
 	{
 		mUnitMap.insert({ userId, {{ theID, pUnit }} });
-		mLerpCounter.insert({ userId, 0.0f });
+		//mLerpCounter.insert({ userId, 0.0f });
 		b = new BoidInfo();
 		b->unprocessedMoves.insert({ theID, std::multiset<Move>() });
 	}
