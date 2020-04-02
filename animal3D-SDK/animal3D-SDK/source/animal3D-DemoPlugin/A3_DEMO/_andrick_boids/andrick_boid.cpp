@@ -38,8 +38,8 @@ void Boid::draw() const
 	BoidPosition* pPosition = getPositionComponent();
 	//assert(pPosition != NULL);
 	const a3vec2& pos = pPosition->getPosition();
-	//gTextFormatter.drawBoidText(mDrawColor, pos);
-	gTextFormatter.drawBoidText(WHITE, pos);
+	gTextFormatter.drawBoidText(mDrawColor, pos);
+	//gTextFormatter.drawBoidText(WHITE, pos);
 
 	if (mShowTarget)
 	{

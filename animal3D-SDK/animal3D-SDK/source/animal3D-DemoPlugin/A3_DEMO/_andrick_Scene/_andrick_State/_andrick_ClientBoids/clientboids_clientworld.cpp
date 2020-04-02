@@ -13,7 +13,7 @@
 #include <A3_DEMO/_andrick_Utils/andrick_common.h>
 
 ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScene) :
-	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, LIGHT_BLUE),
+	SceneState(parentScene, (SceneStateId)ClientBoidsScene::ClientBoidsStateId::CLIENT_WORLD, DARK_GREY),
 	mChatHistory(10),
 	mDataMode(andrick_ID_BOID_DATA_PUSH_EVENT),
 	mDataModeText("Data Push")
@@ -23,9 +23,10 @@ ClientBoidsClientWorld::ClientBoidsClientWorld(std::shared_ptr<Scene> parentScen
 
 void ClientBoidsClientWorld::enteringState()
 {
-	Color boidColor = AndrickColors::createColor(rand() % 255 / 255.0f,
-		rand() % 255 / 255.0f,
-		rand() % 255 / 255.0f,
+	Color boidColor = AndrickColors::createColor(
+		rand() % 255 / 255.0f + 0.2f,
+		rand() % 255 / 255.0f + 0.2f,
+		rand() % 255 / 255.0f + 0.2f,
 		1.0f);
 
 	printf("%f %f %f", boidColor.r, boidColor.g, boidColor.b);
@@ -129,7 +130,7 @@ void ClientBoidsClientWorld::render()
 	gTextFormatter.offsetLine(2);
 	renderChatLogHistory(mChatLogHistory, TextAlign::RIGHT, 1);
 
-	gTextFormatter.drawText(std::to_string(gDemoState->mpClient->getId()));
+	//gTextFormatter.drawText(std::to_string(gDemoState->mpClient->getId()));
 }
 
 void ClientBoidsClientWorld::exitingState()

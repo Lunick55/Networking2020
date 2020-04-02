@@ -244,7 +244,7 @@ void BoidManager::updateAll(float elapsedTime)
 				}
 
 				//Simulate
-				//simulateMove(currentBoidInfoIter->first, *currentBoidInfoIter->second);
+				simulateMove(currentBoidInfoIter->first, *currentBoidInfoIter->second);
 			}
 		}
 	}
